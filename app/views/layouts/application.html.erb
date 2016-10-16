@@ -9,6 +9,19 @@
   </head>
 
   <body>
-    <%= yield %>
+    <div class="container-fluid">
+    <div class="page-header">
+      <h1>Aker <small>Project Management</small></h1>
+    </div>
+      <div class="row">
+        <div class="col-md-3">
+          <%= render 'side_menu' %>
+        </div>
+
+        <div class="col-md-9">
+          <%= yield %>
+        </div>
+      </div>
+    </div>
   </body>
 </html>

@@ -15,3 +15,32 @@
 //= require turbolinks
 //= require bootstrap-sprockets
 //= require_tree .
+
+$(function() {
+  $.get('/api/v1/programs?include=projects.aims.proposals', function(response) {
+    var treeviewData = buildTree(response.data, response.included);
+
+    $('#tree').treeview({
+      data: treeviewData,
+      enableLinks: true,
+      collapseIcon: 'fa fa-minus',
+      expandIcon: 'fa fa-plus',
+      emptyIcon: 'fa',
+      levels: 1
+    })
+  });
+
+  $('#project-search').on('keyup', debounce(function(e) {
+    var value = $(this).val();
+
+    if (value) {
+      $('#tree').treeview('search', [ value, {
+        ignoreCase: true,
+        exactMatch: false,
+        revealResults: true,
+      }]);
+    } else {
+      $('#tree').treeview('clearSearch');
+    }
+  }, 300))
+})

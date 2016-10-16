@@ -1,5 +1,10 @@
 Rails.application.routes.draw do
 
+  resources :programs, only: [:show]
+  resources :projects, only: [:show]
+  resources :aims, only: [:show]
+  resources :proposals, only: [:show]
+
   namespace :api do
     namespace :v1 do
 
