@@ -1,7 +1,7 @@
 function buildTree(node, included) {
   return node.reduce(function(memo, leaf) {
 
-    let ret = {
+    var ret = {
       text: leaf.attributes.name,
       href: '/' + leaf.type + '/' + leaf.id,
       icon: getIcon(leaf),
