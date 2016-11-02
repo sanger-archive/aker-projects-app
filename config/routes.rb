@@ -1,5 +1,7 @@
 Rails.application.routes.draw do
 
+  root 'programs#show', id: 1
+
   resources :programs, only: [:show]
   resources :projects, only: [:show]
   resources :aims, only: [:show]
