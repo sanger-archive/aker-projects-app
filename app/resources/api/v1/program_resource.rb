@@ -3,6 +3,7 @@ module Api
     class ProgramResource < JSONAPI::Resource
       immutable
       has_many :projects
+      has_one :collection
       attributes :name
     end
   end

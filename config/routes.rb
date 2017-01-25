@@ -25,6 +25,8 @@ Rails.application.routes.draw do
 
       jsonapi_resources :proposals
 
+      jsonapi_resources :collections
+
     end
   end
 
