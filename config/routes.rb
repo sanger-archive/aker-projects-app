@@ -6,7 +6,7 @@ Rails.application.routes.draw do
   resources :projects, only: [:show]
   resources :aims, only: [:show]
   resources :proposals, only: [:show]
-  resources :nodes, only: [:show, :create]
+  resources :nodes
 
   namespace :api do
     namespace :v1 do
