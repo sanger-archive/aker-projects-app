@@ -1,0 +1,29 @@
+<div class="row">
+  <div class="col-md-12">
+    <h2>Nodes</h2>
+
+	<table class="table table-striped">
+	  <thead>
+	    <tr>
+	      <th>Id</th>
+	      <th>Name</th>
+	      <th></th>
+	    </tr>
+	  </thead>
+
+	  <tbody>
+	  	<% @nodes.each do |node| %>
+			<tr>
+			  <td><%= node.id %></td>
+			  <td><%= node.name %></td>
+			  <td>
+			      <%= link_to 'Edit', edit_node_path(id: node.id), class: 'btn btn-default' %>
+			  </td>
+			</tr>
+	  	<% end %>
+	  </tbody>
+
+	</table>
+  </div>
+</div>
+
