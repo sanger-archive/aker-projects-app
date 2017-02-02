@@ -1,0 +1,29 @@
+<% parents(@node).each do |p| %>
+  <%= linknode(p) %> /
+<% end -%>
+<b><%= @node.name %></b>
+
+<h2><%= @node.name %></h2>
+
+<h3>Children</h3>
+
+<% if @node.children.empty? %>
+  None
+<% else %>
+  <ul>
+  <% @node.children.each do |c| %>
+	  <li><%= linknode(c) %></li>
+  <% end %>
+  </ul>
+<% end %>
+
+<br/>
+<h4>Add child node</h4>
+
+<%= form_tag(controller: "nodes", action: "create", method: "post") do %>
+  <%= label_tag(:name, "Name:") %>
+  <%= text_field_tag(:name) %>
+  <%= hidden_field_tag :parent_id, @node.id %>
+  <br/><br/>
+  <%= submit_tag("Create") %>
+<% end %>

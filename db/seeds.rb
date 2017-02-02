@@ -34,3 +34,11 @@ Program.create([
   { name: "Cellular Genetics" },
   { name: "Computational Genomics" }
 ])
+
+root = Node.create(name: "root")
+Node.create(name: "Prog 1", parent: root)
+p2 = Node.create(name: "Prog 2", parent: root)
+a1 = Node.create(name: "Aim 1", parent: p2)
+a2 = Node.create(name: "Aim 2", parent: p2)
+pr = Node.create(name: "Project 1", parent: a1)
+pr2 = Node.create(name: "Project 2", parent: a1)
