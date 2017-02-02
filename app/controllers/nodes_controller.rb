@@ -1,8 +1,4 @@
 class NodesController < ApplicationController
-	
-	def index
-		@nodes = Node.all
-	end
 
 	def show
 		if params[:id]
@@ -15,7 +11,7 @@ class NodesController < ApplicationController
 	def create
 		p = create_params
 		node = Node.create!(p)
-		redirect_back(fallback_location: (url_for controller: 'nodes', action: 'show', id: node.parent_id))
+		redirect_to node_path(node.parent_id)
 	end
 
 	def edit
@@ -25,7 +21,7 @@ class NodesController < ApplicationController
 	def update
 		@node = Node.find(params[:id])
 		if @node.update_attributes(node_params)
-			redirect_to nodes_path
+			redirect_to node_path(@node.parent_id)
       	else 
       		flash[:error] = "Failed to update node"
       		redirect_to edit_node_path(@node.id)
@@ -35,24 +31,16 @@ class NodesController < ApplicationController
 	def destroy
 		@node = Node.find(params[:id])
 
-		if @node.parent == nil
-			flash[:danger] = "Cannot delete the root node"
-			redirect_to nodes_path
-			return
-		end
-
 		if @node.children.any?
-			puts "node has children"
-			p @node
-			flash[:danger] = "Cannot delete node with children"
-			redirect_to nodes_path
+			flash[:danger] = "A node with children cannot be deleted"
+			redirect_to node_path(@node.parent_id)
 			return
 		end
 
 		if @node.destroy
 			puts "node deleted"
 			flash[:success] = "Node deleted"
-			redirect_to nodes_path
+			redirect_to node_path(@node.parent_id)
 		else
 			puts "node not deleted"
 			flash[:error] = "Node could not be deleted"

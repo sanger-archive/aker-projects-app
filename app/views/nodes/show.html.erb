@@ -11,9 +11,13 @@
   None
 <% else %>
   <ul>
-  <% @node.children.each do |c| %>
-	  <li><%= linknode(c) %></li>
-  <% end %>
+    <% @node.children.each do |c| %>
+	     <li>
+          <%= linknode(c) %>
+          <%= edit_node(c) %>
+          <%= delete_node(c) %>
+        </li>
+    <% end %>
   </ul>
 <% end %>
 
