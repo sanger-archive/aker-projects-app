@@ -1,11 +1,14 @@
 Rails.application.routes.draw do
 
+  get 'nodes/index'
+
   root 'programs#show', id: 1
 
   resources :programs, only: [:show]
   resources :projects, only: [:show]
   resources :aims, only: [:show]
   resources :proposals, only: [:show]
+  resources :nodes
 
   namespace :api do
     namespace :v1 do
