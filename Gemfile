@@ -57,7 +57,7 @@ gem 'pg'
 gem 'jsonapi-resources', '0.7.1.beta2'
 gem 'therubyracer'
 
-group :test do
+group :development, :test do
   gem 'rspec-rails', '~> 3.4'
   gem 'launchy'
   gem 'capybara'
