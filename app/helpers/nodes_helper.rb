@@ -16,7 +16,7 @@ module NodesHelper
   end
 
   def edit_node(node)
-    link_to "Edit", edit_node_path(node.id)
+    link_to 'Edit', edit_node_path(node.id)
   end
 
   def delete_node(node)
