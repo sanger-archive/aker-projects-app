@@ -6,6 +6,18 @@ class Node < ApplicationRecord
 	has_many :children, :class_name => 'Node', :foreign_key => 'parent_id'
 
 	def self.root
-		self.find_by(parent_id: nil)
+		find_by(parent_id: nil)
 	end
+
+  # Gets the parents of a node,
+  # starting from root, ending at the node's direct parent
+	def parents
+    parents = []
+    p = parent
+    while p do
+      parents.unshift(p)
+      p = p.parent
+    end
+    parents
+  end
 end

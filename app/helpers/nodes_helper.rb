@@ -1,18 +1,7 @@
 module NodesHelper
-	# Gets the parents of a node,
-	# starting from root, ending at the node's direct parent
-  def parents(node)
-  	parents = []
-  	p = node.parent
-  	while p do
-  		parents.unshift(p)
-  		p = p.parent
-  	end
-  	parents
-  end
 
   def linknode(node)
-  	link_to node.name, node_path(node.id)
+    link_to node.name, node_path(node.id)
   end
 
   def edit_node(node)
