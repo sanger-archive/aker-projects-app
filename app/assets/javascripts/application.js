@@ -20,7 +20,7 @@ $(function() {
 
  $.get('/api/v1/nodes?include=nodes.parent', function(response) {
   console.log(response);
-    var treeviewData = buildTree(response.data, response.included);
+    var treeviewData = TreeBuilder.createFrom(response.data);
     $('#tree').treeview({
       data: treeviewData,
       enableLinks: true,
