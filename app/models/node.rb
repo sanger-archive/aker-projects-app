@@ -1,4 +1,5 @@
 class Node < ApplicationRecord
+    include Collector
 
 	validates :name, presence: true, uniqueness: true
 	validates :parent, presence: true, if: :parent_id
@@ -7,7 +8,19 @@ class Node < ApplicationRecord
 	belongs_to :parent, class_name: 'Node', required: false
 
 	def self.root
-		self.find_by(parent_id: nil)
+		find_by(parent_id: nil)
 	end
 
+
+  # Gets the parents of a node,
+  # starting from root, ending at the node's direct parent
+	def parents
+    parents = []
+    p = parent
+    while p do
+      parents.push(p)
+      p = p.parent
+    end
+    parents.reverse
+  end
 end
