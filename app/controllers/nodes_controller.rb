@@ -6,6 +6,7 @@ class NodesController < ApplicationController
 		else
 			@node = Node.root
 		end
+
 	end
 
 	def create
@@ -31,7 +32,7 @@ class NodesController < ApplicationController
 	def destroy
 		@node = Node.find(params[:id])
 
-		if @node.children.any?
+		if @node.nodes.any?
 			flash[:danger] = "A node with children cannot be deleted"
 			redirect_to node_path(@node.parent_id)
 			return

@@ -7,11 +7,11 @@
 
 <h3>Children</h3>
 
-<% if @node.children.empty? %>
+<% if @node.nodes.empty? %>
   None
 <% else %>
   <ul>
-    <% @node.children.each do |c| %>
+    <% @node.nodes.each do |c| %>
 	     <li>
           <%= linknode(c) %>
           <%= edit_node(c) %>

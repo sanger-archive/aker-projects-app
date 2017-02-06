@@ -1,11 +1,11 @@
-function buildTree(node, included) {
-  return node.reduce(function(memo, leaf) {
-
+function buildTree(data, included) {
+  return data.reduce(function(memo, leaf) {
+    
     var ret = {
       text: leaf.attributes.name,
-      href: '/' + leaf.type + '/' + leaf.id,
-      icon: getIcon(leaf),
-      selectedIcon: getSelectedIcon(leaf)
+      href: '/nodes/' + leaf.id
+      // icon: getIcon(leaf),
+      // selectedIcon: getSelectedIcon(leaf)
     };
 
     var relationships = Object.keys(leaf.relationships || {});
@@ -17,22 +17,21 @@ function buildTree(node, included) {
 
     ret.nodes = relationships
       .reduce(function(memo2, relationship) {
+  
         // Get the relation node
         const relation = leaf.relationships[relationship];
-
         // If it doesn't have any data we don't care about it
         if (!relation.data || relation.data.length == 0) return memo2;
 
         // If it does, find it's info in the included array
         const child = relation.data.map(function(datum) {
           return included.find(function(resource) {
-            return resource.id == datum.id && resource.type == datum.type
+            return resource.id == datum.id
           })
         })
-
+ 
         // Continue building the tree with this info
         memo2.push.apply(memo2, buildTree(child, included));
-
         return memo2;
       }, []);
 
@@ -59,3 +58,6 @@ function getSelectedIcon(resource) {
       return '';
   }
 }
+
+
+

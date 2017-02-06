@@ -17,9 +17,10 @@
 //= require_tree .
 
 $(function() {
-  $.get('/api/v1/programs?include=projects.aims.proposals', function(response) {
-    var treeviewData = buildTree(response.data, response.included);
 
+ $.get('/api/v1/nodes?include=nodes.parent', function(response) {
+  console.log(response);
+    var treeviewData = buildTree(response.data, response.included);
     $('#tree').treeview({
       data: treeviewData,
       enableLinks: true,

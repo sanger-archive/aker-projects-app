@@ -11,19 +11,24 @@
   <body>
 
     <div class="container-fluid">
-    <div class="page-header">
-      <h1>Aker <small>Study Management</small></h1>
-    </div>
-
-    <div class="row">
-      <div class="col-md-8">
-        <% flash.each do |key, value| %>
-          <div class="alert alert-<%= key %>"><%= value %></div>
-        <% end %>
-        
-        <%= yield %>
+      <div class="page-header">
+        <h1>Aker <small>Study Management</small></h1>
       </div>
-    </div>
+
+      <div class="row">
+        <div id="tree">
+                    
+        </div>
+
+        <div class="col-md-8">
+          <% flash.each do |key, value| %>
+            <div class="alert alert-<%= key %>"><%= value %></div>
+          <% end %>
+          
+          <%= yield %>
+        </div>
+      </div>
+
     </div>
 
   </body>

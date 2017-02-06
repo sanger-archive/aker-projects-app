@@ -28,6 +28,10 @@ Rails.application.routes.draw do
 
       jsonapi_resources :collections
 
+      jsonapi_resources :nodes do 
+        jsonapi_relationships
+      end
+
     end
   end
 
