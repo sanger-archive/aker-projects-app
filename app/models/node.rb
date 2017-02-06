@@ -15,9 +15,9 @@ class Node < ApplicationRecord
     parents = []
     p = parent
     while p do
-      parents.unshift(p)
+      parents.push(p)
       p = p.parent
     end
-    parents
+    parents.reverse
   end
 end
