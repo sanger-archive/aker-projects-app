@@ -15,18 +15,32 @@
         <h1>Aker <small>Study Management</small></h1>
       </div>
 
-      <div class="row">
-        <div id="tree">
-                    
+      <ul class="nav nav-tabs" id="treeTab">
+        <li class="active"><a data-toggle="tab" href="#home">Home</a></li>
+        <li><a data-toggle="tab" href="#hierarchy">Tree Hierarchy</a></li>
+      </ul>
+
+      <div class="tab-content">
+
+        <div id="home" class="tab-pane active">
+          <br/>
+          <div class="col-md-3">
+            <%= render 'side_menu' %>
+          </div>
+
+          <div class="col-md-8">
+            <% flash.each do |key, value| %>
+              <div class="alert alert-<%= key %>"><%= value %></div>
+            <% end %>
+            <%= yield %>
+          </div>
         </div>
 
-        <div class="col-md-8">
-          <% flash.each do |key, value| %>
-            <div class="alert alert-<%= key %>"><%= value %></div>
-          <% end %>
-          
-          <%= yield %>
+        <div id="hierarchy" class="tab-pane fade">
+          <br/>
+          <div id="tree-hierarchy"></div>
         </div>
+
       </div>
 
     </div>

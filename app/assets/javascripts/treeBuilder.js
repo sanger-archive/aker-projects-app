@@ -21,29 +21,28 @@
     return parentNodesList;  
   }
 
-  function buildTree(parentNodes, data) {
-
-    return parentNodes.reduce(function(memo, leaf) {
+  function buildTree(parentNodes, data, bool) {
+    return parentNodes.reduce(function(memo, parent) {
       
       var ret = {
-        text: leaf.attributes.name,
-        href: '/nodes/' + leaf.id
-        // icon: getIcon(leaf),
-        // selectedIcon: getSelectedIcon(leaf)
+        href: '/nodes/' + parent.id,
+        id : parent.id
       };
+      // depending on the type of display, tree hierachy expects 'name' and finder expects 'text'
+      ret[bool ? 'name' : 'text'] = parent.attributes.name;
 
-      var relationships = Object.keys(leaf.relationships || {});
-
+      var relationships = Object.keys(parent.relationships || {});
       if (relationships.length == 0) {
         memo.push(ret);
         return memo;
       }
 
-      ret.nodes = relationships
+      // depending on the type of display, tree hierachy expects 'children' and finder expects 'nodes'
+      ret[bool ? 'children' : 'nodes'] = relationships
         .reduce(function(memo2, relationship) {
     
           // Get the relation node
-          const relation = leaf.relationships[relationship];
+          const relation = parent.relationships[relationship];
           // If it doesn't have any data we don't care about it
           if (!relation.data || relation.data.length == 0) return memo2;
 
@@ -55,7 +54,7 @@
           })
    
           // Continue building the tree with this info
-          memo2.push.apply(memo2, buildTree(child, data));
+          memo2.push.apply(memo2, buildTree(child, data, bool));
           return memo2;
         }, []);
 
@@ -66,25 +65,8 @@
     }, [])
   }
 
-  function getIcon(resource) {
-    if (resource.type == 'programs') {
-      return 'fa fa-folder-o';
-    } else {
-      return 'fa fa-caret-right';
-    }
-  }
-
-  function getSelectedIcon(resource) {
-    switch(resource.type) {
-      case 'programs':
-        return 'fa fa-folder-open-o';
-      default:
-        return '';
-    }
-  }
-
-  function createFrom(data) {
-    return buildTree(parentNodes(data), data);
+  function createFrom(data, bool) {
+    return buildTree(parentNodes(data), data, bool);
   }
 
   window.TreeBuilder = {

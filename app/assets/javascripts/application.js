@@ -19,29 +19,36 @@
 $(function() {
 
  $.get('/api/v1/nodes?include=nodes.parent', function(response) {
-  console.log(response);
-    var treeviewData = TreeBuilder.createFrom(response.data);
-    $('#tree').treeview({
-      data: treeviewData,
+
+    $('#side_menu_tree').treeview({
+      data: TreeBuilder.createFrom(response.data, false),
       enableLinks: true,
       collapseIcon: 'fa fa-minus',
       expandIcon: 'fa fa-plus',
       emptyIcon: 'fa',
       levels: 1
     })
+
+    $('#tree-hierarchy').orgchart({
+      'data' : TreeBuilder.createFrom(response.data, true)[0],
+      'depth': response.data.length,
+      'nodeContent': 'href',
+      'nodeID': 'id',
+    })
+
   });
 
   $('#project-search').on('keyup', debounce(function(e) {
     var value = $(this).val();
 
     if (value) {
-      $('#tree').treeview('search', [ value, {
+      $('#side_menu_tree').treeview('search', [ value, {
         ignoreCase: true,
         exactMatch: false,
         revealResults: true,
       }]);
     } else {
-      $('#tree').treeview('clearSearch');
+      $('#side_menu_tree').treeview('clearSearch');
     }
   }, 300))
 })
