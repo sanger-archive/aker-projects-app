@@ -33,8 +33,8 @@ $(function() {
       'data' : TreeBuilder.createFrom(response.data, true)[0],
       'depth': response.data.length,
       'nodeContent': 'href',
-      'nodeID': 'id',
-    })
+      'nodeID': 'id'
+    });
 
   });
 
