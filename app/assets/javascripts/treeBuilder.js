@@ -70,6 +70,7 @@
   }
 
   window.TreeBuilder = {
-    createFrom: createFrom
+    createFrom: createFrom,
+    parentNodes: parentNodes
   }
 }(jQuery));
