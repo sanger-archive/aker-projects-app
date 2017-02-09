@@ -22,8 +22,6 @@ $(function() {
 
     var programs = TreeBuilder.parentNodes(response.data);
     var program_node_ids = programs[0].relationships.nodes.data.map(function(a) {return (a.id);});
-    console.log(program_node_ids);
-
 
     $('#side_menu_tree').treeview({
       data: TreeBuilder.createFrom(response.data, false),
@@ -39,7 +37,7 @@ $(function() {
       'depth': response.data.length,
       'nodeContent': 'href',
       'nodeID': 'id',
-      'draggable' : true,
+      'draggable' : false,
 
       'dropCriteria': function($draggedNode, $dragZone, $dropZone) {
         var dropNodeID = $dropZone.children('.content').text().split("/")[2];

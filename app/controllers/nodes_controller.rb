@@ -32,20 +32,12 @@ class NodesController < ApplicationController
 	def destroy
 		@node = Node.find(params[:id])
 
-		if @node.nodes.any?
-			flash[:danger] = "A node with children cannot be deleted"
-			redirect_to node_path(@node.parent_id)
-			return
-		end
-
 		if @node.destroy
-			puts "node deleted"
 			flash[:success] = "Node deleted"
 			redirect_to node_path(@node.parent_id)
 		else
-			puts "node not deleted"
-			flash[:error] = "Node could not be deleted"
-			redirect_to edit_node_path(@node.id)
+			flash[:danger] = "A node with children cannot be deleted"
+			redirect_to node_path(@node.parent_id)
 		end
 	end
 
