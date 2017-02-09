@@ -3,9 +3,11 @@
 <% end %>
 <b><%= @node.name %></b>
 
-<h2><%= @node.name %></h2>
-
-<h3>Children</h3>
+<% if @node.root? %>
+  <h2>Sanger Programs</h2>
+<% else %>
+  <h2><%= @node.name %></h2>
+<% end %>
 
 <% if @node.nodes.empty? %>
   None

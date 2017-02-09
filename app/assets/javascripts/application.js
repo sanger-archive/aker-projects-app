@@ -54,7 +54,30 @@ $(function() {
 
     })
     .children('.orgchart').on('nodedropped.orgchart', function(event) {
-      console.log("On drop update database");
+      $.get('/api/v1/nodes/'+event.dropZone.children('.content').text().split("/")[2], function(response) {
+        updateNode(response.data.id);
+      });
+
+      function updateNode(id) {
+        $.ajax({
+          headers : {
+              'Accept' : 'application/json',
+              'Content-Type' : 'application/json'
+          },
+          url : '/nodes/'+event.draggedNode.children('.content').text().split("/")[2],
+          type : 'PATCH',
+          data : JSON.stringify({ parent_id: id }),
+          success : function(response, textStatus, jqXhr) {
+              console.log("Successfully updated");
+          },
+          error : function(jqXHR, textStatus, errorThrown) {
+              console.log("Error: " + textStatus, errorThrown);
+          },
+          complete : function() {
+              console.log("Update successful");
+          }
+        })
+      }
     });
 
   });
