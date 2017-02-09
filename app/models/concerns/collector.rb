@@ -5,6 +5,5 @@ module Collector
 
   included do
     has_one :collection, as: :collector
-    after_create :create_collection!
   end
 end

@@ -11,6 +11,10 @@ class Node < ApplicationRecord
 		find_by(parent_id: nil)
 	end
 
+  def root?
+    parent_id.nil?
+  end
+
   # Gets the parents of a node,
   # starting from root, ending at the node's direct parent
 	def parents
