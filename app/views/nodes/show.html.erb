@@ -1,7 +1,6 @@
 <% @node.parents.each do |p| %>
   <%= linknode(p) %> /
 <% end %>
-
 <b><%= @node.name %></b>
 
 <h2><%= @node.name %></h2>
@@ -15,8 +14,7 @@
     <% @node.nodes.each do |c| %>
 	     <li>
           <b><%= linknode(c) %></b>
-            
-            <% if c.parent.name != 'root' %>
+            <% unless @node.root? %>
               <%= edit_node(c) %>
               <%= delete_node(c) %>
             <% end %>
@@ -35,4 +33,3 @@
   <br/><br/>
   <%= submit_tag("Create") %>
 <% end %>
-
