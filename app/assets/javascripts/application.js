@@ -37,7 +37,7 @@ $(function() {
       'depth': response.data.length,
       'nodeContent': 'href',
       'nodeID': 'id',
-      'draggable' : false,
+      'draggable' : true,
 
       'dropCriteria': function($draggedNode, $dragZone, $dropZone) {
         var dropNodeID = $dropZone.children('.content').text().split("/")[2];
