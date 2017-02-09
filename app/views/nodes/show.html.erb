@@ -24,12 +24,14 @@
 <% end %>
 
 <br/>
-<h4>Add child node</h4>
-
-<%= form_tag(controller: "nodes", action: "create", method: "post") do %>
-  <%= label_tag(:name, "Name:") %>
-  <%= text_field_tag(:name) %>
-  <%= hidden_field_tag :parent_id, @node.id %>
-  <br/><br/>
-  <%= submit_tag("Create") %>
+<% unless @node.root? %>
+  <h4>Add child node</h4>
+  <%= form_tag(controller: "nodes", action: "create", method: "post") do %>
+    <%= label_tag(:name, "Name:") %>
+    <%= text_field_tag(:name) %>
+    <%= hidden_field_tag :parent_id, @node.id %>
+    <br/><br/>
+    <%= submit_tag("Create") %>
+  <% end %>
 <% end %>
+
