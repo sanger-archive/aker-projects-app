@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170125150504) do
+ActiveRecord::Schema.define(version: 20170203104507) do
 
   create_table "aims", force: :cascade do |t|
     t.string   "name"
@@ -27,6 +27,15 @@ ActiveRecord::Schema.define(version: 20170125150504) do
     t.datetime "created_at",     null: false
     t.datetime "updated_at",     null: false
     t.index ["collector_type", "collector_id"], name: "index_collections_on_collector_type_and_collector_id"
+  end
+
+  create_table "nodes", force: :cascade do |t|
+    t.string   "name"
+    t.integer  "parent_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["name"], name: "index_nodes_on_name", unique: true
+    t.index ["parent_id"], name: "index_nodes_on_parent_id"
   end
 
   create_table "programs", force: :cascade do |t|
