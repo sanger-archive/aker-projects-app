@@ -21,11 +21,11 @@ class NodesController < ApplicationController
 
 	def update
 		@node = Node.find(params[:id])
-		if @node.update_attributes(node_params)
-			redirect_to node_path(@node.parent_id)
-      	else 
-      		flash[:error] = "Failed to update node"
-      		redirect_to edit_node_path(@node.id)
+		unless @node.update_attributes(node_params)
+			#redirect_to node_path(@node.parent_id)
+  	#else 
+  		flash[:error] = "Failed to update node"
+  		redirect_to edit_node_path(@node.id)
 		end
 	end
 
