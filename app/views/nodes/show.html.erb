@@ -27,8 +27,8 @@
 
 <% unless @node.root? %>
   <h4>Add child node</h4>
-  <%= bootstrap_form_tag(controller: "nodes", action: "create", method: "post") do |f| %>
-    <%= f.text_field(:name) %>
+  <%= bootstrap_form_tag(url: nodes_path, method: "post") do |f| %>
+    <%= f.text_field(:name, {autocomplete: 'off'}) %>
     <%= hidden_field_tag :parent_id, @node.id %>
     <%= f.submit("Create") %>
   <% end %>
