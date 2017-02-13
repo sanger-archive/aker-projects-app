@@ -1,5 +1,4 @@
-	require 'rails_helper'
-require_relative 'concerns/collector_shared_example'
+require 'rails_helper'
 
 RSpec.describe Node, type: :model do
 

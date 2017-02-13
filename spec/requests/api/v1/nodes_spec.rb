@@ -16,11 +16,11 @@ RSpec.describe 'API::V1::Nodes', type: :request do
       expect(response).to have_http_status(:ok)
     end
 
-    it 'comforms to the JSON API schema' do
+    it 'conforms to the JSON API schema' do
       expect(response).to match_api_schema('jsonapi')
     end
 
-    it 'comforms to the Nodes schema' do
+    it 'conforms to the Nodes schema' do
       expect(response).to match_api_schema('node')
     end
   end
