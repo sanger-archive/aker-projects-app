@@ -17,23 +17,20 @@
 	     <li>
           <b><%= linknode(c) %></b>
             <% unless @node.root? %>
-              <%= edit_node(c) %>
-              <%= delete_node(c) %>
+                (<%= edit_node(c) %> /
+                <%= delete_node(c) %>)
             <% end %>
         </li>
     <% end %>
   </ul>
 <% end %>
 
-<br/>
 <% unless @node.root? %>
   <h4>Add child node</h4>
-  <%= form_tag(controller: "nodes", action: "create", method: "post") do %>
-    <%= label_tag(:name, "Name:") %>
-    <%= text_field_tag(:name) %>
+  <%= bootstrap_form_tag(controller: "nodes", action: "create", method: "post") do |f| %>
+    <%= f.text_field(:name) %>
     <%= hidden_field_tag :parent_id, @node.id %>
-    <br/><br/>
-    <%= submit_tag("Create") %>
+    <%= f.submit("Create") %>
   <% end %>
 <% end %>
 
