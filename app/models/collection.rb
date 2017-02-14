@@ -10,11 +10,4 @@ class Collection < ApplicationRecord
     # or pass in a set_id ourselves
     allow_blank: true
 
-  # TODO Need to actually go create a new Set
-  # in the Set Service when a Collection is made
-
-  # Generate a set_id if the collection doesn't already have one (for some reason)
-  before_create do
-    self.set_id = SecureRandom.uuid unless self.set_id?
-  end
 end

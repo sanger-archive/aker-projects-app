@@ -1,36 +1,17 @@
-### Human Genetics and family...
-human_genetics = Program.create!(name: 'Human Genetics')
+root = Node.create(name: "root")
 
-project = human_genetics.projects.create!(name: 'Causes, mechanisms & reversability')
+cancer = Node.create(name: "Cancer, Aging & Somatic Mutations", parent: root)
+cellular_genetics = Node.create(name: "Cellular Genetics", parent: root)
+human_genetics = Node.create(name: "Human Genetics", parent: root)
+infection_genomics = Node.create(name: "Infection Genomics", parent: root)
+malaria = Node.create(name: "Malaria", parent: root)
+pathogens = Node.create(name: "Pathogens", parent: root)
 
-project.aims.create!([
-  { name: 'Aim 1: Causes & mechanism of rare' },
-  { name: 'Aim 2: Causes & mechanisms of rare metabolic...' },
-  { name: 'Aim 3: Assessing reversability' }
-])
-
-aim = project.aims.create!( name: 'Phentypic variability in rare disorders' )
-
-proposal = aim.proposals.create!( name: 'Somatic variation proposal' )
-
-### Cancer, Aging & Somatic Mutations and family...
-cancer = Program.create!(name: 'Cancer, Aging & Somatic Mutations')
-
-project = cancer.projects.create!( name: 'The Cancer Genome Project' )
-
-project.aims.create!([
-  { name: 'Pan-Cancer QPQ' },
-  { name: 'COSMIC' }
-])
-
-aim = project.aims.create!( name: 'Systemic derevation' )
-
-proposal = aim.proposals.create!( name: 'Organoids proposal' )
-
-### The rest of the programs
-Program.create([
-  { name: "Pathogens" },
-  { name: "Malaria" },
-  { name: "Cellular Genetics" },
-  { name: "Computational Genomics" }
+Collection.create([
+  { set_id: "f6017957-9c62-48b8-b3d6-794986e95ee6", collector_type: "Node", collector_id: cancer.id },
+  { set_id: "3e978e6f-bbef-4946-bd68-6a4324e5cb4d", collector_type: "Node", collector_id: cellular_genetics.id },
+  { set_id: "5ef4fdd2-1abf-495c-aec2-d8a9af5e5ca6", collector_type: "Node", collector_id: human_genetics.id },
+  { set_id: "1b082a95-f867-42d5-9f3d-95e28ab2125b", collector_type: "Node", collector_id: infection_genomics.id },
+  { set_id: "e7a5fd55-f501-4b49-8cd4-e490b9693f4a", collector_type: "Node", collector_id: malaria.id },
+  { set_id: "9fc2c0d3-51b2-44c4-88a6-64ac02e7a80d", collector_type: "Node", collector_id: pathogens.id },
 ])

@@ -1,11 +1,12 @@
 Rails.application.routes.draw do
 
-  root 'programs#show', id: 1
+  root 'nodes#show', id: nil
 
   resources :programs, only: [:show]
   resources :projects, only: [:show]
   resources :aims, only: [:show]
   resources :proposals, only: [:show]
+  resources :nodes
 
   namespace :api do
     namespace :v1 do
@@ -26,6 +27,10 @@ Rails.application.routes.draw do
       jsonapi_resources :proposals
 
       jsonapi_resources :collections
+
+      jsonapi_resources :nodes do 
+        jsonapi_relationships
+      end
 
     end
   end

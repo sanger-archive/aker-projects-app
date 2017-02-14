@@ -1,0 +1,36 @@
+<% @node.parents.each do |p| %>
+  <%= linknode(p) %> /
+<% end %>
+<b><%= @node.name %></b>
+
+<% if @node.root? %>
+  <h2>Sanger Programs</h2>
+<% else %>
+  <h2><%= @node.name %></h2>
+<% end %>
+
+<% if @node.nodes.empty? %>
+  None
+<% else %>
+  <ul>
+    <% @node.nodes.each do |c| %>
+	     <li>
+          <b><%= linknode(c) %></b>
+            <% unless @node.root? %>
+                (<%= edit_node(c) %> /
+                <%= delete_node(c) %>)
+            <% end %>
+        </li>
+    <% end %>
+  </ul>
+<% end %>
+
+<% unless @node.root? %>
+  <h4>Add child node</h4>
+  <%= bootstrap_form_tag(url: nodes_path, method: "post") do |f| %>
+    <%= f.text_field(:name, {autocomplete: 'off'}) %>
+    <%= hidden_field_tag :parent_id, @node.id %>
+    <%= f.submit("Create") %>
+  <% end %>
+<% end %>
+

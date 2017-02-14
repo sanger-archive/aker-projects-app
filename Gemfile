@@ -28,6 +28,9 @@ gem 'jbuilder', '~> 2.5'
 # Use Capistrano for deployment
 # gem 'capistrano-rails', group: :development
 
+gem 'bootstrap_form'
+gem 'active_model_serializers'
+
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
   gem 'byebug', platform: :mri
@@ -54,7 +57,7 @@ gem 'pg'
 gem 'jsonapi-resources', '0.7.1.beta2'
 gem 'therubyracer'
 
-group :test do
+group :development, :test do
   gem 'rspec-rails', '~> 3.4'
   gem 'launchy'
   gem 'capybara'
