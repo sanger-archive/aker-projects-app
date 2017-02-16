@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170216111407) do
+ActiveRecord::Schema.define(version: 20170216160355) do
 
   create_table "aims", force: :cascade do |t|
     t.string   "name"
@@ -36,7 +36,7 @@ ActiveRecord::Schema.define(version: 20170216111407) do
     t.datetime "updated_at",  null: false
     t.text     "description"
     t.string   "cost_code"
-    t.index ["cost_code"], name: "index_nodes_on_cost_code", unique: true
+    t.index ["cost_code"], name: "index_nodes_on_cost_code"
     t.index ["name"], name: "index_nodes_on_name", unique: true
     t.index ["parent_id"], name: "index_nodes_on_parent_id"
   end

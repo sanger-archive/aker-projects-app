@@ -3,8 +3,9 @@ class Node < ApplicationRecord
 
 	validates :name, presence: true, uniqueness: true
 	validates :parent, presence: true, if: :parent_id
-  validates :cost_code, format: { with: /\AS[0-9]{4}+\z/ }, allow_blank: true
-	
+  validates_presence_of :description, :allow_blank => true
+  validates :cost_code, :presence => true, :allow_blank => true, format: { with: /\AS[0-9]{4}+\z/ }, :on => [:create, :update]
+
 	has_many :nodes, class_name: 'Node', foreign_key: 'parent_id', dependent: :restrict_with_error
 	belongs_to :parent, class_name: 'Node', required: false
 
@@ -27,4 +28,5 @@ class Node < ApplicationRecord
     end
     parents.reverse
   end
+
 end
