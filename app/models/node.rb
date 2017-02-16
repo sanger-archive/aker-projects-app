@@ -3,6 +3,7 @@ class Node < ApplicationRecord
 
 	validates :name, presence: true, uniqueness: true
 	validates :parent, presence: true, if: :parent_id
+  validates :cost_code, format: { with: /\AS[0-9]{4}+\z/ }, allow_blank: true
 	
 	has_many :nodes, class_name: 'Node', foreign_key: 'parent_id', dependent: :restrict_with_error
 	belongs_to :parent, class_name: 'Node', required: false

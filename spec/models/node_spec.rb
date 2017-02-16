@@ -6,6 +6,16 @@ RSpec.describe Node, type: :model do
 		expect(build(:node, name: nil)).to_not be_valid
 	end
 
+	it "is valid with a costcode in the correct format and without" do
+		expect(build(:node, name: 'name', cost_code: 'xx')).to_not be_valid
+		expect(build(:node, name: 'name1', cost_code: 'S1234')).to be_valid
+		expect(build(:node, name: 'name2', cost_code: nil)).to be_valid
+	end
+
+	it "is valid with both all possible attributes" do
+		expect(build(:node, name: 'name', description: 'description', cost_code: 'S1234')).to be_valid
+	end
+
 	context 'when other nodes exist' do
 
 		before do
