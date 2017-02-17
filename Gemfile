@@ -66,3 +66,7 @@ group :development, :test do
   gem 'database_cleaner'
   gem 'json-schema'
 end
+
+gem 'simplecov', :require => false, :group => :test
+gem 'simplecov-rcov', :group => :test
+gem 'rubycritic', :group => :test
