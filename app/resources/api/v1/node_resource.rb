@@ -5,6 +5,8 @@ module Api
       has_many :nodes
       has_one :parent
       attributes :name
+
+      filter :cost_code
     end
   end
 end
