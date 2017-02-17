@@ -6,13 +6,17 @@ class NodesController < ApplicationController
 		else
 			@node = Node.root
 		end
-
 	end
 
 	def create
 		p = create_params
-		node = Node.create!(p)
-		redirect_to node_path(node.parent_id)
+		@node = Node.new(p)
+		if @node.save
+			flash[:success] = "Node created"
+		else
+			flash[:danger] = "Failed to create node"
+		end
+		redirect_to node_path(@node.parent_id)
 	end
 
 	def edit

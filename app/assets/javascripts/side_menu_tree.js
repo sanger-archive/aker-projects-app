@@ -33,7 +33,7 @@
       $('#tree-hierarchy').orgchart({
         'data' : TreeBuilder.createFrom(response.data, true)[0],
         'depth': response.data.length,
-        'nodeContent': 'href',
+        'nodeContent': '',
         'nodeID': 'id',
         //'direction': 'l2r',
         'draggable' : true,
