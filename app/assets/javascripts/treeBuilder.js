@@ -25,7 +25,6 @@
     return parentNodes.reduce(function(memo, parent) {
       
       var ret = {
-        href: '/nodes/' + parent.id,
         id : parent.id
       };
       // depending on the type of display, tree hierachy expects 'name' and finder expects 'text'

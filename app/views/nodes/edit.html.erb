@@ -1,6 +1,8 @@
 <%= bootstrap_form_for(@node) do |f| %>
 	<div class="field">
 	  	<%= f.text_field :name, :readonly => false %>
+		<%= f.text_field :description %>
+		<%= f.text_field :cost_code %>
 		<%= link_to 'Back', :back, class: 'btn btn-primary' %>
 		<%= f.submit("Update") %>
 	</div>

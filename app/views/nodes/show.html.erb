@@ -9,6 +9,14 @@
   <h2><%= @node.name %></h2>
 <% end %>
 
+<% if @node.description? %>
+  <p><b>Description: </b> <%= @node.description %></p>
+<% end %>
+
+<% if @node.cost_code? %>
+  <p><b>Cost Code:</b> <%= @node.cost_code %></p>
+<% end %>
+
 <% if @node.nodes.empty? %>
   None
 <% else %>
@@ -29,6 +37,8 @@
   <h4>Add child node</h4>
   <%= bootstrap_form_tag(url: nodes_path, method: "post") do |f| %>
     <%= f.text_field(:name, {autocomplete: 'off'}) %>
+    <%= f.text_field :description %>
+    <%= f.text_field :cost_code %>
     <%= hidden_field_tag :parent_id, @node.id %>
     <%= f.submit("Create") %>
   <% end %>
