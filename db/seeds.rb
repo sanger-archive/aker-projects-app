@@ -15,3 +15,15 @@ Collection.create([
   { set_id: "e7a5fd55-f501-4b49-8cd4-e490b9693f4a", collector_type: "Node", collector_id: malaria.id },
   { set_id: "9fc2c0d3-51b2-44c4-88a6-64ac02e7a80d", collector_type: "Node", collector_id: pathogens.id },
 ])
+
+max_random_nodes=100
+require 'securerandom'
+nodes = [cancer, cellular_genetics, human_genetics, infection_genomics, malaria, pathogens]
+max_random_nodes.times do |i|
+  Node.create(name: SecureRandom.uuid, parent: nodes[SecureRandom.random_number(nodes.length)])
+end
+
+nodes = Node.all
+max_random_nodes.times do |i|
+  Node.create(name: SecureRandom.uuid, parent: nodes[SecureRandom.random_number(nodes.length)])
+end
