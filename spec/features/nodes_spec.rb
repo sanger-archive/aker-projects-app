@@ -39,6 +39,21 @@ RSpec.describe 'Nodes', type: :feature do
 	  		expect(page).to have_content('Delete')
 		end
 
+		context 'when node is a proposal' do
+			before do
+				@proposal = create(:node, cost_code: "S1234", description: "My super proposal")
+				visit node_path(@proposal)
+			end
+
+			it "displays the cost code" do
+				expect(page).to have_content(@proposal.cost_code)
+			end
+
+			it "displays the description" do
+				expect(page).to have_content(@proposal.description)
+			end
+		end
+
 	end
-	
+
 end
