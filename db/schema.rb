@@ -10,7 +10,16 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170216160355) do
+ActiveRecord::Schema.define(version: 20170227151100) do
+
+  create_table "collections", force: :cascade do |t|
+    t.string   "set_id"
+    t.string   "collector_type"
+    t.integer  "collector_id"
+    t.datetime "created_at",     null: false
+    t.datetime "updated_at",     null: false
+    t.index ["collector_type", "collector_id"], name: "index_collections_on_collector_type_and_collector_id"
+  end
 
   create_table "nodes", force: :cascade do |t|
     t.string   "name"
