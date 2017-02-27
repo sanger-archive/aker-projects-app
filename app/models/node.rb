@@ -1,8 +1,8 @@
 class Node < ApplicationRecord
-    include Collector
+  include Collector
 
-	validates :name, presence: true, uniqueness: true
-	validates :parent, presence: true, if: :parent_id
+  validates :name, presence: true, uniqueness: true
+  validates :parent, presence: true, if: :parent_id
   validates_presence_of :description, :allow_blank => true
   validates :cost_code, :presence => true, :allow_blank => true, format: { with: /\AS[0-9]{4}+\z/ }, :on => [:create, :update]
 

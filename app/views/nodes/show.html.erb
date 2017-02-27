@@ -9,10 +9,12 @@
   <h2><%= @node.name %></h2>
 <% end %>
 
-<% @node.attributes.slice("description", "cost_code").map do |attribute, name| %>
-  <% if name.present? %>
-    <p><b><%= attribute.gsub('_', ' ').capitalize %>:</b> <%= name %></p>
-  <% end %>
+<% if @node.description? %>
+  <p><b>Description: </b> <%= @node.description %></p>
+<% end %>
+
+<% if @node.cost_code? %>
+  <p><b>Cost Code:</b> <%= @node.cost_code %></p>
 <% end %>
 
 <% if @node.nodes.empty? %>

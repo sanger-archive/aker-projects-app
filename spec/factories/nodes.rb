@@ -1,6 +1,8 @@
 FactoryGirl.define do
   factory :node do
-    name "MyString"
+    sequence(:name) { |n| "Node #{n}" }
+    cost_code nil
+    description nil
     parent_id nil
   end
 end
