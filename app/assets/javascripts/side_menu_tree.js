@@ -33,15 +33,12 @@
       $('#tree-hierarchy').orgchart({
         'data' : TreeBuilder.createFrom(response.data, true)[0],
         'depth': response.data.length,
-        'nodeContent': '',
+        'nodeContent': 'href',
         'nodeID': 'id',
         //'direction': 'l2r',
         'draggable' : true,
         'pan': true,
         //'zoom': true
-        //'nodeContent': 'title',
-        //'nodeID': 'id',
-
 
         'dropCriteria': function($draggedNode, $dragZone, $dropZone) {
           var dropNodeID = $dropZone.children('.content').text().split("/")[2];

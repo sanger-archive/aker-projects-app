@@ -1,5 +1,5 @@
 (function($, undefined) {
-  
+
   function isRoot(node, data) {
     if (typeof node === 'undefined') {
       return false;
@@ -18,13 +18,14 @@
         parentNodesList.push(parentToCheck);
       }
     });
-    return parentNodesList;  
+    return parentNodesList;
   }
 
   function buildTree(parentNodes, data, bool) {
     return parentNodes.reduce(function(memo, parent) {
-      
+
       var ret = {
+        href: '/nodes/' + parent.id,
         id : parent.id
       };
       // depending on the type of display, tree hierachy expects 'name' and finder expects 'text'
@@ -39,7 +40,7 @@
       // depending on the type of display, tree hierachy expects 'children' and finder expects 'nodes'
       ret[bool ? 'children' : 'nodes'] = relationships
         .reduce(function(memo2, relationship) {
-    
+
           // Get the relation node
           const relation = parent.relationships[relationship];
           // If it doesn't have any data we don't care about it
@@ -51,7 +52,7 @@
               return resource.id == datum.id
             })
           })
-   
+
           // Continue building the tree with this info
           memo2.push.apply(memo2, buildTree(child, data, bool));
           return memo2;

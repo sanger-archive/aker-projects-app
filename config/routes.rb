@@ -6,8 +6,10 @@ Rails.application.routes.draw do
 
   namespace :api do
     namespace :v1 do
-
       # https://github.com/cerebris/jsonapi-resources#routing
+
+      jsonapi_resources :collections
+
       jsonapi_resources :nodes do
         jsonapi_relationships
       end

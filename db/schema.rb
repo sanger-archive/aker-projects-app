@@ -10,15 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170216160355) do
-
-  create_table "aims", force: :cascade do |t|
-    t.string   "name"
-    t.integer  "project_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["project_id"], name: "index_aims_on_project_id"
-  end
+ActiveRecord::Schema.define(version: 20170227151100) do
 
   create_table "collections", force: :cascade do |t|
     t.string   "set_id"
@@ -39,28 +31,6 @@ ActiveRecord::Schema.define(version: 20170216160355) do
     t.index ["cost_code"], name: "index_nodes_on_cost_code"
     t.index ["name"], name: "index_nodes_on_name", unique: true
     t.index ["parent_id"], name: "index_nodes_on_parent_id"
-  end
-
-  create_table "programs", force: :cascade do |t|
-    t.string   "name"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-  end
-
-  create_table "projects", force: :cascade do |t|
-    t.string   "name"
-    t.integer  "program_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["program_id"], name: "index_projects_on_program_id"
-  end
-
-  create_table "proposals", force: :cascade do |t|
-    t.string   "name"
-    t.integer  "aim_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["aim_id"], name: "index_proposals_on_aim_id"
   end
 
 end
