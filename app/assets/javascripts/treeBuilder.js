@@ -71,27 +71,23 @@
     }, [])
   }
 
-  function isParent(node, childId) {
-    return node.relationships.nodes && node.relationships.nodes.data && node.relationships.nodes.data.find(function(n) {
-      return (n.id==childId); // This equals deliberately left doubly
-    });
-  }
-
-  function findParentId(data, nodeId) {
-    if (!nodeId) {
+  function findExpandedIds(data, currentId) {
+    if (!currentId) {
       return [];
     }
-    var p = data.find(function(n) { return isParent(n, nodeId) });
-    if (p) {
-      return p.id;
-    }
-  }
-
-  function findExpandedIds(data, currentId) {
+    var parents = Object();
+    data.forEach(function(node) {
+      if (node.relationships.nodes && node.relationships.nodes.data) {
+        var parentId = node.id;
+        node.relationships.nodes.data.forEach(function(child) {
+          parents[child.id] = parentId;
+        });
+      }
+    });
     var expandedIds = [];
     while (currentId) {
       expandedIds.push(currentId);
-      currentId = findParentId(data, currentId);
+      currentId = parents[currentId];
     }
     return expandedIds;
   }
