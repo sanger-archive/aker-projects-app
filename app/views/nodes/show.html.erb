@@ -1,3 +1,7 @@
+<%= javascript_tag do %>
+  window.currentNodeId = '<%= @node.id %>'
+<% end %>
+
 <% @node.parents.each do |p| %>
   <%= linknode(p) %> /
 <% end %>

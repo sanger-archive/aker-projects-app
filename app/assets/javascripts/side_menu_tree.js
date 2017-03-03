@@ -6,7 +6,7 @@
   var proto = SideMenuTree.prototype;
 
   proto.attachHandlers = function() {
-    //$(document).on('ready', $.proxy(this.loadTree, this));
+    $(document).on('ready', $.proxy(this.loadSidebar, this));
     $(document).on('turbolinks:load', $.proxy(this.loadTree, this));
   };
 
@@ -15,20 +15,39 @@
     return parseInt(pathElems[pathElems.length - 1], 10);
   };
 
-  proto.loadTree = function() {
+  proto.loadSidebar = function() {
     $.get('/api/v1/nodes?include=nodes.parent', function(response) {
-      //response.data = [response.data];
-      var programs = TreeBuilder.parentNodes(response.data);
-      var program_node_ids = programs[0].relationships.nodes.data.map(function(a) {return (a.id);});
 
       $('#side_menu_tree').treeview({
-        data: TreeBuilder.createFrom(response.data, false),
+        data: TreeBuilder.createFrom(response.data, false, window.currentNodeId),
         enableLinks: true,
         collapseIcon: 'fa fa-minus',
         expandIcon: 'fa fa-plus',
         emptyIcon: 'fa',
         levels: 1
       });
+    });
+
+    $('#project-search').on('keyup', debounce(function(e) {
+      var value = $(this).val();
+
+      if (value) {
+        $('#side_menu_tree').treeview('search', [ value, {
+          ignoreCase: true,
+          exactMatch: false,
+          revealResults: true,
+        }]);
+      } else {
+        $('#side_menu_tree').treeview('clearSearch');
+      }
+    }, 300));
+  }
+
+  proto.loadTree = function() {
+    $.get('/api/v1/nodes?include=nodes.parent', function(response) {
+      //response.data = [response.data];
+      var programs = TreeBuilder.parentNodes(response.data);
+      var program_node_ids = programs[0].relationships.nodes.data.map(function(a) {return (a.id);});
 
       $('#tree-hierarchy').orgchart({
         'data' : TreeBuilder.createFrom(response.data, true)[0],
@@ -80,20 +99,6 @@
       });
 
     });
-
-    $('#project-search').on('keyup', debounce(function(e) {
-      var value = $(this).val();
-
-      if (value) {
-        $('#side_menu_tree').treeview('search', [ value, {
-          ignoreCase: true,
-          exactMatch: false,
-          revealResults: true,
-        }]);
-      } else {
-        $('#side_menu_tree').treeview('clearSearch');
-      }
-    }, 300));
 
   };
 
