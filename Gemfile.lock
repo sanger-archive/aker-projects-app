@@ -126,7 +126,7 @@ GEM
       jsonapi-renderer (= 0.1.1.beta1)
     jsonapi-parser (0.1.1.beta3)
     jsonapi-renderer (0.1.1.beta1)
-    jsonapi-resources (0.7.1.beta2)
+    jsonapi-resources (0.8.0)
       concurrent-ruby
       rails (>= 4.0)
     launchy (2.4.3)
@@ -305,7 +305,7 @@ DEPENDENCIES
   jbuilder (~> 2.5)
   jquery-rails
   json-schema
-  jsonapi-resources (= 0.7.1.beta2)
+  jsonapi-resources (~> 0.8)
   launchy
   listen (~> 3.0.5)
   pg

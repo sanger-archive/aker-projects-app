@@ -10,11 +10,6 @@
     $(document).on('turbolinks:load', $.proxy(this.loadTree, this));
   };
 
-  proto.getCurrentNodeId = function() {
-    var pathElems = window.location.pathname.split('/');
-    return parseInt(pathElems[pathElems.length - 1], 10);
-  };
-
   proto.loadSidebar = function() {
     $.get('/api/v1/nodes?include=nodes.parent', function(response) {
 
@@ -44,6 +39,8 @@
   }
 
   proto.loadTree = function() {
+    var self = this;
+
     $.get('/api/v1/nodes?include=nodes.parent', function(response) {
       //response.data = [response.data];
       var programs = TreeBuilder.parentNodes(response.data);
@@ -79,12 +76,12 @@
         function updateNode(id) {
           $.ajax({
             headers : {
-                'Accept' : 'application/json',
-                'Content-Type' : 'application/json'
+                'Accept' : 'application/vnd.api+json',
+                'Content-Type' : 'application/vnd.api+json'
             },
-            url : '/nodes/'+event.draggedNode.children('.content').text().split("/")[2],
+            url : '/api/v1/nodes/'+event.draggedNode.children('.content').text().split("/")[2]+'/relationships/parent',
             type : 'PATCH',
-            data : JSON.stringify({ parent_id: id }),
+            data : JSON.stringify({ data: { type: 'nodes', id: id }}),
             success : function(response, textStatus, jqXhr) {
                 console.log("Successfully updated");
             },
@@ -92,7 +89,8 @@
                 console.log("Error: " + textStatus, errorThrown);
             },
             complete : function() {
-                console.log("Update successful");
+              // Reload that sidebar
+              self.loadSidebar();
             }
           })
         }

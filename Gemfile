@@ -54,7 +54,7 @@ gem 'bootstrap-sass', '~> 3.3.6'
 gem 'font-awesome-sass'
 gem 'rubocop', '~> 0.41.2', require: false
 gem 'pg'
-gem 'jsonapi-resources', '0.7.1.beta2'
+gem 'jsonapi-resources', '~> 0.8'
 gem 'therubyracer'
 
 group :development, :test do
