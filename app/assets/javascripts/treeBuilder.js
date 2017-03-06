@@ -21,12 +21,18 @@
     return parentNodesList;
   }
 
-  function buildTree(parentNodes, data, bool) {
+  function buildTree(parentNodes, data, bool, expandedIds) {
+    if (!(expandedIds instanceof Array)) {
+      expandedIds = [];
+    }
     return parentNodes.reduce(function(memo, parent) {
 
       var ret = {
         href: '/nodes/' + parent.id,
-        id : parent.id
+        id : parent.id,
+        state: {
+          expanded: expandedIds.indexOf(parent.id)>=0
+        }
       };
       // depending on the type of display, tree hierachy expects 'name' and finder expects 'text'
       ret[bool ? 'name' : 'text'] = parent.attributes.name;
@@ -54,7 +60,7 @@
           })
 
           // Continue building the tree with this info
-          memo2.push.apply(memo2, buildTree(child, data, bool));
+          memo2.push.apply(memo2, buildTree(child, data, bool, expandedIds));
           return memo2;
         }, []);
 
@@ -65,8 +71,30 @@
     }, [])
   }
 
-  function createFrom(data, bool) {
-    return buildTree(parentNodes(data), data, bool);
+  function findExpandedIds(data, currentId) {
+    if (!currentId) {
+      return [];
+    }
+    var parents = Object();
+    data.forEach(function(node) {
+      if (node.relationships.nodes && node.relationships.nodes.data) {
+        var parentId = node.id;
+        node.relationships.nodes.data.forEach(function(child) {
+          parents[child.id] = parentId;
+        });
+      }
+    });
+    var expandedIds = [];
+    while (currentId) {
+      expandedIds.push(currentId);
+      currentId = parents[currentId];
+    }
+    return expandedIds;
+  }
+
+  function createFrom(data, bool, currentId) {
+    var expandedIds = findExpandedIds(data, currentId);
+    return buildTree(parentNodes(data), data, bool, expandedIds);
   }
 
   window.TreeBuilder = {

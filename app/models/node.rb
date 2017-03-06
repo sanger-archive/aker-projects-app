@@ -9,6 +9,8 @@ class Node < ApplicationRecord
 	has_many :nodes, class_name: 'Node', foreign_key: 'parent_id', dependent: :restrict_with_error
 	belongs_to :parent, class_name: 'Node', required: false
 
+  before_save :validate_node_blank
+
 	def self.root
 		find_by(parent_id: nil)
 	end
@@ -27,6 +29,14 @@ class Node < ApplicationRecord
       p = p.parent
     end
     parents.reverse
+  end
+
+  private
+
+  def validate_node_blank
+    if self.cost_code.blank?
+      self.cost_code = nil
+    end
   end
 
 end
