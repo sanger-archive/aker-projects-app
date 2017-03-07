@@ -17,11 +17,11 @@ RSpec.describe 'API routing', type: :routing do
     end
 
     it 'does not route to updates' do
-      expect(patch: "/api/v1/nodes/#{@node.id}").to_not be_routable
+      expect(patch: "/api/v1/nodes/#{@node.id}").to be_routable
     end
 
     it 'does not route to delete' do
-      expect(delete: "/api/v1/nodes/#{@node.id}").to_not be_routable
+      expect(delete: "/api/v1/nodes/#{@node.id}").to be_routable
     end
 
     describe 'Relationships' do
