@@ -8,6 +8,7 @@
   proto.attachHandlers = function() {
     $(document).ready($.proxy(this.loadSidebar, this));
     $(document).ready($.proxy(this.loadTree, this));
+    $(document).on('turbolinks:load', $.proxy(this.loadTree, this));
   };
 
   proto.loadSidebar = function() {
@@ -60,7 +61,8 @@
           $node.on('click', function(event) {
             if (!$(event.target).is('.edge')) {
               $('#selected-node').val(data.name).data('node', $node);
-              $('#edit-panel').show(400);
+              $('#edit-panel').show();
+              $('#btn-delete-nodes').prop('disabled', hasChildren($node));
             }
           });
         },
@@ -103,43 +105,49 @@
         if (newNodeName.length == 0 || !$node) {
           return;
         }
+        createNode(newNodeName, $node[0].id).then(function (response) {
 
-        // Determine whether parent has any children (based on its colspan???)
-        var hasChild = $node.parent().attr('colspan') > 0 ? true : false;
+          // See https://github.com/dabeng/OrgChart#structure-of-datasource
+          var relationship = '';
 
-        // See https://github.com/dabeng/OrgChart#structure-of-datasource
-        var relationship = '';
+          if (!hasChildren($node)) {
+            // Relationship will always be "has parent, no siblings, no children"
+            relationship = '100'
 
-        if (!hasChild) {
-          // Relationship will always be "has parent, no siblings, no children"
-          relationship = '100'
+            $('#chart-container').orgchart('addChildren', $node, {
+              'children': [{ name: newNodeName, relationship: relationship }]
+            });
+          } else {
+            // Relationship will always be "has parent, has sibling(s), no children"
+            relationship = '110'
 
-          $('#chart-container').orgchart('addChildren', $node, {
-            'children': [{ name: newNodeName, relationship: relationship }]
-          });
-        } else {
-          // Relationship will always be "has parent, has sibling(s), no children"
-          relationship = '110'
+            $('#chart-container').orgchart('addSiblings', $node.closest('tr').siblings('.nodes').find('.node:first'),
+              {
+                'siblings': [{
+                  'name': newNodeName,
+                  'relationship': relationship,
+                  'Id': getId()
+                }]
+              }
+            );
+          }
 
-          $('#chart-container').orgchart('addSiblings', $node.closest('tr').siblings('.nodes').find('.node:first'),
-            {
-              'siblings': [{
-                'name': newNodeName,
-                'relationship': relationship,
-                'Id': getId()
-              }]
-            }
-          );
-        }
+        }, function(error) {
+          alert('Failed to create node')
+        });
 
       });
 
-
-      // $('#btn-delete-nodes').on('click', function() {
-      //   var $node = $('#selected-node').data('node');
-      //   $('#chart-container').orgchart('removeNodes', $node);
-      //   $('#selected-node').data('node', null);
-      // });
+      $('#btn-delete-nodes').on('click', function() {
+        var $node = $('#selected-node').data('node');
+        deleteNode($node[0].id).then( function (response) {
+          $('#chart-container').orgchart('removeNodes', $node);
+          $('#selected-node').data('node', null);
+        },
+        function() {
+          alert('Failed to delete the node');
+        })
+      });
 
     });
   };
@@ -168,6 +176,35 @@
         self.loadSidebar();
       }
     })
+  }
+
+  function createNode(newName, parentId) {
+    return $.ajax({
+      headers : {
+          'Accept' : 'application/vnd.api+json',
+          'Content-Type' : 'application/vnd.api+json'
+      },
+      url : '/api/v1/nodes/',
+      type : 'POST',
+      // {"data" : { "type": "nodes", "attributes": { "name": "x" }, "relationships": { "parent": { "data" : { "type" : "nodes", "id" : 2 } } } } }
+      data : JSON.stringify({ data: { type: 'nodes', attributes: { name: newName}, relationships: { parent: { data: { type: 'nodes', id: parentId }}} }})
+    });
+  }
+
+  function deleteNode(id) {
+    return $.ajax({
+       headers : {
+          'Accept' : 'application/vnd.api+json',
+          'Content-Type' : 'application/vnd.api+json'
+      },
+      url : '/api/v1/nodes/'+id,
+      type : 'DELETE'
+    })
+  }
+
+  // Determine whether parent has any children (based on its colspan???)
+  function hasChildren(node) {
+    return node.parent().attr('colspan') > 0 ? true : false;
   }
 
   window.SideMenuTree = SideMenuTree;
