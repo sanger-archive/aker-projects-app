@@ -6,8 +6,8 @@
   var proto = SideMenuTree.prototype;
 
   proto.attachHandlers = function() {
-    $(document).on('ready', $.proxy(this.loadSidebar, this));
-    $(document).on('turbolinks:load', $.proxy(this.loadTree, this));
+    $(document).ready($.proxy(this.loadSidebar, this));
+    $(document).ready($.proxy(this.loadTree, this));
   };
 
   proto.loadSidebar = function() {
@@ -42,7 +42,6 @@
     var self = this;
 
     $.get('/api/v1/nodes?include=nodes.parent', function(response) {
-      //response.data = [response.data];
       var programs = TreeBuilder.parentNodes(response.data);
       var program_node_ids = programs[0].relationships.nodes.data.map(function(a) {return (a.id);});
 
@@ -56,7 +55,17 @@
         'pan': true,
         //'zoom': true
 
-        'dropCriteria': function($draggedNode, $dragZone, $dropZone) {
+        // Callback function called every time a node is created
+        createNode: function($node, data) {
+          $node.on('click', function(event) {
+            if (!$(event.target).is('.edge')) {
+              $('#selected-node').val(data.name).data('node', $node);
+              $('#edit-panel').show(400);
+            }
+          });
+        },
+
+        dropCriteria: function($draggedNode, $dragZone, $dropZone) {
           var dropNodeID = $dropZone.children('.content').text().split("/")[2];
           var draggedNodeID = $draggedNode.children('.content').text().split("/")[2];
 
@@ -67,38 +76,99 @@
             return false;
           }
           return true;
-        }})
-        .children('.orgchart').on('nodedropped.orgchart', function(event) {
+        }
+      })
+
+      // Deselected selected node
+      .on('click', '.orgchart', function(event) {
+        if (!$(event.target).closest('.node').length) {
+          $('#selected-node').val('');
+        }
+      })
+
+      .children('.orgchart')
+      .on('nodedropped.orgchart', function(event) {
         $.get('/api/v1/nodes/'+event.dropZone.children('.content').text().split("/")[2], function(response) {
           updateNode(response.data.id);
-        });
-
-        function updateNode(id) {
-          $.ajax({
-            headers : {
-                'Accept' : 'application/vnd.api+json',
-                'Content-Type' : 'application/vnd.api+json'
-            },
-            url : '/api/v1/nodes/'+event.draggedNode.children('.content').text().split("/")[2]+'/relationships/parent',
-            type : 'PATCH',
-            data : JSON.stringify({ data: { type: 'nodes', id: id }}),
-            success : function(response, textStatus, jqXhr) {
-                console.log("Successfully updated");
-            },
-            error : function(jqXHR, textStatus, errorThrown) {
-                console.log("Error: " + textStatus, errorThrown);
-            },
-            complete : function() {
-              // Reload that sidebar
-              self.loadSidebar();
-            }
-          })
-        }
+        })
       });
 
-    });
+      $('#btn-add-nodes').on('click', function() {
+        // Get the values of the new nodes and add them to the nodeVals array
+        var newNodeName = $('#new-node').val().trim();
 
+        // Get the data of the currently selected node
+        var $node = $('#selected-node').data('node');
+
+        if (newNodeName.length == 0 || !$node) {
+          return;
+        }
+
+        // Determine whether parent has any children (based on its colspan???)
+        var hasChild = $node.parent().attr('colspan') > 0 ? true : false;
+
+        // See https://github.com/dabeng/OrgChart#structure-of-datasource
+        var relationship = '';
+
+        if (!hasChild) {
+          // Relationship will always be "has parent, no siblings, no children"
+          relationship = '100'
+
+          $('#chart-container').orgchart('addChildren', $node, {
+            'children': [{ name: newNodeName, relationship: relationship }]
+          });
+        } else {
+          // Relationship will always be "has parent, has sibling(s), no children"
+          relationship = '110'
+
+          $('#chart-container').orgchart('addSiblings', $node.closest('tr').siblings('.nodes').find('.node:first'),
+            {
+              'siblings': [{
+                'name': newNodeName,
+                'relationship': relationship,
+                'Id': getId()
+              }]
+            }
+          );
+        }
+
+      });
+
+
+      // $('#btn-delete-nodes').on('click', function() {
+      //   var $node = $('#selected-node').data('node');
+      //   $('#chart-container').orgchart('removeNodes', $node);
+      //   $('#selected-node').data('node', null);
+      // });
+
+    });
   };
+
+  function getId() {
+    return (new Date().getTime()) * 1000 + Math.floor(Math.random() * 1001);
+  };
+
+  function updateNode(id) {
+    $.ajax({
+      headers : {
+          'Accept' : 'application/vnd.api+json',
+          'Content-Type' : 'application/vnd.api+json'
+      },
+      url : '/api/v1/nodes/'+event.draggedNode.children('.content').text().split("/")[2]+'/relationships/parent',
+      type : 'PATCH',
+      data : JSON.stringify({ data: { type: 'nodes', id: id }}),
+      success : function(response, textStatus, jqXhr) {
+          console.log("Successfully updated");
+      },
+      error : function(jqXHR, textStatus, errorThrown) {
+          console.log("Error: " + textStatus, errorThrown);
+      },
+      complete : function() {
+        // Reload that sidebar
+        self.loadSidebar();
+      }
+    })
+  }
 
   window.SideMenuTree = SideMenuTree;
 
