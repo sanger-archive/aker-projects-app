@@ -21,6 +21,11 @@ class NodesController < ApplicationController
 
   def edit
     @node = Node.find(params[:id])
+
+    respond_to do |format|
+      format.html
+      format.js { render template: 'nodes/edit' }
+    end
   end
 
   def update
