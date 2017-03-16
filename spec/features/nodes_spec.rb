@@ -103,7 +103,33 @@ RSpec.describe 'Nodes', type: :feature do
 			end
 		end
 
+		describe 'reset' do
+
+		  context 'after selecting a node and filling in New Node' do
+
+	    	before do
+			    page.find('div', class: 'node', text: @root.name).click
+			    page.fill_in 'New Node:', :with => 'child'
+	    	end
+
+			  it 'deselects the node' do
+			    expect(page.find_by_id('selected-node').value).to eq @root.name
+			    click_button 'Reset'
+			    expect(page.find_by_id('selected-node').value).to eq ''
+			  end
+
+			  it 'clears the New Node input' do
+			    expect(page.find_by_id('new-node').value).to eq 'child'
+			    click_button 'Reset'
+			    expect(page.find_by_id('new-node').value).to eq ''
+			  end
+		  end
+
+
+		end
+
 	end
+
 
 
 	context 'when i visit node#id#show page' do |variable|
