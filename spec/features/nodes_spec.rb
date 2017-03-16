@@ -40,7 +40,7 @@ RSpec.describe 'Nodes', type: :feature do
 		end
 
 		it 'does not show the edit panel' do
-			expect(page.find(:css, '#edit-panel')).to_not be_visible
+			expect(page.find(:css, '#edit-panel', visible: false)).to_not be_visible
 		end
 
 		context 'when I click a node in the tree' do
@@ -51,6 +51,55 @@ RSpec.describe 'Nodes', type: :feature do
 
 			it 'shows the edit panel' do
 				expect(page.find_by_id('edit-panel').visible?).to be(true)
+			end
+
+			it 'shows selected node' do
+				page.find('div', class: 'node', text: @program1.name).click
+				expect(page.find_by_id('selected-node').value).to eq @program1.name
+			end
+
+		end
+
+		describe 'adding nodes' do
+			it 'can add a new child node' do
+				expect do
+					page.find('div', class: 'node', text: @program1.name).click
+					page.fill_in 'New Node:', :with => 'child'
+					click_button 'Add Child Node'
+					wait_for_ajax
+				end.to change{@program1.nodes.count}.by(1)
+			end
+		end
+
+		describe 'deleting nodes' do
+			context 'when a node has children' do
+				before do
+					page.find('div', class: 'node', text: @root.name).click
+				end
+
+				it 'disables the delete button' do
+					expect(page.find_by_id('btn-delete-nodes').disabled?).to be true
+				end
+
+			end
+
+			context 'when a node has no children' do
+				before do
+					page.find('div', class: 'node', text: @program1.name).click
+				end
+
+				it 'disables the delete button' do
+					expect(page.find_by_id('btn-delete-nodes').disabled?).to be false
+				end
+
+			end
+
+			it 'can delete a node' do
+				expect do
+					page.find('div', class: 'node', text: @program1.name).click
+					click_button 'Delete'
+					wait_for_ajax
+				end.to change{@root.nodes.count}.by(-1)
 			end
 		end
 
