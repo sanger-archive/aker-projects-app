@@ -138,6 +138,7 @@
 
       });
 
+      // Delete Button
       $('#btn-delete-nodes').on('click', function() {
         var $node = $('#selected-node').data('node');
         deleteNode($node[0].id).then( function (response) {
@@ -148,6 +149,12 @@
           alert('Failed to delete the node');
         })
       });
+
+      // Reset Button
+      $('#btn-reset').on('click', function() {
+        $('#selected-node').data('node', null).val('');
+        $('#new-node').val('');
+      })
 
     });
   };
