@@ -9,18 +9,6 @@
     $(document).ready($.proxy(this.loadSidebar, this));
     $(document).ready($.proxy(this.loadTree, this));
     $(document).on('turbolinks:load', $.proxy(this.loadTree, this));
-
-    // This attaches an event to the modal show event
-    $('#editNodeModal').on('show.bs.modal', function(e) {
-      // We get the nodeId of the currently selected node
-      var nodeId = $('#selected-node').data('node')[0].id;
-
-      // We call jQuery's load method to fetch the html content of /nodes/:id/edit.js
-      // and load it into the modal body
-
-      // BUG: This only seems to work once :)
-      $('div.modal-body', '#editNodeModal').load('/nodes/' + nodeId + '/edit.js')
-    })
   };
 
   proto.loadSidebar = function() {
@@ -174,6 +162,17 @@
       })
 
     });
+
+    $('#editNodeModal').on('show.bs.modal', function(e) {
+      // We get the nodeId of the currently selected node
+      var nodeId = $('#selected-node').data('node')[0].id;
+
+      // We call jQuery's load method to fetch the html content of /nodes/:id/edit.js
+      // and load it into the modal body
+
+      $('div.modal-body', '#editNodeModal').load('/nodes/' + nodeId + '/edit.js')
+    });
+
   };
 
   function getId() {
