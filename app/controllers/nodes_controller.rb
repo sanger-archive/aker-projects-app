@@ -24,18 +24,23 @@ class NodesController < ApplicationController
 
     respond_to do |format|
       format.html
-      format.js { render template: 'nodes/edit' }
+      format.js { render template: 'nodes/modal' }
     end
   end
 
   def update
     @node = Node.find(params[:id])
+    source = params[:source]
     if @node.update_attributes(node_params)
       flash[:success] = "Node updated"
+      # unless source == 'tree'
       redirect_to node_path(@node.parent_id)
-      else
+      # end
+    else
       flash[:danger] = "Failed to update node"
-        redirect_to edit_node_path(@node.id)
+      # unless source == 'tree'
+      redirect_to edit_node_path(@node.id)
+      # end
     end
   end
 
