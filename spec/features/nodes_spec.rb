@@ -2,7 +2,7 @@ require 'rails_helper'
 
 RSpec.describe 'Nodes', type: :feature do
 
-	context 'when I visit the node#show page' do
+	context 'when I visit the node#show page', js: true do
 
 	  before do
 			@root = create(:node, name: "root", parent_id: nil)
