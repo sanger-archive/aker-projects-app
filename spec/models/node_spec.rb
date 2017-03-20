@@ -17,6 +17,20 @@ RSpec.describe Node, type: :model do
 		expect(build(:node, name: 'name', description: 'description', cost_code: 'S1234')).to be_valid
 	end
 
+	context 'when it is a root node' do
+		setup do
+			@collection = build(:collection, :set_id => SecureRandom.uuid)
+			@node = build(:node, name: 'SOME NAME', collection: @collection)
+		end
+
+		context '#destroy' do
+			it 'nullifies the set of the collection' do
+				expect(@collection).to receive(:nullify).at_least(:once)
+				@node.destroy
+			end
+		end
+	end
+
 	context 'when other nodes exist' do
 
 		before do
