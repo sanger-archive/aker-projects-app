@@ -10,4 +10,24 @@ class Collection < ApplicationRecord
     # or pass in a set_id ourselves
     allow_blank: true
 
+
+  before_destroy :nullify
+
+  def nullify
+    unless set_nullified?
+      set.update_attributes(:name => "#{nullified_prefix} #{set.name}")
+    end
+  end
+
+  def nullified_prefix
+    "(DISABLED)"
+  end
+
+  def set_nullified?
+    set.name.starts_with?(nullified_prefix)
+  end
+
+  def set
+    SetClient::Set::find(set_id)
+  end
 end

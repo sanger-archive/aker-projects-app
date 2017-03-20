@@ -11,12 +11,22 @@ class Node < ApplicationRecord
 
   before_save :validate_node_blank
 
+  before_destroy :destroy_collection, :if => :root?
+
+  def destroy_collection
+    collection.destroy
+  end
+
 	def self.root
 		find_by(parent_id: nil)
 	end
 
   def root?
     parent_id.nil?
+  end
+
+  def program?
+    parent.root?
   end
 
   # Gets the parents of a node,

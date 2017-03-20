@@ -1,3 +1,10 @@
+GIT
+  remote: git://github.com/sanger/aker-set-client.git
+  revision: 93853e389b78ea99346edc2f4f42904aa58e18b2
+  specs:
+    aker-set-client (0.1.0)
+      json_api_client
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -95,6 +102,10 @@ GEM
     factory_girl_rails (4.8.0)
       factory_girl (~> 4.8.0)
       railties (>= 3.0.0)
+    faraday (0.11.0)
+      multipart-post (>= 1.2, < 3)
+    faraday_middleware (0.11.0.1)
+      faraday (>= 0.7.4, < 1.0)
     ffi (1.9.17)
     flay (2.8.1)
       erubis (~> 2.7.0)
@@ -121,6 +132,12 @@ GEM
     json (2.0.3)
     json-schema (2.7.0)
       addressable (>= 2.4)
+    json_api_client (1.5.1)
+      activemodel (>= 3.2.0)
+      activesupport (>= 3.2.0)
+      addressable (~> 2.2)
+      faraday (~> 0.9)
+      faraday_middleware (~> 0.9)
     jsonapi (0.1.1.beta6)
       jsonapi-parser (= 0.1.1.beta3)
       jsonapi-renderer (= 0.1.1.beta1)
@@ -146,6 +163,7 @@ GEM
     mini_portile2 (2.1.0)
     minitest (5.10.1)
     multi_json (1.12.1)
+    multipart-post (2.0.0)
     nio4r (1.2.1)
     nokogiri (1.7.0.1)
       mini_portile2 (~> 2.1.0)
@@ -294,6 +312,7 @@ PLATFORMS
 
 DEPENDENCIES
   active_model_serializers
+  aker-set-client!
   bootstrap-sass (~> 3.3.6)
   bootstrap_form
   byebug
