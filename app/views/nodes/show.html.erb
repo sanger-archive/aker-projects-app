@@ -28,10 +28,8 @@
     <% @node.nodes.each do |c| %>
 	     <li>
           <b><%= linknode(c) %></b>
-            <% unless @node.root? %>
-                (<%= edit_node(c) %> /
-                <%= delete_node(c) %>)
-            <% end %>
+            (<%= edit_node(c) %> /
+            <%= delete_node(c) %>)
         </li>
     <% end %>
   </ul>

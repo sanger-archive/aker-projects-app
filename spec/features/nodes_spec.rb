@@ -18,9 +18,9 @@ RSpec.describe 'Nodes', type: :feature do
       expect(page).to have_link('program2', href: node_path(@program2.id))
     end
 
-		it "you cannot edit or delete program level nodes" do
-		  expect(page).not_to have_content('Edit')
-		  expect(page).not_to have_content('Delete')
+		it "you can edit or delete program level nodes" do
+		  expect(page).to have_content('Edit')
+		  expect(page).to have_content('Delete')
 		end
 
 	end
