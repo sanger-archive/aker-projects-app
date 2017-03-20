@@ -96,7 +96,7 @@
       .children('.orgchart')
       .on('nodedropped.orgchart', function(event) {
         $.get('/api/v1/nodes/'+event.dropZone.children('.content').text().split("/")[2], function(response) {
-          updateNode(response.data.id);
+          updateNode(response.data.id, event);
         })
       });
 
@@ -179,7 +179,7 @@
     return (new Date().getTime()) * 1000 + Math.floor(Math.random() * 1001);
   };
 
-  function updateNode(id) {
+  function updateNode(id, event) {
     $.ajax({
       headers : {
           'Accept' : 'application/vnd.api+json',
