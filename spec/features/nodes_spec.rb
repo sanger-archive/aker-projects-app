@@ -26,7 +26,7 @@ RSpec.describe 'Nodes', type: :feature do
 	end
 
 	context 'when I visit the Tree Hierarchy', js: true do
-		before 'allows you visit the Tree Hierarchy' do
+		before do
 			@root = create(:node, name: "root", parent_id: nil)
 			@program1 = create(:node, name: "program1", parent: @root)
 			@program2 = create(:node, name: "program2", parent: @root)
@@ -124,7 +124,23 @@ RSpec.describe 'Nodes', type: :feature do
 			    expect(page.find_by_id('new-node').value).to eq ''
 			  end
 		  end
+		end
 
+		describe 'editing nodes' do
+
+			context 'Double-clicking a node' do
+				before do
+					page.find('div', class: 'node', text: @program1.name).double_click
+					wait_for_ajax
+				end
+
+				it 'displays a modal with an edit form' do
+					modal = page.find_by_id('editNodeModal')
+					expect(modal.visible?).to be(true)
+					expect(modal.has_css?('form')).to be(true)
+				end
+
+			end
 
 		end
 

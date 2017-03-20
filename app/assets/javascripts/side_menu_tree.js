@@ -6,7 +6,12 @@
   var proto = SideMenuTree.prototype;
 
   proto.attachHandlers = function() {
-    $(document).ready($.proxy(this.loadSidebar, this));
+    var loadSidebar = $.proxy(this.loadSidebar, this)
+
+    $(document).ready(loadSidebar);
+    $('#tree-tab').on('show.bs.tab', function(e) {
+      if (e.target.innerText == 'Home') loadSidebar();
+    })
     $(document).ready($.proxy(this.loadTree, this));
     $(document).on('turbolinks:load', $.proxy(this.loadTree, this));
   };
@@ -86,7 +91,7 @@
         }
       })
 
-      // Deselected selected node
+      // Deselect selected node
       .on('click', '.orgchart', function(event) {
         if (!$(event.target).closest('.node').length) {
           $('#selected-node').val('');
@@ -170,7 +175,31 @@
 
       // We call jQuery's load method to fetch the html content of /nodes/:id/edit.js
       // and load it into the modal body
-      $('div.modal-body', '#editNodeModal').load('/nodes/' + nodeId + '/edit.js');
+      $('div.modal-body', '#editNodeModal').load('/nodes/' + nodeId + '/edit.js', function(response, status, xhr) {
+        $('form', 'div.modal-body')
+          .on('ajax:before', function() {
+            $(this).clear_form_errors();
+          })
+          .on('ajax:beforeSend', function(event, xhr, settings) {
+            xhr.setRequestHeader('Accept', 'application/json');
+          })
+          .on('ajax:success', function(e, data, status, xhr) {
+            // If the name has updated, we need to update the node
+            $('#selected-node').data('node').find('div.title').text(data['name'])
+
+            // Show a success message
+            $('div.modal-body', '#editNodeModal').prepend('<div class="alert alert-success">Update successful</div>');
+
+            // Setting a timeout so the user can see the update was successful just before closing
+            // the modal window
+            setTimeout(function() {
+              $('#editNodeModal').modal('hide');
+            }, 1000);
+          })
+          .on('ajax:error', function(e, data, status, xhr) {
+            $('form', 'div.modal-body').render_form_errors('node', data.responseJSON);
+          })
+      });
 
     });
 
@@ -184,17 +213,7 @@
       },
       url : '/api/v1/nodes/'+event.draggedNode.children('.content').text().split("/")[2]+'/relationships/parent',
       type : 'PATCH',
-      data : JSON.stringify({ data: { type: 'nodes', id: id }}),
-      success : function(response, textStatus, jqXhr) {
-          console.log("Successfully updated");
-      },
-      error : function(jqXHR, textStatus, errorThrown) {
-          console.log("Error: " + textStatus, errorThrown);
-      },
-      complete : function() {
-        // Reload that sidebar
-        self.loadSidebar();
-      }
+      data : JSON.stringify({ data: { type: 'nodes', id: id }})
     })
   }
 
@@ -206,7 +225,6 @@
       },
       url : '/api/v1/nodes/',
       type : 'POST',
-      // {"data" : { "type": "nodes", "attributes": { "name": "x" }, "relationships": { "parent": { "data" : { "type" : "nodes", "id" : 2 } } } } }
       data : JSON.stringify({ data: { type: 'nodes', attributes: { name: newName}, relationships: { parent: { data: { type: 'nodes', id: parentId }}} }})
     });
   }
