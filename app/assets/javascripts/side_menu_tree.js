@@ -95,7 +95,7 @@
 
       .children('.orgchart')
       .on('nodedropped.orgchart', function(event) {
-        $.get('/api/v1/nodes/'+event.dropZone.children('.content').text().split("/")[2], function(response) {
+        $.get('/api/v1/nodes/'+event.dropZone[0].id, function(response) {
           updateNode(response.data.id, event);
         })
       });
@@ -206,7 +206,7 @@
           'Accept' : 'application/vnd.api+json',
           'Content-Type' : 'application/vnd.api+json'
       },
-      url : '/api/v1/nodes/'+event.draggedNode.children('.content').text().split("/")[2]+'/relationships/parent',
+      url : '/api/v1/nodes/'+event.draggedNode[0].id+'/relationships/parent',
       type : 'PATCH',
       data : JSON.stringify({ data: { type: 'nodes', id: id }})
     })
