@@ -114,13 +114,14 @@
 
           // See https://github.com/dabeng/OrgChart#structure-of-datasource
           var relationship = '';
+          var id = response['data']['id'];
 
           if (!hasChildren($node)) {
             // Relationship will always be "has parent, no siblings, no children"
             relationship = '100'
 
             $('#chart-container').orgchart('addChildren', $node, {
-              'children': [{ name: newNodeName, relationship: relationship }]
+              'children': [{ name: newNodeName, relationship: relationship, id: id }]
             });
           } else {
             // Relationship will always be "has parent, has sibling(s), no children"
@@ -131,7 +132,7 @@
                 'siblings': [{
                   'name': newNodeName,
                   'relationship': relationship,
-                  'Id': getId()
+                  'id': id
                 }]
               }
             );
@@ -169,14 +170,10 @@
 
       // We call jQuery's load method to fetch the html content of /nodes/:id/edit.js
       // and load it into the modal body
+      $('div.modal-body', '#editNodeModal').load('/nodes/' + nodeId + '/edit.js');
 
-      $('div.modal-body', '#editNodeModal').load('/nodes/' + nodeId + '/edit.js')
     });
 
-  };
-
-  function getId() {
-    return (new Date().getTime()) * 1000 + Math.floor(Math.random() * 1001);
   };
 
   function updateNode(id, event) {
