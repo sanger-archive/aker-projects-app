@@ -17,6 +17,5 @@
 //= require_tree .
 
 $(function() {
-
   new SideMenuTree();
 })

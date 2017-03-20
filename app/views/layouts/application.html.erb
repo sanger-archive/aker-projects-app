@@ -39,7 +39,36 @@
         <div id="hierarchy" class="tab-pane">
           <br/>
           <div id="tree-hierarchy"></div>
-        </div>
+
+          <form id="edit-panel" style="display: none" class="form-inline">
+            <div class="form-group">
+              <label for="selected-node" class="selected-node-group">Selected Node:</label>
+              <input type="text" class="form-control" id="selected-node" class="selected-node-group" disabled="disabled">
+            </div>
+
+            <div class="form-group">
+              <label for="new-node">New Node:</label>
+              <input type="text" class="form-control" id="new-node">
+            </div>
+
+            <button type="button" class="btn btn-success" id="btn-add-nodes">Add Child Node</button>
+            <button type="button" class="btn btn-default" id="btn-reset">Reset</button>
+            <button type="button" class="btn btn-danger"  id="btn-delete-nodes">Delete</button>
+          </form>
+
+          <div class="modal fade" id="editNodeModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+            <div class="modal-dialog" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                  <h4 class="modal-title" id="myModalLabel">Edit Node</h4>
+                </div>
+                <div class="modal-body">
+                  Form will go here
+                </div>
+              </div>
+            </div>
+          </div>
 
       </div>
 

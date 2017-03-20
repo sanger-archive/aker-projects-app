@@ -28,10 +28,8 @@
     <% @node.nodes.each do |c| %>
 	     <li>
           <b><%= linknode(c) %></b>
-            <% unless @node.root? %>
-                (<%= edit_node(c) %> /
-                <%= delete_node(c) %>)
-            <% end %>
+            (<%= edit_node(c) %> /
+            <%= delete_node(c) %>)
         </li>
     <% end %>
   </ul>
@@ -39,11 +37,11 @@
 
 <% unless @node.root? %>
   <h4>Add child node</h4>
-  <%= bootstrap_form_tag(url: nodes_path, method: "post") do |f| %>
+  <%= bootstrap_form_for(@child, url: nodes_path, method: "post") do |f| %>
     <%= f.text_field(:name, {autocomplete: 'off'}) %>
     <%= f.text_field :description %>
     <%= f.text_field :cost_code %>
-    <%= hidden_field_tag :parent_id, @node.id %>
+    <%= f.hidden_field :parent_id %>
     <%= f.submit("Create") %>
   <% end %>
 <% end %>
