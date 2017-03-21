@@ -10,12 +10,7 @@ class Node < ApplicationRecord
 	belongs_to :parent, class_name: 'Node', required: false
 
   before_save :validate_node_blank
-
-  before_destroy :destroy_collection, :if => :root?
-
-  def destroy_collection
-    collection.destroy
-  end
+  before_create :set_collection, if: -> { level == 2 }
 
 	def self.root
 		find_by(parent_id: nil)
@@ -25,8 +20,8 @@ class Node < ApplicationRecord
     parent_id.nil?
   end
 
-  def program?
-    parent.root?
+  def level
+    parents.size + 1
   end
 
   # Gets the parents of a node,
@@ -47,6 +42,10 @@ class Node < ApplicationRecord
     if self.cost_code.blank?
       self.cost_code = nil
     end
+  end
+
+  def set_collection
+    self.collection = build_collection if collection.nil?
   end
 
 end
