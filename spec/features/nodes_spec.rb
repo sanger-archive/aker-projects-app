@@ -2,6 +2,10 @@ require 'rails_helper'
 
 RSpec.describe 'Nodes', type: :feature do
 
+  before(:each) do
+    allow(SetClient::Set).to receive(:create).and_return(double('Set', id: SecureRandom.uuid))
+  end
+
 	context 'when I visit the node#show page', js: true do
 
 	  before do
@@ -95,6 +99,8 @@ RSpec.describe 'Nodes', type: :feature do
 			end
 
 			it 'can delete a node' do
+				allow(SetClient::Set).to receive(:find).and_return([double(Set, name: '(DISABLED)')])
+
 				expect do
 					page.find('div', class: 'node', text: @program1.name).click
 					click_button 'Delete'

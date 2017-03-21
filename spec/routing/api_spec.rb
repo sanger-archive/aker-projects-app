@@ -43,7 +43,8 @@ RSpec.describe 'API routing', type: :routing do
   describe 'Collection' do
 
     before(:each) do
-      @collection = create(:collection)
+      expect(SetClient::Set).to receive(:create).and_return(double('Set', id: SecureRandom.uuid))
+      @collection = create(:collection, set_id: nil)
     end
 
     it 'routes to the index' do

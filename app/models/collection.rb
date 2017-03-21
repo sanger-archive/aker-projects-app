@@ -10,8 +10,8 @@ class Collection < ApplicationRecord
     # or pass in a set_id ourselves
     allow_blank: true
 
-
   before_destroy :nullify
+  before_create :create_set
 
   def nullify
     unless set_nullified?
@@ -28,6 +28,14 @@ class Collection < ApplicationRecord
   end
 
   def set
-    SetClient::Set::find(set_id)
+    SetClient::Set.find(set_id).first
+  end
+
+  private
+
+  def create_set
+    if self.set_id.nil?
+      self.set_id = SetClient::Set.create(name: collector.name).id
+    end
   end
 end
