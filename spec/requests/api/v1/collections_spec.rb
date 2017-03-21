@@ -5,7 +5,8 @@ RSpec.describe 'Api::V1::Collections', type: :request do
   describe 'GET' do
 
     before(:each) do
-      collection = create(:collection)
+      expect(SetClient::Set).to receive(:create).and_return(double('Set', id: SecureRandom.uuid))
+      collection = create(:collection, set_id: nil)
 
       get api_v1_collection_path(collection), headers: {
         "Content-Type": "application/vnd.api+json",

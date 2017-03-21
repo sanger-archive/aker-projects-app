@@ -2,6 +2,10 @@ require 'rails_helper'
 
 RSpec.describe Node, type: :model do
 
+  before(:each) do
+    allow(SetClient::Set).to receive(:create).and_return(double('Set', id: SecureRandom.uuid))
+  end
+
 	it "is not valid without a name" do
 		expect(build(:node, name: nil)).to_not be_valid
 	end
@@ -17,15 +21,30 @@ RSpec.describe Node, type: :model do
 		expect(build(:node, name: 'name', description: 'description', cost_code: 'S1234')).to be_valid
 	end
 
-	context 'when it is a root node' do
-		setup do
-			@collection = build(:collection, :set_id => SecureRandom.uuid)
-			@node = build(:node, name: 'SOME NAME', collection: @collection)
+	describe '#level' do
+
+		before do
+			@root = create(:node, name: 'root', parent_id: nil)
+			@node = create(:node, name: 'SOME NAME', collection: @collection, parent: @root)
 		end
 
-		context '#destroy' do
+		it 'returns the level of the node in the tree' do
+			expect(@root.level).to eq(1)
+			expect(@node.level).to eq(2)
+		end
+
+	end
+
+	describe '#destroy' do
+		context 'when it is a level 2 node (program)' do
+			before do
+				@collection = create(:collection, set_id: SecureRandom.uuid)
+				@root = create(:node, name: 'root', parent_id: nil)
+				@node = create(:node, name: 'SOME NAME', collection: @collection, parent: @root)
+			end
+
 			it 'nullifies the set of the collection' do
-				expect(@collection).to receive(:nullify).at_least(:once)
+				expect(@node.collection).to receive(:nullify).and_return(true).at_least(:once)
 				@node.destroy
 			end
 		end
