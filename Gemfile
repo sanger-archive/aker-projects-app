@@ -30,6 +30,7 @@ gem 'jbuilder', '~> 2.5'
 
 gem 'bootstrap_form'
 gem 'active_model_serializers'
+gem 'zipkin-tracer'
 
 gem 'aker-set-client', :github => 'sanger/aker-set-client'
 
