@@ -43,8 +43,8 @@ RSpec.describe 'Nodes', type: :feature do
 			expect(page.find_by_id('tree-hierarchy').visible?).to be(true)
 		end
 
-		it 'does not show the edit panel' do
-			expect(page.find(:css, '#edit-panel', visible: false)).to_not be_visible
+		it 'does show the edit panel' do
+			expect(page.find(:css, '#edit-panel', visible: true)).to be_visible
 		end
 
 		context 'when I click a node in the tree' do
