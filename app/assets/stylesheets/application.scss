@@ -4,3 +4,9 @@
 @import "font-awesome";
 @import "bootstrap-treeview";
 @import "jquery-orgchart";
+
+
+.orgchart .node .title {
+  height: initial;
+  white-space: initial;
+}
