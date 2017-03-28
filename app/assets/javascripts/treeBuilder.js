@@ -37,6 +37,8 @@
       // depending on the type of display, tree hierachy expects 'name' and finder expects 'text'
       ret[bool ? 'name' : 'text'] = parent.attributes.name;
 
+      ret['href'] = parent.id;
+
       var relationships = Object.keys(parent.relationships || {});
       if (relationships.length == 0) {
         memo.push(ret);
