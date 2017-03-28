@@ -62,6 +62,7 @@
 
         // Callback function called every time a node is created
         createNode: function($node, data) {
+          $('#selected-node').val('');
           $node.attr('title', data.name);
           $node.on('click', function(event) {
             if (!$(event.target).is('.edge')) {
