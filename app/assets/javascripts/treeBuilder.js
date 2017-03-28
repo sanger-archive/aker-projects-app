@@ -28,7 +28,7 @@
     return parentNodes.reduce(function(memo, parent) {
 
       var ret = {
-        href: '/nodes/' + parent.id,
+        cost_code: parent.attributes['cost-code'],
         id : parent.id,
         state: {
           expanded: expandedIds.indexOf(parent.id)>=0

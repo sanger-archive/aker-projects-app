@@ -53,19 +53,22 @@
       $('#tree-hierarchy').orgchart({
         'data' : TreeBuilder.createFrom(response.data, true)[0],
         'depth': response.data.length,
-        'nodeContent': 'href',
+        'nodeContent': 'cost_code',
         'nodeID': 'id',
         //'direction': 'l2r',
         'draggable' : true,
-        'pan': true,
+        'pan': false,
         //'zoom': true
 
         // Callback function called every time a node is created
         createNode: function($node, data) {
+          $node.attr('title', data.name);
           $node.on('click', function(event) {
             if (!$(event.target).is('.edge')) {
               $('#selected-node').val(data.name).data('node', $node);
-              $('#edit-panel').show();
+              //$('#edit-panel').css('visibility', 'visible');
+              $('#edit-panel button').prop('disabled', false);
+              $('#edit-panel input').prop('disabled', false);
               $('#btn-delete-nodes').prop('disabled', hasChildren($node));
             }
           });
@@ -89,6 +92,11 @@
       // Deselect selected node
       .on('click', '.orgchart', function(event) {
         if (!$(event.target).closest('.node').length) {
+          //$('#edit-panel').hide();
+          //$('#edit-panel').css('visibility', 'hidden');
+          $('#edit-panel button').prop('disabled', true);
+          $('#edit-panel input').prop('disabled', true);
+          $('#edit-panel input').val('')
           $('#selected-node').val('');
         }
       })
@@ -141,7 +149,7 @@
         }, function(error) {
           alert('Failed to create node')
         });
-
+        $('#new-node').val('');
       });
 
       // Delete Button
@@ -180,7 +188,8 @@
           })
           .on('ajax:success', function(e, data, status, xhr) {
             // If the name has updated, we need to update the node
-            $('#selected-node').data('node').find('div.title').text(data['name'])
+            $('#selected-node').data('node').find('div.title').text(data['name']);
+            $('#selected-node').data('node').find('div.content').text(data['cost_code']);
 
             // Show a success message
             $('div.modal-body', '#editNodeModal').prepend('<div class="alert alert-success">Update successful</div>');
