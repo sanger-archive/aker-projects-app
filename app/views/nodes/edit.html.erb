@@ -1,0 +1,7 @@
+<%= bootstrap_form_for(@node, remote: true) do |f| %>
+	<div class="field">
+		<%= render "node_fields", f: f %>
+		<%= link_to 'Back', :back, class: 'btn btn-primary' %>
+		<%= f.submit("Update") %>
+	</div>
+<% end %>
