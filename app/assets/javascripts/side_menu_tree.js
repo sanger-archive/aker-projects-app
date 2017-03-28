@@ -57,7 +57,7 @@
         'nodeID': 'id',
         //'direction': 'l2r',
         'draggable' : true,
-        'pan': true,
+        'pan': false,
         //'zoom': true
 
         // Callback function called every time a node is created
