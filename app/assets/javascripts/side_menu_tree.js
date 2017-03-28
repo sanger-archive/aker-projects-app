@@ -89,7 +89,7 @@
       // Deselect selected node
       .on('click', '.orgchart', function(event) {
         if (!$(event.target).closest('.node').length) {
-          $('#selected-node').val('');
+          $('#edit-panel').hide();
         }
       })
 
@@ -141,7 +141,7 @@
         }, function(error) {
           alert('Failed to create node')
         });
-
+        $('#new-node').val('');
       });
 
       // Delete Button
