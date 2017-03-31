@@ -44,12 +44,14 @@
     }, 300));
   }
 
+  proto.destroyTree = function() {
+    $('#tree-hierarchy').html('');
+  };
+
   proto.loadTree = function() {
     var self = this;
-
-    $.get('/api/v1/nodes?include=nodes.parent', function(response) {
+    $.get('/api/v1/nodes?include=nodes.parent', $.proxy(function(response) {
       var programs = TreeBuilder.parentNodes(response.data);
-
       $('#tree-hierarchy').orgchart({
         'data' : TreeBuilder.createFrom(response.data, true)[0],
         'depth': response.data.length,
@@ -103,11 +105,11 @@
       })
 
       .children('.orgchart')
-      .on('nodedropped.orgchart', function(event) {
-        $.get('/api/v1/nodes/'+event.dropZone[0].id, function(response) {
-          updateNode(response.data.id, event);
-        })
-      });
+      .on('nodedropped.orgchart', $.proxy(function(event) {
+        $.get('/api/v1/nodes/'+event.dropZone[0].id, $.proxy(function(response) {
+          updateNode.call(this, response.data.id, event);
+        }, this));
+      }, this));
 
       $('#btn-add-nodes').on('click', function() {
         // Get the values of the new nodes and add them to the nodeVals array
@@ -171,7 +173,7 @@
         $('#new-node').val('');
       })
 
-    });
+    }, this));
 
     $('#editNodeModal').on('show.bs.modal', function(e) {
       // We get the nodeId of the currently selected node
@@ -210,7 +212,37 @@
 
   };
 
+  function setIconChildren(node, val) {
+    if (val) {
+      if ($('.title .fa-users', node).length == 0) {
+        $('.title', node).append($('<i class="fa fa-users symbol"></i>'));
+      }
+    } else {
+      $('.title .fa-users', node).remove();
+    }
+  };
+
+  function getChildrenForParentId(id) {
+    return $('[data-parent]').filter(function(e) { return ($(e).data('parent')==id);});
+  }
+
+  function getNodeNumChildren(id) {
+    return getChildrenForParentId(id).length;
+  }
+
+  function updateIconChildren(dropNode, draggedNode) {
+    var previousParent = $('#'+draggedNode.data('parent')+'.node');
+    draggedNode.data('parent', dropNode.attr('id'));
+    setIconChildren(dropNode, true);
+    setIconChildren(previousParent, (getNodeNumChildren(draggedNode.data('parent'))>0));
+  }
+
   function updateNode(id, event) {
+    var dropNode = $('#'+id+'.node');
+    var draggedNode = $('#'+event.draggedNode[0].id+'.node');    
+    updateIconChildren(dropNode, draggedNode);
+
+
     $.ajax({
       headers : {
           'Accept' : 'application/vnd.api+json',
@@ -219,7 +251,14 @@
       url : '/api/v1/nodes/'+event.draggedNode[0].id+'/relationships/parent',
       type : 'PATCH',
       data : JSON.stringify({ data: { type: 'nodes', id: id }})
-    })
+    }).then($.proxy(function() {
+      //$('#tree-hierarchy').orgchart('addChildren', dropNode, {children: [draggedNode]});
+      //$(dropNode).orgchart('addChildren', draggedNode);
+      /*
+      this.destroyTree();
+      this.loadTree();
+      */
+    }, this));
   }
 
   function createNode(newName, parentId) {
