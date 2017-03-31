@@ -44,10 +44,6 @@
     }, 300));
   }
 
-  proto.destroyTree = function() {
-    $('#tree-hierarchy').html('');
-  };
-
   proto.loadTree = function() {
     var self = this;
     $.get('/api/v1/nodes?include=nodes.parent', $.proxy(function(response) {
@@ -238,11 +234,6 @@
   }
 
   function updateNode(id, event) {
-    var dropNode = $('#'+id+'.node');
-    var draggedNode = $('#'+event.draggedNode[0].id+'.node');    
-    updateIconChildren(dropNode, draggedNode);
-
-
     $.ajax({
       headers : {
           'Accept' : 'application/vnd.api+json',
@@ -252,12 +243,9 @@
       type : 'PATCH',
       data : JSON.stringify({ data: { type: 'nodes', id: id }})
     }).then($.proxy(function() {
-      //$('#tree-hierarchy').orgchart('addChildren', dropNode, {children: [draggedNode]});
-      //$(dropNode).orgchart('addChildren', draggedNode);
-      /*
-      this.destroyTree();
-      this.loadTree();
-      */
+      var dropNode = $('#'+id+'.node');
+      var draggedNode = $('#'+event.draggedNode[0].id+'.node');    
+      updateIconChildren(dropNode, draggedNode);      
     }, this));
   }
 
