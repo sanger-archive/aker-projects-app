@@ -219,7 +219,7 @@
   };
 
   function getChildrenForParentId(id) {
-    return $('[data-parent]').filter(function(e) { return ($(e).data('parent')==id);});
+    return $('[data-parent]').filter(function(idx, elem) { return ($(elem).data('parent')==id);});
   }
 
   function getNodeNumChildren(id) {
@@ -230,7 +230,7 @@
     var previousParent = $('#'+draggedNode.data('parent')+'.node');
     draggedNode.data('parent', dropNode.attr('id'));
     setIconChildren(dropNode, true);
-    setIconChildren(previousParent, (getNodeNumChildren(draggedNode.data('parent'))>0));
+    setIconChildren(previousParent, (getNodeNumChildren(previousParent.attr('id'))>0));
   }
 
   function updateNode(id, event) {
@@ -245,7 +245,7 @@
     }).then($.proxy(function() {
       var dropNode = $('#'+id+'.node');
       var draggedNode = $('#'+event.draggedNode[0].id+'.node');    
-      updateIconChildren(dropNode, draggedNode);      
+      updateIconChildren(dropNode, draggedNode);
     }, this));
   }
 
