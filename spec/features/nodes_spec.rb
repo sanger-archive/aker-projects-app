@@ -36,7 +36,7 @@ RSpec.describe 'Nodes', type: :feature do
 			@program2 = create(:node, name: "program2", parent: @root)
 
 			visit root_path
-			click_link "Tree Hierarchy"
+			click_link "Tree"
 		end
 
 		it 'shows the tree hierarchy' do
