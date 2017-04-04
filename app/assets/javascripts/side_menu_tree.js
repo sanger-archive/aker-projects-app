@@ -1,9 +1,17 @@
 (function($,undefined) {
   function SideMenuTree() {
+    this.resetStatusMenu();
     this.attachHandlers();
   }
 
   var proto = SideMenuTree.prototype;
+
+  proto.resetStatusMenu = function() {
+    $('#edit-panel button').prop('disabled', true);
+    $('#edit-panel input').prop('disabled', true);
+    $('#edit-panel input').val('')
+    $('#selected-node').val('');    
+  };
 
   proto.attachHandlers = function() {
     var loadSidebar = $.proxy(this.loadSidebar, this)
@@ -46,10 +54,8 @@
 
   proto.loadTree = function() {
     var self = this;
-
-    $.get('/api/v1/nodes?include=nodes.parent', function(response) {
+    $.get('/api/v1/nodes?include=nodes.parent', $.proxy(function(response) {
       var programs = TreeBuilder.parentNodes(response.data);
-
       $('#tree-hierarchy').orgchart({
         'data' : TreeBuilder.createFrom(response.data, true)[0],
         'depth': response.data.length,
@@ -91,25 +97,20 @@
       })
 
       // Deselect selected node
-      .on('click', '.orgchart', function(event) {
+      .on('click', '.orgchart', $.proxy(function(event) {
         if (!$(event.target).closest('.node').length) {
-          //$('#edit-panel').hide();
-          //$('#edit-panel').css('visibility', 'hidden');
-          $('#edit-panel button').prop('disabled', true);
-          $('#edit-panel input').prop('disabled', true);
-          $('#edit-panel input').val('')
-          $('#selected-node').val('');
+          this.resetStatusMenu();
         }
-      })
+      }, this))
 
       .children('.orgchart')
-      .on('nodedropped.orgchart', function(event) {
-        $.get('/api/v1/nodes/'+event.dropZone[0].id, function(response) {
-          updateNode(response.data.id, event);
-        })
-      });
+      .on('nodedropped.orgchart', $.proxy(function(event) {
+        $.get('/api/v1/nodes/'+event.dropZone[0].id, $.proxy(function(response) {
+          updateNode.call(this, response.data.id, event);
+        }, this)).fail($.proxy(onErrorConnection, this));
+      }, this));
 
-      $('#btn-add-nodes').on('click', function() {
+      $('#btn-add-nodes').on('click', $.proxy(function() {
         // Get the values of the new nodes and add them to the nodeVals array
         var newNodeName = $('#new-node').val().trim();
 
@@ -119,7 +120,7 @@
         if (newNodeName.length == 0 || !$node) {
           return;
         }
-        createNode(newNodeName, $node[0].id).then(function (response) {
+        createNode.call(this, newNodeName, $node[0].id).then(function (response) {
 
           // See https://github.com/dabeng/OrgChart#structure-of-datasource
           var relationship = '';
@@ -151,10 +152,10 @@
           alert('Failed to create node')
         });
         $('#new-node').val('');
-      });
+      }, this));
 
       // Delete Button
-      $('#btn-delete-nodes').on('click', function() {
+      $('#btn-delete-nodes').on('click', $.proxy(function() {
         var $node = $('#selected-node').data('node');
         deleteNode($node[0].id).then( function (response) {
           $('#chart-container').orgchart('removeNodes', $node);
@@ -163,7 +164,7 @@
         function() {
           alert('Failed to delete the node');
         })
-      });
+      }, this));
 
       // Reset Button
       $('#btn-reset').on('click', function() {
@@ -171,7 +172,7 @@
         $('#new-node').val('');
       })
 
-    });
+    }, this)).fail($.proxy(onErrorConnection, this));
 
     $('#editNodeModal').on('show.bs.modal', function(e) {
       // We get the nodeId of the currently selected node
@@ -210,6 +211,53 @@
 
   };
 
+  function setIconChildren(node, val) {
+    if (val) {
+      if ($('.title .fa-users', node).length == 0) {
+        $('.title', node).append($('<i class="fa fa-users symbol"></i>'));
+      }
+    } else {
+      $('.title .fa-users', node).remove();
+    }
+  };
+
+  function getChildrenForParentId(id) {
+    return $('[data-parent]').filter(function(idx, elem) { return ($(elem).data('parent')==id);});
+  }
+
+  function getNodeNumChildren(id) {
+    return getChildrenForParentId(id).length;
+  }
+
+  function updateIconChildren(dropNode, draggedNode) {
+    var previousParent = $('#'+draggedNode.data('parent')+'.node');
+    draggedNode.data('parent', dropNode.attr('id'));
+    setIconChildren(dropNode, true);
+    setIconChildren(previousParent, (getNodeNumChildren(previousParent.attr('id'))>0));
+  }
+
+  function onSuccessfulUpdateNode(id, event) {
+    return enableTree.call(this, id, event);
+    var dropNode = $('#'+id+'.node');
+    var draggedNode = $('#'+event.draggedNode[0].id+'.node');    
+    updateIconChildren(dropNode, draggedNode);
+  }
+
+  function onErrorConnection() {
+    disableTree.call(this);
+  }
+
+  function disableTree() {
+    $('#tree-hierarchy').html('<div class="alert alert-danger">Sorry, we have lost connection with the server</div>');
+    $('#tree-hierarchy').append('<button id="reconnect" class="button btn btn-default">Reconnect?</button>');
+    $('#reconnect').on('click', $.proxy(enableTree, this));
+  }
+
+  function enableTree() {
+    $('#tree-hierarchy').html('');
+    this.loadTree();    
+  }
+
   function updateNode(id, event) {
     $.ajax({
       headers : {
@@ -219,7 +267,10 @@
       url : '/api/v1/nodes/'+event.draggedNode[0].id+'/relationships/parent',
       type : 'PATCH',
       data : JSON.stringify({ data: { type: 'nodes', id: id }})
-    })
+    }).then(
+      $.proxy(onSuccessfulUpdateNode, this, id, event), 
+      $.proxy(onErrorConnection, this)
+    );
   }
 
   function createNode(newName, parentId) {
@@ -231,7 +282,7 @@
       url : '/api/v1/nodes/',
       type : 'POST',
       data : JSON.stringify({ data: { type: 'nodes', attributes: { name: newName}, relationships: { parent: { data: { type: 'nodes', id: parentId }}} }})
-    });
+    }).fail($.proxy(onErrorConnection, this));
   }
 
   function deleteNode(id) {
@@ -242,7 +293,7 @@
       },
       url : '/api/v1/nodes/'+id,
       type : 'DELETE'
-    })
+    }).fail($.proxy(onErrorConnection, this))
   }
 
   // Determine whether parent has any children (based on its colspan???)
