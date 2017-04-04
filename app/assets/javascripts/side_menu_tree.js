@@ -237,6 +237,7 @@
   }
 
   function onSuccessfulUpdateNode(id, event) {
+    return enableTree.call(this, id, event);
     var dropNode = $('#'+id+'.node');
     var draggedNode = $('#'+event.draggedNode[0].id+'.node');    
     updateIconChildren(dropNode, draggedNode);
