@@ -14,6 +14,8 @@
 //= require jquery_ujs
 //= require turbolinks
 //= require bootstrap-sprockets
+//= require_tree ./org_chart/actions/
+//= require_tree ./org_chart
 //= require_tree .
 
 $(function() {
