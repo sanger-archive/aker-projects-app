@@ -1,5 +1,6 @@
 (function($, undefined) {
   function OrgChartStatus() {
+    this.updateChartOnChanges();
   };
 
   window.OrgChartStatus = OrgChartStatus;
@@ -10,7 +11,12 @@
     this.resetTree();
   };
 
+  proto.updateChartOnChanges = function() {
+    setInterval($.proxy(this.keepTreeUpdate, this), 10000);
+  };
+
   proto.disableTree = function() {
+    this._treeIsDown=true;
     $('#tree-hierarchy').html('<div class="alert alert-danger">Sorry, there was a problem while updating the server</div>');
     $('#tree-hierarchy').append('<button id="reconnect" class="button btn btn-default">Reconnect?</button>');
     $('#reconnect').on('click', $.proxy(this.resetTree, this));
@@ -41,12 +47,22 @@
   };
 
   proto.keepTreeUpdate = function() {
+    var defer = $.Deferred();
     return $.get('/api/v1/nodes?include=nodes.parent', $.proxy(function(response, status, promise) {
-      var localTree = $('#tree-hierarchy').orgchart('getHierarchy');
-      var remoteTree = TreeBuilder.createFrom(response.data, true)[0]
-      if (!this.equalHierarchy(localTree, remoteTree) || !this.equalHierarchy(remoteTree, localTree)) {
-        return this.resetTree();
+      if (this._treeIsDown) {
+        return this.resetTree().then($.proxy(function() {
+          this._treeIsDown = false;
+          defer.resolve(true);
+        },this));
       }
+      var localTree = $('#tree-hierarchy').orgchart('getHierarchy');
+      var remoteTree = TreeBuilder.createFrom(response.data, true)[0];
+      if (!this.equalHierarchy(localTree, remoteTree) || !this.equalHierarchy(remoteTree, localTree)) {
+        return this.resetTree().then(function() {
+          defer.resolve(true);
+        });
+      }
+      defer.resolve(true);
     }, this)).fail($.proxy(this.onErrorConnection, this));
     return promise;
   };  

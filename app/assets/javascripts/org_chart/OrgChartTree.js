@@ -63,14 +63,27 @@
     }
   };
 
-  proto.createTreeNode = function($node, data) {
+  proto.selectedNode = function() {
+    return $('#selected-node').data('node');
+  };
+
+  proto.selectNode = function(node) {
+    $('#selected-node').val(node.attr('title')).data('node', node);
+  };
+
+  proto.unselectNode = function() {
+    $('#selected-node').data('node', null);
     $('#selected-node').val('');
+  };
+
+  proto.createTreeNode = function($node, data) {
+    this.unselectNode();
     this.resetStatusMenu();
     $node.attr('title', data.name);
     $node.attr('id', data.id);
     $node.on('click', $.proxy(function(event) {
       if (!$(event.target).is('.edge')) {
-        $('#selected-node').val(data.name).data('node', $node);
+        this.selectNode($node);
         //$('#edit-panel').css('visibility', 'visible');
         $('#edit-panel button').prop('disabled', false);
         $('#edit-panel input').prop('disabled', false);
@@ -78,10 +91,11 @@
       }
     }, this));
 
-    $node.on('dblclick', function(event) {
-      $('#selected-node').val(data.name).data('node', $node);
+    $node.on('dblclick', $.proxy(function(event) {
+      this.selectNode($node);
       $('#editNodeModal').modal('show')
-    })
+    }, this));
+    return($node);
   };
 
   // Determine whether parent has any children (based on its colspan???)

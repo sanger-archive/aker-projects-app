@@ -1,15 +1,16 @@
 (function($, undefined) {
   function OrgChartIconChildren() {
-    var oldMethod = this.onSuccessfulUpdate;
-    this.onSuccessfulUpdate = $.proxy(function(dropNode, draggedNode) {
-      this.updateIconChildren(dropNode, draggedNode);
-      return oldMethod.apply(this,arguments);
-    }, this);
   };
 
   window.OrgChartIconChildren = OrgChartIconChildren;
 
   var proto = OrgChartIconChildren.prototype;
+
+  proto.onUpdateNode = function(id, event) {
+    var dropNode = $('#'+id+'.node');
+    var draggedNode = $('#'+event.draggedNode[0].id+'.node');
+    return this.updateIconChildren(dropNode, draggedNode);
+  };
 
   proto.setIconChildren = function(node, val) {
     if (val) {

@@ -10,12 +10,12 @@
     var newNodeName = $('#new-node').val().trim();
 
     // Get the data of the currently selected node
-    var $node = $('#selected-node').data('node');
+    var $node = this.selectedNode();
 
     if (newNodeName.length == 0 || !$node) {
       return;
     }
-    this.createNode(newNodeName, $node[0].id).then($.proxy(this.onCreateNode, this), $.proxy(this.onErrorCreateNode, this));
+    this.createNode(newNodeName, $node[0].id);
     $('#new-node').val('');
   };
 
@@ -25,12 +25,12 @@
     }, this));
   };
 
-  proto.onCreateNode = function (response) {
+  proto.onCreateNode = function() {
+    var $node = this.selectedNode();
     // See https://github.com/dabeng/OrgChart#structure-of-datasource
     var relationship = '';
     var id = response['data']['id'];
 
-    $node.attr('id', id);
     if (!this.hasChildren($node)) {
       // Relationship will always be "has parent, no siblings, no children"
       relationship = '100'
@@ -58,8 +58,7 @@
   };
 
   proto.createNode = function(newName, parentId) {
-    return this.keepTreeUpdate().then($.proxy(function() {
-      return $.ajax({
+    return $.ajax({
         headers : {
             'Accept' : 'application/vnd.api+json',
             'Content-Type' : 'application/vnd.api+json'
@@ -67,8 +66,13 @@
         url : '/api/v1/nodes/',
         type : 'POST',
         data : JSON.stringify({ data: { type: 'nodes', attributes: { name: newName}, relationships: { parent: { data: { type: 'nodes', id: parentId }}} }})
-      }).fail($.proxy(onErrorConnection, this));
-    }, this));
+    }).then(
+      $.proxy(this.onCreateNode, this), 
+      $.proxy(this.onErrorCreateNode, this)
+    ).then(
+      $.proxy(this.keepTreeUpdate, this), 
+      $.proxy(this.onErrorConnection, this)
+    );
   };
 
 }(jQuery));

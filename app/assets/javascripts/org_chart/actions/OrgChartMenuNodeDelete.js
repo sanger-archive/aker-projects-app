@@ -6,9 +6,13 @@
 
   var proto = OrgChartMenuNodeDelete.prototype;
 
-  proto.onDeleteNode = function (response) {
-    $('#chart-container').orgchart('removeNodes', $node);
-    $('#selected-node').data('node', null);
+  proto.onDeleteNodes = function() {
+    return this.deleteNode(this.selectedNode().attr('id'));
+  };
+
+  proto.onDeleteNode = function () {
+    $('#chart-container').orgchart('removeNodes', this.selectedNode());
+    this.unselectNode();
   };
 
   proto.onErrorDeleteNode = function() {
@@ -16,16 +20,20 @@
   };
 
   proto.deleteNode = function(id) {
-    return this.keepTreeUpdate().then($.proxy(function() {
-      return $.ajax({
+    return $.ajax({
          headers : {
             'Accept' : 'application/vnd.api+json',
             'Content-Type' : 'application/vnd.api+json'
         },
         url : '/api/v1/nodes/'+id,
         type : 'DELETE'
-      }).fail($.proxy(this.onErrorConnection, this));
-    }, this));
+    }).then(
+      $.proxy(this.onDeleteNode, this), 
+      $.proxy(this.onErrorConnection, this)
+    ).then(
+      $.proxy(this.keepTreeUpdate, this),
+      $.proxy(this.onErrorConnection, this)
+    );
   };
   
 }(jQuery));

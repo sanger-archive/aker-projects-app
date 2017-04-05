@@ -2,7 +2,6 @@
   
   function OrgChartMenu() {
     this.resetStatusMenu();
-    this.attachMenuHandlers();
   };
 
   window.OrgChartMenu = OrgChartMenu;
@@ -21,7 +20,7 @@
     $('#edit-panel button').prop('disabled', true);
     $('#edit-panel input').prop('disabled', true);
     $('#edit-panel input').val('')
-    $('#selected-node').val('');    
+    this.unselectNode();
   };
 
 
@@ -35,7 +34,7 @@
   };
   
   proto.onResetNodes = function() {
-    $('#selected-node').data('node', null).val('');
+    this.unselectNode();
     $('#new-node').val('');
   };
   
