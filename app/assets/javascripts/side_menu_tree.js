@@ -35,9 +35,13 @@
     var loadSidebar = $.proxy(this.loadSidebar, this)
 
     $(document).ready(loadSidebar);
-    $('#tree-tab').on('show.bs.tab', function(e) {
-      if (e.target.innerText == 'Home') loadSidebar();
-    })
+    $('#tree-tab').on('show.bs.tab', $.proxy(function() {
+      if (this.selectedNode() && this.selectedNode().attr('id')) {
+        window.location.href='/nodes/'+this.selectedNode().attr('id');
+      } else {
+        this.loadSidebar(); 
+      }
+    }, this));
   };
 
   proto.loadSidebar = function() {
@@ -51,6 +55,7 @@
         emptyIcon: 'fa',
         levels: 1
       });
+      $('#side_menu_tree')
     });
 
     $('#project-search').on('keyup', debounce(function(e) {

@@ -21,6 +21,7 @@
     var defer = $.Deferred();
     var self = this;
     return $.get('/api/v1/nodes?include=nodes.parent', $.proxy(function(response) {
+      $('#tree-hierarchy').html('');
       var programs = TreeBuilder.parentNodes(response.data);
       $('#tree-hierarchy').orgchart({
         'data' : TreeBuilder.createFrom(response.data, true)[0],
@@ -91,10 +92,7 @@
       }
     }, this));
 
-    $node.on('dblclick', $.proxy(function(event) {
-      this.selectNode($node);
-      $('#editNodeModal').modal('show')
-    }, this));
+    $node.on('dblclick', $.proxy(this.onUpdateNodes, this, $node));
     return($node);
   };
 

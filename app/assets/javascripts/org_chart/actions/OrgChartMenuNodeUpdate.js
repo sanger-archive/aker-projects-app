@@ -6,13 +6,15 @@
 
   var proto = OrgChartMenuNodeUpdate.prototype;
 
-  proto.onUpdateNodes = function(e) {
+  proto.onUpdateNodes = function($node) {
+    this.selectNode($node);
     // We get the nodeId of the currently selected node
 
     var url = '/nodes/'+this.selectedNode().attr('id'); 
 
     // We call jQuery's load method to fetch the html content of /nodes/:id/edit.js
     // and load it into the modal body
+    $('#editNodeModal').modal('show'); 
     $('div.modal-body', '#editNodeModal').load(url+ '/edit.js', $.proxy(this.onLoadUpdateNodeForm, this));
   };
 

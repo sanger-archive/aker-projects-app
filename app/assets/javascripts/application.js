@@ -17,6 +17,7 @@
 //= require_tree ./org_chart/actions/
 //= require_tree ./org_chart
 //= require_tree .
+//= require loading_mask
 
 $(function() {
   new SideMenuTree();

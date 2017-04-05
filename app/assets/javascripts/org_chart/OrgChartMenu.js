@@ -30,7 +30,6 @@
     $('#btn-delete-nodes').on('click', $.proxy(this.onDeleteNodes, this));
     // Reset Button
     $('#btn-reset').on('click', $.proxy(this.onResetNodes, this));
-    $('#editNodeModal').on('show.bs.modal', $.proxy(this.onUpdateNodes, this));    
   };
   
   proto.onResetNodes = function() {
