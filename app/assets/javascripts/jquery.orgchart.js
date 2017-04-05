@@ -638,7 +638,7 @@
       }
     } else {
       if (Number(flags.substr(0,1))) {
-        // $nodeDiv.append('<i class="edge verticalEdge topEdge fa"></i>');
+        $nodeDiv.append('<i class="edge verticalEdge topEdge fa"></i>');
       }
       if(Number(flags.substr(1,1))) {
         $nodeDiv.append('<i class="edge horizontalEdge rightEdge fa"></i>' +
