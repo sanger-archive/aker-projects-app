@@ -4,6 +4,8 @@
 @import "font-awesome";
 @import "bootstrap-treeview";
 @import "jquery-orgchart";
+@import 'loading_mask_sass';
+
 
 
 .orgchart .node .title {
@@ -13,6 +15,8 @@
 
 #tree-hierarchy {
   overflow: scroll;
+
+  .orgchart { border: 1px solid lightgray;}
 }
 
 .topEdge,.rightEdge,.leftEdge { display:none !important;}

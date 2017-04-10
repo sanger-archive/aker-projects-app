@@ -1,6 +1,5 @@
 source 'https://rubygems.org'
 
-
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'rails', '~> 5.0.0', '>= 5.0.0.1'
 # Use Puma as the app server
@@ -31,7 +30,7 @@ gem 'jbuilder', '~> 2.5'
 gem 'bootstrap_form'
 gem 'active_model_serializers'
 gem 'zipkin-tracer'
-
+gem 'loading_mask'
 gem 'aker-set-client', :github => 'sanger/aker-set-client'
 
 group :development, :test do

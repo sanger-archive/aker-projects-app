@@ -37,7 +37,7 @@
       // depending on the type of display, tree hierachy expects 'name' and finder expects 'text'
       ret[bool ? 'name' : 'text'] = parent.attributes.name;
 
-      ret['href'] = '/nodes/'+parent.id;
+      ret['href'] = bool ? parent.id : '/nodes/' + parent.id;
 
       var relationships = Object.keys(parent.relationships || {});
       if (relationships.length == 0) {
