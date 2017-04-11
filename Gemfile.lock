@@ -1,12 +1,6 @@
 GIT
-  remote: git://github.com/sanger/aker-set-client.git
-  revision: 93853e389b78ea99346edc2f4f42904aa58e18b2
-  specs:
-    aker-set-client (0.1.0)
-      json_api_client
-
-PATH
-  remote: /Users/emr/projects/aker_authentication_gem
+  remote: git://github.com/emrojo/aker-authentication.git
+  revision: cbbf4547f1adab4b3cef45094d4312bcd3c05b6d
   specs:
     aker_authentication_gem (0.1.0)
       devise
@@ -15,11 +9,19 @@ PATH
       net-ldap
       request_store
 
-PATH
-  remote: /Users/emr/projects/aker_permission_gem
+GIT
+  remote: git://github.com/emrojo/aker-permission.git
+  revision: 5de9fecd74d18fec2281519491c6d8b7aa245468
   specs:
     aker_permission_gem (0.1.1)
       cancancan
+
+GIT
+  remote: git://github.com/sanger/aker-set-client.git
+  revision: 93853e389b78ea99346edc2f4f42904aa58e18b2
+  specs:
+    aker-set-client (0.1.0)
+      json_api_client
 
 GEM
   remote: https://rubygems.org/

@@ -18,8 +18,8 @@ gem 'net-ldap'
 gem 'devise_ldap_authenticatable'
 gem 'request_store'
 gem 'jwt'
-gem 'aker_authentication_gem', :path => '/Users/emr/projects/aker_authentication_gem'
-gem 'aker_permission_gem', :path => '/Users/emr/projects/aker_permission_gem'
+gem 'aker_authentication_gem', :github => 'emrojo/aker-authentication'
+gem 'aker_permission_gem', :github => 'emrojo/aker-permission'
 gem 'cancancan'
 
 # Use jquery as the JavaScript library
