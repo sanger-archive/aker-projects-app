@@ -2,6 +2,11 @@ require 'rails_helper'
 
 RSpec.describe NodesController, type: :controller do
 
+  setup do
+    user = create(:user)
+    sign_in user    
+  end
+
   describe 'DELETE #destroy' do
     setup do
       @root = create(:node, name: "root", parent_id: nil)

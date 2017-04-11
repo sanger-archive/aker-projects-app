@@ -4,6 +4,9 @@ RSpec.describe 'API::V1::Nodes', type: :request do
 
   describe 'GET' do
     before(:each) do
+      user = create(:user)
+      sign_in user        
+
       node = create(:node, cost_code: "S1234", description: "Here is my node")
 
       get api_v1_node_path(node), headers: {
@@ -26,6 +29,10 @@ RSpec.describe 'API::V1::Nodes', type: :request do
   end
 
   describe 'filtering' do
+    before(:each) do
+      user = create(:user)
+      sign_in user
+    end
 
     let!(:proposals) { create_list(:node, 3, cost_code: "S1234", description: "This is a proposal") }
     let!(:nodes) { create_list(:node, 2) }
@@ -33,6 +40,7 @@ RSpec.describe 'API::V1::Nodes', type: :request do
     context 'when using a value of _none for cost_code' do
 
       before(:each) do
+
         get api_v1_nodes_path, params: { "filter[cost_code]": "_none" }, headers: {
           "Content-Type": "application/vnd.api+json",
           "Accept": "application/vnd.api+json"

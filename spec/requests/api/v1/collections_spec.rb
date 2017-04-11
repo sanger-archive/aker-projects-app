@@ -5,6 +5,9 @@ RSpec.describe 'Api::V1::Collections', type: :request do
   describe 'GET' do
 
     before(:each) do
+      user = create(:user)
+      sign_in user        
+
       expect(SetClient::Set).to receive(:create).and_return(double('Set', id: SecureRandom.uuid))
       collection = create(:collection, set_id: nil)
 
