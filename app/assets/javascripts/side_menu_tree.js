@@ -44,6 +44,14 @@
     }, this));
   };
 
+  proto.unauthorizedRequest = function(promise, msg, status) {
+    if (status === 'Unauthorized') {
+      $('#tree-tab').html('');
+      $('#side_menu_tree').html('');
+      
+    }
+  };
+
   proto.loadSidebar = function() {
     $.get('/api/v1/nodes?include=nodes.parent', function(response) {
 
@@ -56,7 +64,7 @@
         levels: 1
       });
       $('#side_menu_tree')
-    });
+    }).fail($.proxy(this.unauthorizedRequest, this));
 
     $('#project-search').on('keyup', debounce(function(e) {
       var value = $(this).val();

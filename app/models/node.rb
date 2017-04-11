@@ -1,5 +1,6 @@
 class Node < ApplicationRecord
   include Collector
+  include AkerPermissionGem::Accessible
 
   validates :name, presence: true, uniqueness: true
   validates :parent, presence: true, if: :parent_id

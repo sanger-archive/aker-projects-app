@@ -13,6 +13,15 @@ gem 'coffee-rails', '~> 4.2'
 # See https://github.com/rails/execjs#readme for more supported runtimes
 # gem 'therubyracer', platforms: :ruby
 
+gem 'devise'
+gem 'net-ldap'
+gem 'devise_ldap_authenticatable'
+gem 'request_store'
+gem 'jwt'
+gem 'aker_authentication_gem', :path => '/Users/emr/projects/aker_authentication_gem'
+gem 'aker_permission_gem', :path => '/Users/emr/projects/aker_permission_gem'
+gem 'cancancan'
+
 # Use jquery as the JavaScript library
 gem 'jquery-rails'
 # Turbolinks makes navigating your web application faster. Read more: https://github.com/turbolinks/turbolinks

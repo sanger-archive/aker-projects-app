@@ -1,4 +1,6 @@
-class NodesController < ApplicationController
+class NodesController < AkerAuthController
+
+  before_action :authenticate_user!
 
   def show
     if params[:id]
