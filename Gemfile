@@ -13,14 +13,8 @@ gem 'coffee-rails', '~> 4.2'
 # See https://github.com/rails/execjs#readme for more supported runtimes
 # gem 'therubyracer', platforms: :ruby
 
-gem 'devise'
-gem 'net-ldap'
-gem 'devise_ldap_authenticatable'
-gem 'request_store'
-gem 'jwt'
 gem 'aker_authentication_gem', :github => 'emrojo/aker-authentication'
 gem 'aker_permission_gem', :github => 'emrojo/aker-permission'
-gem 'cancancan'
 
 # Use jquery as the JavaScript library
 gem 'jquery-rails'

@@ -12,14 +12,14 @@
 
     <div class="container-fluid">
       <div class="page-header">
-        <h1>Aker <small>WTSI Research Activity Model</small>
+        <h1>Aker <small>WTSI Research Activity Model</small> </h1>
+
       <div class="col-md-1 pull-right">
         <%= yield(:title_button) if content_for?(:title_button) %>
         <%= link_to 'Log Out', destroy_user_session_url, class: 'btn btn-default vcenter', style: 'right: 0px', method: :delete if user_signed_in? %>
         <br />
       </div>
 
-        </h1>
 
       </div>
 

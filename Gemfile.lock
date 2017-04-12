@@ -1,6 +1,6 @@
 GIT
   remote: git://github.com/emrojo/aker-authentication.git
-  revision: cbbf4547f1adab4b3cef45094d4312bcd3c05b6d
+  revision: 64412af752a2c2813c17a50c4734cd8b964b8301
   specs:
     aker_authentication_gem (0.1.0)
       devise
@@ -11,7 +11,7 @@ GIT
 
 GIT
   remote: git://github.com/emrojo/aker-permission.git
-  revision: 5de9fecd74d18fec2281519491c6d8b7aa245468
+  revision: 312836fae7f896fff45cfb75847e3b29ba0e0f5c
   specs:
     aker_permission_gem (0.1.1)
       cancancan
@@ -160,7 +160,7 @@ GEM
       rails-dom-testing (>= 1, < 3)
       railties (>= 4.2.0)
       thor (>= 0.14, < 2.0)
-    json (2.0.3)
+    json (2.0.4)
     json-schema (2.8.0)
       addressable (>= 2.4)
     json_api_client (1.5.1)
@@ -328,7 +328,7 @@ GEM
       thread_safe (~> 0.1)
     uglifier (3.2.0)
       execjs (>= 0.3.0, < 3)
-    unicode-display_width (1.2.0)
+    unicode-display_width (1.2.1)
     virtus (1.0.5)
       axiom-types (~> 0.1)
       coercible (~> 1.0)
@@ -363,28 +363,22 @@ DEPENDENCIES
   bootstrap-sass (~> 3.3.6)
   bootstrap_form
   byebug
-  cancancan
   capybara
   coffee-rails (~> 4.2)
   database_cleaner
-  devise
-  devise_ldap_authenticatable
   factory_girl_rails
   font-awesome-sass
   jbuilder (~> 2.5)
   jquery-rails
   json-schema
   jsonapi-resources (~> 0.8)
-  jwt
   launchy
   listen (~> 3.0.5)
   loading_mask
-  net-ldap
   pg
   poltergeist
   puma (~> 3.0)
   rails (~> 5.0.0, >= 5.0.0.1)
-  request_store
   rspec-rails (~> 3.4)
   rubocop (~> 0.41.2)
   rubycritic

@@ -1,5 +1,9 @@
 class NodesController < AkerAuthController
 
+  include AkerPermissionControllerConfig
+
+  skip_authorization_check :show
+
   before_action :authenticate_user!
 
   def show
