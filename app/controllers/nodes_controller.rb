@@ -1,17 +1,25 @@
 class NodesController < ApplicationController
 
-  def show
-    if params[:id]
-      @node = Node.find(params[:id])
-    else
-      @node = Node.root
-    end
+  before_action :current_node, except: :create
+  before_action :set_child, only: [:show, :list, :tree]
 
-    @child = Node.new(parent: @node)
+  def show
+    render "list"
+  end
+
+  def index
+    render "list"
+  end
+
+  def list
+  end
+
+  def tree
   end
 
   def create
     @node = Node.new(node_params)
+
     if @node.save
       flash[:success] = "Node created"
     else
@@ -21,8 +29,6 @@ class NodesController < ApplicationController
   end
 
   def edit
-    @node = Node.find(params[:id])
-
     respond_to do |format|
       format.html
       format.js { render template: 'nodes/modal' }
@@ -30,8 +36,6 @@ class NodesController < ApplicationController
   end
 
   def update
-    @node = Node.find(params[:id])
-
     respond_to do |format|
       if @node.update_attributes(node_params)
         format.html { redirect_to node_path(@node.parent_id), flash: { success: "Node updated" }}
@@ -44,7 +48,6 @@ class NodesController < ApplicationController
   end
 
   def destroy
-    @node = Node.find(params[:id])
     @parent_id = @node.parent_id
 
     if @node.destroy
@@ -57,6 +60,14 @@ class NodesController < ApplicationController
   end
 
   private
+
+  def set_child
+    @child = Node.new(parent: @node)
+  end
+
+  def current_node
+    @node = params[:id] ? Node.find(params[:id]) : Node.root
+  end
 
   def node_params
     params.require(:node).permit(:name, :parent_id, :description, :cost_code)

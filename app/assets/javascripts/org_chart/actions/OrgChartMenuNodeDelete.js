@@ -11,8 +11,14 @@
   };
 
   proto.onDeleteNode = function () {
-    $('#chart-container').orgchart('removeNodes', this.selectedNode());
-    this.unselectNode();
+    // If all the parent nodes are hidden, reload the tree
+    // Fixes issue of there being an empty chart after deletion
+    if (this.selectedNode().closest('tr.nodes').siblings().is('.hidden')) {
+      this.loadTree();
+    } else {
+      $('#chart-container').orgchart('removeNodes', this.selectedNode());
+      this.unselectNode();
+    }
   };
 
   proto.onErrorDeleteNode = function() {
@@ -28,12 +34,12 @@
         url : '/api/v1/nodes/'+id,
         type : 'DELETE'
     }).then(
-      $.proxy(this.onDeleteNode, this), 
+      $.proxy(this.onDeleteNode, this),
       $.proxy(this.onErrorConnection, this)
     ).then(
       $.proxy(this.keepTreeUpdate, this),
       $.proxy(this.onErrorConnection, this)
     );
   };
-  
+
 }(jQuery));

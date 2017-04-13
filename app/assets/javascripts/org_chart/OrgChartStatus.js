@@ -12,13 +12,17 @@
   };
 
   proto.updateChartOnChanges = function() {
-    setInterval($.proxy(this.keepTreeUpdate, this), 10000);
+    this.intervalId = setInterval($.proxy(this.keepTreeUpdate, this), 10000);
   };
+
+  proto.stopUpdating = function() {
+    clearInterval(this.intervalId);
+  }
 
   proto.toggleMask = function(state) {
     if (state !== this._maskStatus) {
       this._maskStatus = state;
-      $('#tree-hierarchy .orgchart').lmask(state ? 'show' : 'hide');      
+      $('#tree-hierarchy .orgchart').lmask(state ? 'show' : 'hide');
     }
   };
 
@@ -27,9 +31,9 @@
       this.toggleMask(true);
       $('#tree-hierarchy').prepend('<button id="reconnect" class="button btn btn-default">Reconnect?</button>');
       $('#tree-hierarchy').prepend('<div class="alert alert-danger">Sorry, there was a problem while updating the server</div>');
-      $('#reconnect').on('click', $.proxy(this.resetTree, this));      
+      $('#reconnect').on('click', $.proxy(this.resetTree, this));
     }
-    this._treeIsDown=true;    
+    this._treeIsDown=true;
   };
 
   proto.enableTree = function() {
@@ -48,7 +52,7 @@
       if (tree1.children && (tree1.children.length>0)) {
         if (!((tree2.children) && (tree2.children.length>0))) {
           return false;
-        }        
+        }
         return tree1.children.every($.proxy(function(child) {
           var child2 = tree2.children.filter(function(child2) {
             return (child2.id == child.id);
@@ -79,6 +83,6 @@
       defer.resolve(true);
     }, this)).fail($.proxy(this.onErrorConnection, this));
     return promise;
-  };  
+  };
 
 }(jQuery));
