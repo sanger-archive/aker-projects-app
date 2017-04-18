@@ -1,0 +1,10 @@
+<ul class="nav nav-tabs" id="tree-tab">
+  <li class="<%= 'active' if locals[:tab] == 'list' %>"><a href="<%= list_node_path(@node) %>">List</a></li>
+  <li class="<%= 'active' if locals[:tab] == 'tree' %>"><a href="<%= tree_node_path(@node) %>">Tree</a></li>
+</ul>
+
+<div class="tab-content">
+
+  <%= yield %>
+
+</div>

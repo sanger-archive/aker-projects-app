@@ -2,7 +2,17 @@ Rails.application.routes.draw do
 
   root 'nodes#show', id: nil
 
-  resources :nodes
+  resources :nodes do
+    collection do
+      get 'list'
+      get 'tree'
+    end
+
+    member do
+      get 'list'
+      get 'tree'
+    end
+  end
 
   namespace :api do
     namespace :v1 do

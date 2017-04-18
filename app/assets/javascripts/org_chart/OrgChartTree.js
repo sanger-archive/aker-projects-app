@@ -2,15 +2,15 @@
   function OrgChartTree() {
     MODULES.forEach($.proxy(function(module) {
       module.apply(this, arguments);
-    }, this));    
+    }, this));
   };
 
   window.OrgChartTree = OrgChartTree;
 
   var MODULES = [
-    OrgChartMenu, 
-    OrgChartStatus, 
-    OrgChartIconChildren  
+    OrgChartMenu,
+    OrgChartStatus,
+    OrgChartIconChildren
   ];
 
   OrgChartTree.prototype = $.extend.apply(this, $.map(MODULES, function(mod) { return mod.prototype; }));
