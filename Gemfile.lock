@@ -1,15 +1,4 @@
 GIT
-  remote: git://github.com/emrojo/aker-authentication.git
-  revision: 64412af752a2c2813c17a50c4734cd8b964b8301
-  specs:
-    aker_authentication_gem (0.1.0)
-      devise
-      devise_ldap_authenticatable
-      jwt
-      net-ldap
-      request_store
-
-GIT
   remote: git://github.com/emrojo/aker-permission.git
   revision: 312836fae7f896fff45cfb75847e3b29ba0e0f5c
   specs:
@@ -22,6 +11,23 @@ GIT
   specs:
     aker-set-client (0.1.0)
       json_api_client
+
+PATH
+  remote: /Users/emr/projects/aker_authentication_gem
+  specs:
+    aker_authentication_gem (0.1.0)
+      devise
+      devise_ldap_authenticatable
+      jwt
+      net-ldap
+      request_store
+
+PATH
+  remote: /Users/emr/projects/aker_credentials_gem
+  specs:
+    aker_credentials_gem (0.1.0)
+      jwt
+      request_store
 
 GEM
   remote: https://rubygems.org/
@@ -359,6 +365,7 @@ DEPENDENCIES
   active_model_serializers
   aker-set-client!
   aker_authentication_gem!
+  aker_credentials_gem!
   aker_permission_gem!
   bootstrap-sass (~> 3.3.6)
   bootstrap_form

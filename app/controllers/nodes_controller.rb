@@ -1,5 +1,6 @@
 class NodesController < AkerAuthController
 
+  include JWTCredentials
   include AkerPermissionControllerConfig
 
   skip_authorization_check :show

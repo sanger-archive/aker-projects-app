@@ -53,4 +53,5 @@ Rails.application.configure do
   config.file_watcher = ActiveSupport::EventedFileUpdateChecker
   config.fake_ldap = true
   config.set_url = 'http://localhost:3000/api/v1'
+  config.jwt_secret_key = 'development'
 end

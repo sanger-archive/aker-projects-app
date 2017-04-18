@@ -13,7 +13,9 @@ gem 'coffee-rails', '~> 4.2'
 # See https://github.com/rails/execjs#readme for more supported runtimes
 # gem 'therubyracer', platforms: :ruby
 
-gem 'aker_authentication_gem', :github => 'emrojo/aker-authentication'
+#gem 'aker_authentication_gem', :github => 'emrojo/aker-authentication'
+gem 'aker_credentials_gem', :path => '/Users/emr/projects/aker_credentials_gem'
+gem 'aker_authentication_gem', :path => '/Users/emr/projects/aker_authentication_gem'
 gem 'aker_permission_gem', :github => 'emrojo/aker-permission'
 
 # Use jquery as the JavaScript library
