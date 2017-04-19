@@ -4,7 +4,6 @@ class ApplicationController < ActionController::Base
 
   include JWTCredentials
 
-  before_action :authenticate_user!
 
   layout :layout
 

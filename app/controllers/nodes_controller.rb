@@ -1,11 +1,10 @@
-class NodesController < AkerAuthController
+class NodesController < ApplicationController
 
-  include JWTCredentials
+  include AkerAuthenticationGem::AuthController
   include AkerPermissionControllerConfig
 
   skip_authorization_check :show
 
-  before_action :authenticate_user!
 
   before_action :current_node, except: :create
   before_action :set_child, only: [:show, :list, :tree]
