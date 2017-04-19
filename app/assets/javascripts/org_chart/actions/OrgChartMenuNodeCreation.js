@@ -25,11 +25,12 @@
     }, this));
   };
 
-  proto.onCreateNode = function() {
+  proto.onCreateNode = function(response) {
     var $node = this.selectedNode();
     // See https://github.com/dabeng/OrgChart#structure-of-datasource
     var relationship = '';
     var id = response['data']['id'];
+    var newNodeName = response['data']['attributes']['name'];
 
     if (!this.hasChildren($node)) {
       // Relationship will always be "has parent, no siblings, no children"
@@ -40,7 +41,7 @@
       });*/
       $('#chart-container').orgchart('addChildren', $node, {
         'children': [{ name: newNodeName, relationship: relationship, id: id }]
-      });    
+      });
     } else {
       // Relationship will always be "has parent, has sibling(s), no children"
       relationship = '110'
@@ -67,10 +68,10 @@
         type : 'POST',
         data : JSON.stringify({ data: { type: 'nodes', attributes: { name: newName}, relationships: { parent: { data: { type: 'nodes', id: parentId }}} }})
     }).then(
-      $.proxy(this.onCreateNode, this), 
+      $.proxy(this.onCreateNode, this),
       $.proxy(this.onErrorCreateNode, this)
     ).then(
-      $.proxy(this.keepTreeUpdate, this), 
+      $.proxy(this.keepTreeUpdate, this),
       $.proxy(this.onErrorConnection, this)
     );
   };
