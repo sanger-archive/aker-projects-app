@@ -13,9 +13,9 @@ class Node < ApplicationRecord
   before_save :validate_node_blank
   before_create :set_collection, if: -> { level == 2 }
 
-  def initialize(attributes)
-    @no_collection = attributes[:no_collection]
-    super(attributes.except :no_collection)
+  def initialize(data = {})
+    @no_collection = data[:no_collection]
+    super(data.except :no_collection)
   end
 
 	def self.root
