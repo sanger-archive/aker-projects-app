@@ -13,6 +13,11 @@ class Node < ApplicationRecord
   before_save :validate_node_blank
   before_create :set_collection, if: -> { level == 2 }
 
+  def initialize(attributes)
+    @no_collection = attributes[:no_collection]
+    super(attributes.except :no_collection)
+  end
+
 	def self.root
 		find_by(parent_id: nil)
 	end
@@ -46,7 +51,7 @@ class Node < ApplicationRecord
   end
 
   def set_collection
-    self.collection = build_collection if collection.nil?
+    self.collection = build_collection if collection.nil? && !@no_collection
   end
 
 end
