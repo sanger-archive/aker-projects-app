@@ -1,11 +1,11 @@
 root = Node.create(name: "root")
 
-cancer = Node.create(name: "Cancer, Aging & Somatic Mutations", parent: root)
-cellular_genetics = Node.create(name: "Cellular Genetics", parent: root)
-human_genetics = Node.create(name: "Human Genetics", parent: root)
-infection_genomics = Node.create(name: "Infection Genomics", parent: root)
-malaria = Node.create(name: "Malaria", parent: root)
-pathogens = Node.create(name: "Pathogens", parent: root)
+cancer = Node.create(name: "Cancer, Aging & Somatic Mutations", parent: root, no_collection: true)
+cellular_genetics = Node.create(name: "Cellular Genetics", parent: root, no_collection: true)
+human_genetics = Node.create(name: "Human Genetics", parent: root, no_collection: true)
+infection_genomics = Node.create(name: "Infection Genomics", parent: root, no_collection: true)
+malaria = Node.create(name: "Malaria", parent: root, no_collection: true)
+pathogens = Node.create(name: "Pathogens", parent: root, no_collection: true)
 
 Collection.create([
   { set_id: "f6017957-9c62-48b8-b3d6-794986e95ee6", collector_type: "Node", collector_id: cancer.id },
