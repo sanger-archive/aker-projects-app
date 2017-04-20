@@ -3,8 +3,7 @@ class NodesController < ApplicationController
   include AkerAuthenticationGem::AuthController
   include AkerPermissionControllerConfig
 
-  skip_authorization_check :show
-
+  skip_authorization_check only: :show
 
   before_action :current_node, except: :create
   before_action :set_child, only: [:show, :list, :tree]
