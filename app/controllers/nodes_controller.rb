@@ -71,7 +71,7 @@ class NodesController < ApplicationController
   end
 
   def current_node
-    @node = params[:id] ? Node.find(params[:id]) : Node.root
+    @node = (params[:id] && Node.find_by_id(params[:id])) || Node.root
   end
 
   def node_params
