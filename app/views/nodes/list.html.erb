@@ -1,5 +1,5 @@
 <%= javascript_tag do %>
-  window.currentNodeId = '<%= @node.id if @node %>'
+  window.currentNodeId = '<%= @node.id %>'
 <% end %>
 
 <%= render "show", locals: { tab: "list" } do %>
