@@ -1,5 +1,10 @@
 class NodesController < ApplicationController
 
+  include AkerAuthenticationGem::AuthController
+  include AkerPermissionControllerConfig
+
+  skip_authorization_check
+
   before_action :current_node, except: :create
   before_action :set_child, only: [:show, :list, :tree]
 
@@ -22,6 +27,7 @@ class NodesController < ApplicationController
 
     if @node.save
       flash[:success] = "Node created"
+      @node.set_collection if @node.level==2
     else
       flash[:danger] = "Failed to create node"
     end
@@ -66,7 +72,7 @@ class NodesController < ApplicationController
   end
 
   def current_node
-    @node = params[:id] ? Node.find(params[:id]) : Node.root
+    @node = (params[:id] && Node.find_by_id(params[:id])) || Node.root
   end
 
   def node_params
