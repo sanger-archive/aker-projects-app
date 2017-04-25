@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170411101918) do
+ActiveRecord::Schema.define(version: 20170425110933) do
 
   create_table "collections", force: :cascade do |t|
     t.string   "set_id"
@@ -34,12 +34,14 @@ ActiveRecord::Schema.define(version: 20170411101918) do
   end
 
   create_table "permissions", force: :cascade do |t|
-    t.string  "permitted"
-    t.boolean "r"
-    t.boolean "w"
-    t.boolean "x"
-    t.string  "accessible_type"
-    t.integer "accessible_id"
+    t.string   "permitted",                       null: false
+    t.boolean  "r",               default: false, null: false
+    t.boolean  "w",               default: false, null: false
+    t.boolean  "x",               default: false, null: false
+    t.string   "accessible_type",                 null: false
+    t.integer  "accessible_id",                   null: false
+    t.datetime "created_at",                      null: false
+    t.datetime "updated_at",                      null: false
     t.index ["accessible_type", "accessible_id"], name: "index_permissions_on_accessible_type_and_accessible_id"
     t.index ["permitted"], name: "index_permissions_on_permitted"
   end
