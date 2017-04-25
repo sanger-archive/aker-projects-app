@@ -5,6 +5,8 @@ module Api
       has_one :parent
       attributes :name, :cost_code, :description
 
+      after_save :check_collection
+
       # We need to be able to find all records that have a cost_code (i.e. proposals)
       # Unfortunately, JSONAPI's spec does not have a standard way to filter where an
       # attribute is or is not NULL, so implementing our own.
@@ -23,6 +25,10 @@ module Api
           records.where('cost_code': value)
         end
       }
+
+      def check_collection
+        @model.set_collection if @model.level==2
+      end
     end
   end
 end

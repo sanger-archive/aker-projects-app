@@ -11,12 +11,6 @@ class Node < ApplicationRecord
 	belongs_to :parent, class_name: 'Node', required: false
 
   before_save :validate_node_blank
-  before_create :set_collection, if: -> { level == 2 }
-
-  def initialize(data = {})
-    @no_collection = data[:no_collection]
-    super(data.except :no_collection)
-  end
 
 	def self.root
 		find_by(parent_id: nil)
@@ -42,16 +36,17 @@ class Node < ApplicationRecord
     parents.reverse
   end
 
+  # Create a collection for this node if it doesn't have one
+  def set_collection
+    self.collection = build_collection if collection.nil? && !@no_collection
+  end
+
   private
 
   def validate_node_blank
     if self.cost_code.blank?
       self.cost_code = nil
     end
-  end
-
-  def set_collection
-    self.collection = build_collection if collection.nil? && !@no_collection
   end
 
 end

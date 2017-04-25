@@ -27,6 +27,7 @@ class NodesController < ApplicationController
 
     if @node.save
       flash[:success] = "Node created"
+      @node.set_collection if @node.level==2
     else
       flash[:danger] = "Failed to create node"
     end

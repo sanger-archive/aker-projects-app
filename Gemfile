@@ -36,6 +36,9 @@ gem 'bootstrap_form'
 gem 'active_model_serializers'
 gem 'zipkin-tracer'
 gem 'loading_mask'
+
+gem 'json_api_client', github: 'sanger/json_api_client'
+
 gem 'aker-set-client', :github => 'sanger/aker-set-client'
 
 group :development, :test do
