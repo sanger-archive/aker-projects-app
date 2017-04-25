@@ -1,7 +1,7 @@
 module Api
   module V1
     class NodesController < JSONAPI::ResourceController
-
-	end
+      include JWTCredentials
+	  end
   end
 end

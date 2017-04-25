@@ -3,6 +3,9 @@ require 'rails_helper'
 RSpec.describe 'Nodes', type: :feature do
 
   before(:each) do
+    user = create(:user)
+    sign_in user
+
     allow(SetClient::Set).to receive(:create).and_return(double('Set', id: SecureRandom.uuid))
   end
 

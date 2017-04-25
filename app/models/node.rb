@@ -1,5 +1,6 @@
 class Node < ApplicationRecord
   include Collector
+  include AkerPermissionGem::Accessible
 
   validates :name, presence: true, uniqueness: true
   validates :parent, presence: true, if: :parent_id
@@ -10,7 +11,6 @@ class Node < ApplicationRecord
 	belongs_to :parent, class_name: 'Node', required: false
 
   before_save :validate_node_blank
-  before_create :set_collection, if: -> { level == 2 }
 
 	def self.root
 		find_by(parent_id: nil)
@@ -36,16 +36,17 @@ class Node < ApplicationRecord
     parents.reverse
   end
 
+  # Create a collection for this node if it doesn't have one
+  def set_collection
+    self.collection = build_collection if collection.nil? && !@no_collection
+  end
+
   private
 
   def validate_node_blank
     if self.cost_code.blank?
       self.cost_code = nil
     end
-  end
-
-  def set_collection
-    self.collection = build_collection if collection.nil?
   end
 
 end
