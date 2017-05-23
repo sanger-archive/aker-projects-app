@@ -33,11 +33,11 @@
         <p><b>Cost Code:</b> <%= @node.cost_code %></p>
       <% end %>
 
-      <% if @node.nodes.empty? %>
-        None
+      <% if @node.active_children.empty? %>
+        No children
       <% else %>
         <ul>
-          <% @node.nodes.each do |c| %>
+          <% @node.active_children.each do |c| %>
              <li>
                 <b><%= linknode(c) %></b>
                   (<%= edit_node(c) %> /

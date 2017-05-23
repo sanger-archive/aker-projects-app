@@ -4,7 +4,7 @@ RSpec.describe NodesController, type: :controller do
 
   setup do
     user = create(:user)
-    sign_in user    
+    sign_in user
 
     @root = create(:node, name: "root", parent_id: nil)
   end
@@ -16,7 +16,8 @@ RSpec.describe NodesController, type: :controller do
 
     context "success" do
       it "deletes the node" do
-        expect { delete :destroy, params: { id: @program1} }.to change(Node, :count).by(-1)
+        delete :destroy, params: { id: @program1}
+        expect(@program1.reload).not_to be_active
         expect(flash[:success]).to match('Node deleted')
       end
     end
@@ -27,8 +28,9 @@ RSpec.describe NodesController, type: :controller do
       end
 
       it "you cannot delete a node with children" do
-        expect { delete :destroy, params: { id: @program1 } }.to change(Node, :count).by(0)
-        expect(flash[:danger]).to match('A node with children cannot be deleted')
+        delete :destroy, params: { id: @program1 }
+        expect(@program1.reload).to be_active
+        expect(flash[:danger]).to match('A node with active children cannot be deactivated')
       end
     end
   end
