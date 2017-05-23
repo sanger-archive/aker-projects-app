@@ -56,11 +56,11 @@ class NodesController < ApplicationController
   def destroy
     @parent_id = @node.parent_id
 
-    if @node.destroy
+    if @node.deactivate(current_user)
       flash[:success] = "Node deleted"
       redirect_to node_path(@parent_id)
     else
-      flash[:danger] = "A node with children cannot be deleted"
+      flash[:danger] = @node.errors.empty? ? "This node cannot be deleted." : @node.errors.full_messages.join(" ")
       redirect_to node_path(@parent_id)
     end
   end

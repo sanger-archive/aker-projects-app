@@ -12,7 +12,7 @@ RSpec.describe 'API::V1::Nodes', type: :request do
   describe 'GET' do
     before(:each) do
       user = create(:user)
-      sign_in user        
+      sign_in user
 
       node = create(:node, cost_code: "S1234", description: "Here is my node")
 
@@ -34,12 +34,13 @@ RSpec.describe 'API::V1::Nodes', type: :request do
 
   describe 'filtering' do
     before(:each) do
-      user = create(:user)
       sign_in user
     end
 
     let!(:proposals) { create_list(:node, 3, cost_code: "S1234", description: "This is a proposal") }
     let!(:nodes) { create_list(:node, 2) }
+    let!(:user) { create(:user) }
+    let!(:deactivated_proposals) { create_list(:node, 2, deactivated_by: user, deactivated_datetime: DateTime.now, cost_code: "S1234") }
 
     context 'when using a value of _none for cost_code' do
 
@@ -65,8 +66,41 @@ RSpec.describe 'API::V1::Nodes', type: :request do
       end
 
       it 'returns on the nodes with a cost code' do
-        expect(@json[:data].length).to eql(3)
+        expect(@json[:data].length).to eq(3)
       end
+    end
+
+    it 'will filter out deactivated nodes by default' do
+      get api_v1_nodes_path
+
+      json = JSON.parse(response.body, symbolize_names: true)
+      response_data = json[:data]
+      response_ids = response_data.map { |node| node[:id].to_i }
+      expected_ids = (proposals + nodes).pluck(:id)
+
+      expect(response_data.length).to eql(5)
+      expect(response_ids).to match_array(expected_ids)
+    end
+
+    it 'can filter out active nodes' do
+      get api_v1_nodes_path, params: { "filter[active]": "false" }
+
+      json = JSON.parse(response.body, symbolize_names: true)
+      response_data = json[:data]
+      response_ids = response_data.map { |node| node[:id].to_i }
+      expected_ids = deactivated_proposals.pluck(:id)
+
+      expect(response_data.length).to eql(2)
+      expect(response_ids).to match_array(expected_ids)
+    end
+
+    it 'can find a deactivated node by id' do
+      node = deactivated_proposals.first
+      get api_v1_node_path(node), headers: headers
+
+      expect(response).to have_http_status(:ok)
+      response_data = JSON.parse(response.body, symbolize_names: true)[:data]
+      expect(response_data[:id].to_i).to eq(node.id)
     end
   end
 
@@ -125,7 +159,7 @@ RSpec.describe 'API::V1::Nodes', type: :request do
       end
 
       it 'creates a collection for the node' do
-        params = { 
+        params = {
           data: {
             type: 'nodes',
             id: @root.id,
@@ -147,7 +181,7 @@ RSpec.describe 'API::V1::Nodes', type: :request do
       end
 
       it 'does not create a collection for the node' do
-        params = { 
+        params = {
           data: {
             type: 'nodes',
             id: @prog2.id,

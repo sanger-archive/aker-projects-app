@@ -26,6 +26,16 @@ module Api
         end
       }
 
+      filter :active, default: "true", apply: -> (records, value, _options) {
+        (value[0].downcase == "true") ? records.where(deactivated_by_id: nil) : records.where.not(deactivated_by_id: nil)
+      }
+
+      def meta(options)
+        {
+          active: _model.active?
+        }
+      end
+
       def check_collection
         @model.set_collection if @model.level==2
       end
