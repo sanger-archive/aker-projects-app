@@ -259,6 +259,15 @@ RSpec.describe Node, type: :model do
         expect(@node.deactivated_datetime).to eq(@deactivation_time)
       end
     end
+    context 'when user does not have an id' do
+    	before do
+    		@user = build(:user)
+    		@node = create(:node)
+    	end
+    	it 'raises an ArgumentError' do
+    		expect { @node.deactivate(@user) }.to raise_error(ArgumentError)
+    	end
+    end
   end
 
   describe '#active_children' do
