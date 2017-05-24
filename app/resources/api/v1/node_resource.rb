@@ -39,6 +39,10 @@ module Api
       def check_collection
         @model.set_collection if @model.level==2
       end
+
+      def remove
+        @model.deactivate(context[:current_user])
+      end
     end
   end
 end

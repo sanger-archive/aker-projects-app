@@ -55,6 +55,7 @@ class Node < ApplicationRecord
 
   def deactivate(user)
     return true unless active?
+    raise ArgumentError, "Node must be deactivated by a User" unless user.id
     update_attributes(deactivated_by: user, deactivated_datetime: DateTime.now)
   end
 

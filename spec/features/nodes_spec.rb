@@ -103,11 +103,10 @@ RSpec.describe 'Nodes', type: :feature do
       it 'can delete a node' do
         allow(SetClient::Set).to receive(:find).and_return([double(Set, name: '(DISABLED)')])
 
-        expect do
-          page.find('div', class: 'node', text: @program1.name).click
-          click_button 'Delete'
-          wait_for_ajax
-        end.to change{@root.nodes.count}.by(-1)
+        page.find('div', class: 'node', text: @program1.name).click
+        click_button 'Delete'
+        wait_for_ajax
+        expect(@program1.reload).not_to be_active
       end
 
       context 'when a node is the only one visible' do

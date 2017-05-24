@@ -195,4 +195,18 @@ RSpec.describe 'API::V1::Nodes', type: :request do
       end
     end
   end
+
+  describe 'delete' do
+
+    before do
+      user = create(:user)
+      sign_in user
+      @node = create(:node)
+    end
+
+    it 'deactivates the node' do
+      delete api_v1_node_path(@node)
+      expect(@node.reload).not_to be_active
+    end
+  end
 end
