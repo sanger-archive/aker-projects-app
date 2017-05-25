@@ -152,35 +152,75 @@
     return $('#selected-node').data('node');
   };
 
-  
+  // selectNode()
+  //
+  // Arguments: DOM element to be selected
+  // Returns: Nothing
+  //
+  // Selects a node by assigning the value of its title (url for the node) inside the HTML element with id
+  // 'selected-node' and stores the DOM node inside the data-node attribute of the HTML element 'selected-node'
+  // This way we can access to either the DOM node (from the data-node attr), or url for the node (inside the
+  // value of input#selected-node).
   proto.selectNode = function(node) {
     $('#selected-node').val(node.attr('title')).data('node', node);
   };
 
+  // unselectNode()
+  //
+  // Arguments: None
+  // Returns: Nothing
+  //
+  // Resets the selection of node by removing the previous value of the attribute data-node and the 
+  // value for the input #selected-node
   proto.unselectNode = function() {
     $('#selected-node').data('node', null);
     $('#selected-node').val('');
   };
 
+  // createTreeNode()
+  //
+  // Arguments:
+  // - $node : jQuery HTML element of the created element in the tree
+  // - data : Object with config data to apply to the created node
+  // Returns: the jQuery HTML element after modifications
+  //
+  // After org_chart creates a new tree node, this handler adds to the created DOM element more
+  // configuration like:
+  // - Sets the title of the node to data.name. In HTML, the title of an element is an easy way to create 
+  // a tooltip without needing to add the behaviour by JS events
+  // - Sets the id of the node, so it can be easily found
+  // - Adds the handler to select the node on single click
+  // - Adds the handler to update the node on double click
   proto.createTreeNode = function($node, data) {
+    // After creating a new node, unselects the current node
     this.unselectNode();
+    // Resets the menu for add/delete/update to its default values
     this.resetStatusMenu();
+    // Update some config in the node
     $node.attr('title', data.name);
     $node.attr('id', data.id);
+    // Attaches handler for single click for selecting a node
     $node.on('click', $.proxy(function(event) {
+      // If it's not and edge (link between nodes) then it must be a node.
       if (!$(event.target).is('.edge')) {
         this.selectNode($node);
-        //$('#edit-panel').css('visibility', 'visible');
+        // Enables the use of the menu to Add/Remove/Update info in the currently selected node
         $('#edit-panel button').prop('disabled', false);
         $('#edit-panel input').prop('disabled', false);
+        // Only able to delete nodes if it does not have childrens
         $('#btn-delete-nodes').prop('disabled', this.hasChildren($node));
       }
     }, this));
-
+    // On double click, opens the updating node window
     $node.on('dblclick', $.proxy(this.onUpdateNodes, this, $node));
     return($node);
   };
 
+  // hasChildren(node)
+  //
+  // Arguments: 
+  // - node: The node we want to check if it has children
+  // Returns: True if the node has more children, false if not
   // Determine whether parent has any children (based on its colspan???)
   proto.hasChildren = function (node) {
     return node.parent().attr('colspan') > 0 ? true : false;
