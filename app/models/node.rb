@@ -20,7 +20,7 @@ class Node < ApplicationRecord
 
   scope :active, -> { where(deactivated_by_id: nil) }
 
-	def create_uuid
+  def create_uuid
     self.node_uuid ||= SecureRandom.uuid
   end
 
