@@ -6,6 +6,10 @@ RSpec.describe Node, type: :model do
     allow(SetClient::Set).to receive(:create).and_return(double('Set', id: SecureRandom.uuid))
   end
 
+  it "it has a uuid" do
+    expect(build(:node, name: 'name', cost_code: 'S1234')).to have_attribute('node_uuid')
+  end
+
   it "is not valid without a name" do
     expect(build(:node, name: nil)).to_not be_valid
   end

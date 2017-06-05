@@ -16,10 +16,15 @@ class Node < ApplicationRecord
   belongs_to :deactivated_by, class_name: "User"
 
   before_save :sanitise_blank_cost_code
+  after_initialize :create_uuid
 
   scope :active, -> { where(deactivated_by_id: nil) }
 
-	def self.root
+  def create_uuid
+    self.node_uuid ||= SecureRandom.uuid
+  end
+
+  def self.root
 		find_by(parent_id: nil)
 	end
 

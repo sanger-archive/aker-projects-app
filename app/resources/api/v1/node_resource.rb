@@ -3,7 +3,7 @@ module Api
     class NodeResource < JSONAPI::Resource
       has_many :nodes
       has_one :parent
-      attributes :name, :cost_code, :description
+      attributes :name, :cost_code, :description, :node_uuid
 
       after_save :check_collection
 

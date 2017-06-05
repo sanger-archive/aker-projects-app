@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170523101847) do
+ActiveRecord::Schema.define(version: 20170605085957) do
 
   create_table "collections", force: :cascade do |t|
     t.string   "set_id"
@@ -30,6 +30,7 @@ ActiveRecord::Schema.define(version: 20170523101847) do
     t.string   "cost_code"
     t.integer  "deactivated_by_id"
     t.datetime "deactivated_datetime"
+    t.string   "node_uuid"
     t.index ["cost_code"], name: "index_nodes_on_cost_code"
     t.index ["deactivated_by_id"], name: "index_nodes_on_deactivated_by_id"
     t.index ["name"], name: "index_nodes_on_name"
