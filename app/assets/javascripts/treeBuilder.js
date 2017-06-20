@@ -21,7 +21,7 @@
     return parentNodesList;
   }
 
-  function buildTree(parentNodes, data, bool, expandedIds) {
+  function buildTree(parentNodes, data, istree, expandedIds) {
     if (!(expandedIds instanceof Array)) {
       expandedIds = [];
     }
@@ -35,9 +35,9 @@
         }
       };
       // depending on the type of display, tree hierachy expects 'name' and finder expects 'text'
-      ret[bool ? 'name' : 'text'] = parent.attributes.name;
+      ret[istree ? 'name' : 'text'] = parent.attributes.name;
 
-      ret['href'] = parent.id;
+      ret['href'] = istree ? parent.id : '/nodes/' + parent.id;
 
       var relationships = Object.keys(parent.relationships || {});
       if (relationships.length == 0) {
@@ -46,7 +46,7 @@
       }
 
       // depending on the type of display, tree hierachy expects 'children' and finder expects 'nodes'
-      ret[bool ? 'children' : 'nodes'] = relationships
+      ret[istree ? 'children' : 'nodes'] = relationships
         .reduce(function(memo2, relationship) {
 
           // Get the relation node
@@ -55,14 +55,16 @@
           if (!relation.data || relation.data.length == 0) return memo2;
 
           // If it does, find it's info in the data array
-          const child = relation.data.map(function(datum) {
+          const children = relation.data.map(function(datum) {
             return data.find(function(resource) {
               return resource.id == datum.id
             })
-          })
+          }).filter(function(x) { return x }); // filter out missing nodes (presumably deactivated)
 
-          // Continue building the tree with this info
-          memo2.push.apply(memo2, buildTree(child, data, bool, expandedIds));
+          if (children.length > 0) {
+            // Continue building the tree with this info
+            memo2.push.apply(memo2, buildTree(children, data, istree, expandedIds));
+          }
           return memo2;
         }, []);
 
@@ -94,9 +96,9 @@
     return expandedIds;
   }
 
-  function createFrom(data, bool, currentId) {
+  function createFrom(data, istree, currentId) {
     var expandedIds = findExpandedIds(data, currentId);
-    return buildTree(parentNodes(data), data, bool, expandedIds);
+    return buildTree(parentNodes(data), data, istree, expandedIds);
   }
 
   window.TreeBuilder = {

@@ -14,8 +14,20 @@
 //= require jquery_ujs
 //= require turbolinks
 //= require bootstrap-sprockets
+//= require_tree ./org_chart/actions/
+//= require_tree ./org_chart
 //= require_tree .
+//= require loading_mask
 
-$(function() {
-  new SideMenuTree();
-})
+$(document).on("turbolinks:load", function() {
+  $('#side_menu_tree').each(function() {
+    new SideMenu();
+  });
+
+  $('#tree').each(function() {
+    var orgTree = new OrgTree();
+
+    // We need the tree to stop polling the server when we leave the page
+    $(document).one('turbolinks:before-visit', orgTree.stopUpdating.bind(orgTree))
+  });
+});

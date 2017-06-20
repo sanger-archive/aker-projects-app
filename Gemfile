@@ -1,6 +1,5 @@
 source 'https://rubygems.org'
 
-
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'rails', '~> 5.0.0', '>= 5.0.0.1'
 # Use Puma as the app server
@@ -13,6 +12,11 @@ gem 'uglifier', '>= 1.3.0'
 gem 'coffee-rails', '~> 4.2'
 # See https://github.com/rails/execjs#readme for more supported runtimes
 # gem 'therubyracer', platforms: :ruby
+
+#gem 'aker_authentication_gem', :github => 'emrojo/aker-authentication'
+gem 'aker_credentials_gem', :github => 'sanger/aker-credentials'
+gem 'aker_authentication_gem', :github => 'sanger/aker-authentication'
+gem 'aker_permission_gem', :github => 'sanger/aker-permission'
 
 # Use jquery as the JavaScript library
 gem 'jquery-rails'
@@ -31,6 +35,9 @@ gem 'jbuilder', '~> 2.5'
 gem 'bootstrap_form'
 gem 'active_model_serializers'
 gem 'zipkin-tracer'
+gem 'loading_mask'
+
+gem 'json_api_client', github: 'sanger/json_api_client'
 
 gem 'aker-set-client', :github => 'sanger/aker-set-client'
 

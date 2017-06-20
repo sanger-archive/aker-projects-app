@@ -1,0 +1,63 @@
+<%= javascript_tag do %>
+  window.currentNodeId = '<%= @node.id %>'
+<% end %>
+
+<%= render "show", locals: { tab: "list" } do %>
+  <div id="list" class="tab-pane active">
+    <br/>
+    <div class="col-md-4">
+      <%= render 'side_menu' %>
+    </div>
+
+    <div class="col-md-8">
+      <% flash.each do |key, value| %>
+        <div class="alert alert-<%= key %>"><%= value %></div>
+      <% end %>
+
+      <% @node.parents.each do |p| %>
+        <%= linknode(p) %> /
+      <% end %>
+      <b><%= @node.name %></b>
+
+      <% if @node.root? %>
+        <h2>Sanger Programs</h2>
+      <% else %>
+        <h2><%= @node.name %></h2>
+      <% end %>
+
+      <% if @node.description? %>
+        <p><b>Description: </b> <%= @node.description %></p>
+      <% end %>
+
+      <% if @node.cost_code? %>
+        <p><b>Cost Code:</b> <%= @node.cost_code %></p>
+      <% end %>
+
+      <% if @node.active_children.empty? %>
+        No children
+      <% else %>
+        <ul>
+          <% @node.active_children.each do |c| %>
+             <li>
+                <b><%= linknode(c) %></b>
+                  (<%= edit_node(c) %> /
+                  <%= delete_node(c) %>)
+              </li>
+          <% end %>
+        </ul>
+      <% end %>
+
+      <% unless @node.root? %>
+        <h4>Add child node</h4>
+        <%= bootstrap_form_for(@child, url: nodes_path, method: "post") do |f| %>
+          <%= f.text_field(:name, {autocomplete: 'off'}) %>
+          <%= f.text_field :description %>
+          <%= f.text_field :cost_code %>
+          <%= f.hidden_field :parent_id %>
+          <%= f.submit("Create") %>
+        <% end %>
+      <% end %>
+
+    </div>
+  </div>
+<% end %>
