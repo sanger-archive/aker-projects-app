@@ -16,7 +16,7 @@ class Node < ApplicationRecord
   belongs_to :deactivated_by, class_name: "User"
 
   before_save :sanitise_blank_cost_code
-  after_initialize :create_uuid
+  before_create :create_uuid
 
   scope :active, -> { where(deactivated_by_id: nil) }
 
