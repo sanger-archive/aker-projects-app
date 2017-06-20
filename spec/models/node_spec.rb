@@ -10,6 +10,13 @@ RSpec.describe Node, type: :model do
     expect(build(:node, name: 'name', cost_code: 'S1234')).to have_attribute('node_uuid')
   end
 
+  it "it has the same uuid after reloading again" do
+    nodes = create_list(:node, 3)
+    node = nodes.first
+    reloaded_node = nodes.find(node.id).first
+    expect(reloaded_node.node_uuid).to eq nodes.first.node_uuid
+  end
+
   it "is not valid without a name" do
     expect(build(:node, name: nil)).to_not be_valid
   end
