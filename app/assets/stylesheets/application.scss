@@ -18,3 +18,15 @@
 
   .orgchart { border: 1px solid lightgray;}
 }
+
+.alert-error {
+  @extend .alert-danger;
+}
+
+.alert-alert {
+  @extend .alert-warning;
+}
+
+.alert-notice {
+  @extend .alert-success;
+}
