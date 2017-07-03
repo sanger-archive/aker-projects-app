@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170605085957) do
+ActiveRecord::Schema.define(version: 20170703111758) do
 
   create_table "collections", force: :cascade do |t|
     t.string   "set_id"
@@ -60,6 +60,7 @@ ActiveRecord::Schema.define(version: 20170605085957) do
     t.string   "last_sign_in_ip"
     t.datetime "created_at",                       null: false
     t.datetime "updated_at",                       null: false
+    t.string   "remember_token"
     t.index ["email"], name: "index_users_on_email", unique: true
   end
 
