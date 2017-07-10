@@ -1,11 +1,13 @@
 module Api
   module V1
     class NodeResource < JSONAPI::Resource
+
       has_many :nodes
       has_one :parent
       attributes :name, :cost_code, :description, :node_uuid
 
       after_save :check_collection
+      before_create :set_owner
 
       # We need to be able to find all records that have a cost_code (i.e. proposals)
       # Unfortunately, JSONAPI's spec does not have a standard way to filter where an
@@ -43,6 +45,11 @@ module Api
       def remove
         @model.deactivate(context[:current_user])
       end
+
+      def set_owner
+        @model.owner = context[:current_user]
+      end
+
     end
   end
 end

@@ -24,7 +24,7 @@ class Node < ApplicationRecord
   scope :active, -> { where(deactivated_by_id: nil) }
 
   def set_permissions
-    set_default_permission(owner.email)
+    set_default_permission(owner.email) if owner
   end
 
   def create_uuid

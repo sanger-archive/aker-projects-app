@@ -105,8 +105,8 @@ RSpec.describe 'API::V1::Nodes', type: :request do
   end
 
   describe 'creating' do
+    let(:user) { create(:user) }
     before(:each) do
-      user = create(:user)
       sign_in user
 
       @root = create(:node, parent_id: nil, name: 'root')
@@ -128,7 +128,7 @@ RSpec.describe 'API::V1::Nodes', type: :request do
     context 'when creating a node at level 3' do
 
       before do
-        @prog = create(:node, parent_id: @root.id, name: 'prog')
+        @prog = create(:node, parent_id: @root.id, name: 'prog', owner: user)
       end
 
       it 'does not create a collection for the node' do
@@ -146,16 +146,17 @@ RSpec.describe 'API::V1::Nodes', type: :request do
   end
 
   describe 'updating relationship' do
+
+    let(:user){ create(:user) }
     before(:each) do
-      user = create(:user)
       sign_in user
       @root = create(:node, parent_id: nil, name: 'root')
     end
 
     context 'when moving a node to level 2' do
       before do
-        @prog = create(:node, parent_id: @root.id, name: 'prog')
-        @node = create(:node, parent_id: @prog.id, name: 'node')
+        @prog = create(:node, parent_id: @root.id, name: 'prog', owner: user)
+        @node = create(:node, parent_id: @prog.id, name: 'node', owner: user)
       end
 
       it 'creates a collection for the node' do
@@ -176,8 +177,8 @@ RSpec.describe 'API::V1::Nodes', type: :request do
     context 'when moving a node to level 3' do
       before do
         @prog1 = create(:node, parent_id: @root.id, name: 'prog1')
-        @prog2 = create(:node, parent_id: @root.id, name: 'prog2')
-        @node = create(:node, parent_id: @prog1.id, name: 'node')
+        @prog2 = create(:node, parent_id: @root.id, name: 'prog2', owner: user)
+        @node = create(:node, parent_id: @prog1.id, name: 'node', owner: user)
       end
 
       it 'does not create a collection for the node' do
@@ -201,7 +202,7 @@ RSpec.describe 'API::V1::Nodes', type: :request do
     before do
       user = create(:user)
       sign_in user
-      @node = create(:node)
+      @node = create(:node, owner: user)
     end
 
     it 'deactivates the node' do

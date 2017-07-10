@@ -24,7 +24,7 @@ class NodesController < ApplicationController
   end
 
   def create
-    authorize! :create, Node
+    authorize! :create, Node, message: 'You are not authorized to create this node.'
     # You must have write permission on the parent node to create
     # Everyone is allowed to create a node under root
     authorize! :write, parent_node unless parent_node.root?
@@ -66,7 +66,8 @@ class NodesController < ApplicationController
   end
 
   def destroy
-    authorize! :write, current_node
+    authorize! :write, current_node, message: 'You are not authorized to delete this node.'
+
     @parent_id = @node.parent_id
 
     if @node.deactivate(current_user)
