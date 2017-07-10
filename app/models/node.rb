@@ -14,11 +14,18 @@ class Node < ApplicationRecord
 	has_many :nodes, class_name: 'Node', foreign_key: 'parent_id', dependent: :restrict_with_error
 	belongs_to :parent, class_name: 'Node', required: false
   belongs_to :deactivated_by, class_name: "User"
+  belongs_to :owner, class_name: "User"
 
   before_save :sanitise_blank_cost_code
   before_create :create_uuid
 
+  after_create :set_permissions
+
   scope :active, -> { where(deactivated_by_id: nil) }
+
+  def set_permissions
+    set_default_permission(owner.email)
+  end
 
   def create_uuid
     self.node_uuid ||= SecureRandom.uuid

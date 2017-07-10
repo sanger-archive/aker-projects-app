@@ -2,8 +2,9 @@ require 'rails_helper'
 
 RSpec.describe NodesController, type: :controller do
 
+  let(:user) { create(:user) }
+
   setup do
-    user = create(:user)
     sign_in user
 
     @root = create(:node, name: "root", parent_id: nil)
@@ -11,7 +12,7 @@ RSpec.describe NodesController, type: :controller do
 
   describe 'DELETE #destroy' do
     setup do
-      @program1 = create(:node, name: "program1", parent: @root)
+      @program1 = create(:node, name: "program1", parent: @root, owner: user)
     end
 
     context "success" do
@@ -49,6 +50,20 @@ RSpec.describe NodesController, type: :controller do
       it "should not create a collection" do
         expect_any_instance_of(Node).not_to receive(:set_collection)
         post :create, params: { node: { parent_id: @prog.id, name: "Bananas" } }
+      end
+    end
+    describe 'owner' do
+      it "should set the owner" do
+        allow_any_instance_of(Node).to receive(:set_collection)
+
+        parent = create(:node, owner: user)
+
+        post :create, params: { node: { parent_id: parent.id, name: "Bananas" } }
+
+        n = Node.find_by(name: "Bananas")
+        expect(n).not_to be_nil
+        expect(n.owner).not_to be_nil
+        expect(n.owner).to eq(user)
       end
     end
   end

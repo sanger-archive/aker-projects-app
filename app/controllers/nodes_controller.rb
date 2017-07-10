@@ -3,12 +3,11 @@ class NodesController < ApplicationController
   include AkerAuthenticationGem::AuthController
   include AkerPermissionControllerConfig
 
-  skip_authorization_check
-
   before_action :current_node, except: :create
   before_action :set_child, only: [:show, :list, :tree]
 
   def show
+    authorize! :read, Node
     render "list"
   end
 
@@ -17,13 +16,22 @@ class NodesController < ApplicationController
   end
 
   def list
+    authorize! :read, Node
   end
 
   def tree
+    authorize! :read, Node
   end
 
   def create
+    authorize! :create, Node
+    # You must have write permission on the parent node to create
+    # Everyone is allowed to create a node under root
+    authorize! :write, parent_node unless parent_node.root?
+
     @node = Node.new(node_params)
+
+    @node.owner = current_user
 
     if @node.save
       flash[:success] = "Node created"
@@ -35,6 +43,8 @@ class NodesController < ApplicationController
   end
 
   def edit
+    authorize! :read, current_node
+
     respond_to do |format|
       format.html
       format.js { render template: 'nodes/modal' }
@@ -42,6 +52,8 @@ class NodesController < ApplicationController
   end
 
   def update
+    authorize! :write, current_node
+
     respond_to do |format|
       if @node.update_attributes(node_params)
         format.html { redirect_to node_path(@node.parent_id), flash: { success: "Node updated" }}
@@ -54,6 +66,7 @@ class NodesController < ApplicationController
   end
 
   def destroy
+    authorize! :write, current_node
     @parent_id = @node.parent_id
 
     if @node.deactivate(current_user)
@@ -73,6 +86,10 @@ class NodesController < ApplicationController
 
   def current_node
     @node = (params[:id] && Node.find_by_id(params[:id])) || Node.root
+  end
+
+  def parent_node
+    Node.find_by_id(node_params[:parent_id])
   end
 
   def node_params

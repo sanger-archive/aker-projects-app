@@ -2,8 +2,9 @@ require 'rails_helper'
 
 RSpec.describe 'Nodes', type: :feature do
 
+  let(:user) { create(:user) }
+
   before(:each) do
-    user = create(:user)
     sign_in user
 
     allow(SetClient::Set).to receive(:create).and_return(double('Set', id: SecureRandom.uuid))
@@ -35,7 +36,7 @@ RSpec.describe 'Nodes', type: :feature do
   context 'when I visit the Tree Hierarchy', js: true do
     before do
       @root = create(:node, name: "root", parent_id: nil)
-      @program1 = create(:node, name: "program1", parent: @root)
+      @program1 = create(:node, name: "program1", parent: @root, owner: user)
       @program2 = create(:node, name: "program2", parent: @root)
 
       visit tree_nodes_path
@@ -68,6 +69,11 @@ RSpec.describe 'Nodes', type: :feature do
 
     describe 'adding nodes' do
       it 'can add a new child node' do
+        # p @program1.owner.email
+        # p user.email
+
+        # This is because it's done all via the API...
+
         expect do
           page.find('div', class: 'node', text: @program1.name).click
           page.fill_in 'New Node:', :with => 'child'
