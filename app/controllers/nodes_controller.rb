@@ -27,7 +27,7 @@ class NodesController < ApplicationController
     authorize! :create, Node, message: 'You are not authorized to create this node.'
     # You must have write permission on the parent node to create
     # Everyone is allowed to create a node under root
-    authorize! :write, parent_node unless parent_node.root?
+    authorize! :write, parent_node
 
     @node = Node.new(node_params)
 
@@ -35,7 +35,6 @@ class NodesController < ApplicationController
 
     if @node.save
       flash[:success] = "Node created"
-      @node.set_collection if @node.level==2
     else
       flash[:danger] = "Failed to create node"
     end

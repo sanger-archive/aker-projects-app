@@ -6,7 +6,6 @@ module Api
       has_one :parent
       attributes :name, :cost_code, :description, :node_uuid
 
-      after_save :check_collection
       before_create :set_owner
 
       # We need to be able to find all records that have a cost_code (i.e. proposals)
@@ -36,10 +35,6 @@ module Api
         {
           active: _model.active?
         }
-      end
-
-      def check_collection
-        @model.set_collection if @model.level==2
       end
 
       def remove

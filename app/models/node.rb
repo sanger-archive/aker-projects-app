@@ -55,11 +55,6 @@ class Node < ApplicationRecord
     parents.reverse
   end
 
-  # Create a collection for this node if it doesn't have one
-  def set_collection
-    self.collection = build_collection if collection.nil? && !@no_collection
-  end
-
   # A Node is active when its deactivated_by column is null
   def active?
     deactivated_by_id.nil?
