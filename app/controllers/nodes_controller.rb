@@ -27,7 +27,7 @@ class NodesController < ApplicationController
     authorize! :create, Node, message: 'You are not authorized to create this node.'
     # You must have write permission on the parent node to create
     # Everyone is allowed to create a node under root
-    authorize! :write, parent_node unless parent_node.root?
+    authorize! :write, parent_node
 
     @node_form = NodeForm.new(node_form_params.merge(owner: current_user))
 

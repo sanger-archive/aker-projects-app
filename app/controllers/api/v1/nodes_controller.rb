@@ -10,7 +10,7 @@ module Api
 
       def create
         authorize! :create, Node, message: 'You are not authorized to create this node.'
-        authorize! :write, parent_node unless parent_node.root?
+        authorize! :write, parent_node
         super
       end
 
@@ -21,12 +21,13 @@ module Api
 
       def destroy
         authorize! :write, current_node, message: 'You are not authorized to delete this node.'
+        @node.deactivate(current_user)
         super
       end
 
       def update_relationship
         authorize! :write, update_current_node, message: 'You are not authorized to update this node.'
-        authorize! :write, update_parent_node unless update_parent_node.root?
+        authorize! :write, update_parent_node
         super
       end
 
