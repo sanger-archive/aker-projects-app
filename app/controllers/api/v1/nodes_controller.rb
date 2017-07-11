@@ -13,6 +13,11 @@ module Api
         super
       end
 
+      def update
+        authorize! :write, current_node, message: 'You are not authorized to update this node'
+        super
+      end
+
       def destroy
         authorize! :write, current_node, message: 'You are not authorized to delete this node.'
         super

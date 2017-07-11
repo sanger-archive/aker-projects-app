@@ -110,9 +110,24 @@ RSpec.describe 'API::V1::Nodes', type: :request do
       sign_in user
 
       @root = create(:node, parent_id: nil, name: 'root')
+      @prog1 = create(:node, parent_id: @root.id, name: 'Program 1')
     end
 
-    context 'when creating a node at level 2' do
+    context 'when user does not have write permissions on the parent node (except root)' do
+      it 'returns 403' do
+        params = { data: {
+            type: 'nodes',
+            attributes: { name: 'Cherries' },
+            relationships: { parent: { data: { type: 'nodes', id: @prog1.id } } },
+          }
+        }
+        expect_any_instance_of(Node).not_to receive(:set_collection)
+        post api_v1_nodes_path, params: params.to_json, headers: headers
+        expect(response).to have_http_status(:forbidden)
+      end
+    end
+
+    context 'when creating a node under root' do
       it 'creates a collection for the node' do
         params = { data: {
             type: 'nodes',
@@ -143,6 +158,48 @@ RSpec.describe 'API::V1::Nodes', type: :request do
         expect(response).to have_http_status(:created)
       end
     end
+  end
+
+  describe 'update' do
+
+    let(:user){ create(:user) }
+    let(:different_user) { create(:user) }
+
+    before(:each) do
+      sign_in user
+      @root = create(:node, parent_id: nil, name: 'root')
+      @different_users_node = create(:node, parent_id: @root.id, name: 'Pineapples', owner: different_user)
+      @node = create(:node, parent_id: @different_users_node.id, name: 'Pears', owner: user)
+    end
+
+    context 'when user does not have write permissions on a node' do
+      it 'returns a 403' do
+        params = { data: {
+            id: @different_users_node.id,
+            type: 'nodes',
+            attributes: { name: 'Bananas' }
+          }
+        }
+
+        patch api_v1_node_path(@different_users_node), params: params.to_json, headers: headers
+        expect(response).to have_http_status(:forbidden)
+      end
+    end
+
+    context 'when user does have write permissions on a node' do
+      it 'returns a 200' do
+        params = { data: {
+            id: @node.id,
+            type: 'nodes',
+            attributes: { name: 'Strawberries' }
+          }
+        }
+
+        patch api_v1_node_path(@node), params: params.to_json, headers: headers
+        expect(response).to have_http_status(:ok)
+      end
+    end
+
   end
 
   describe 'updating relationship' do
