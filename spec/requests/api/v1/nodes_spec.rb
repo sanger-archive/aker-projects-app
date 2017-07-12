@@ -10,8 +10,10 @@ RSpec.describe 'API::V1::Nodes', type: :request do
   end
 
   describe 'GET' do
+
+    let(:user) { user = create(:user) }
+
     before(:each) do
-      user = create(:user)
       sign_in user
 
       node = create(:node, cost_code: "S1234", description: "Here is my node")
@@ -101,6 +103,76 @@ RSpec.describe 'API::V1::Nodes', type: :request do
       expect(response).to have_http_status(:ok)
       response_data = JSON.parse(response.body, symbolize_names: true)[:data]
       expect(response_data[:id].to_i).to eq(node.id)
+    end
+
+    describe 'permissions' do
+
+      describe '#readable_by' do
+
+        before(:each) do
+          @jason = create_list(:readable_node, 3, permitted: 'jason')
+          @gary  = create_list(:readable_node, 3, permitted: 'gary')
+          @ken   = create_list(:readable_node, 3, permitted: 'ken')
+        end
+
+        it 'can filter only nodes with a given readable permission' do
+          get api_v1_nodes_path, params: { "filter[readable_by]": "jason" }
+
+          json = JSON.parse(response.body, symbolize_names: true)
+          response_data = json[:data]
+          response_ids = response_data.map { |node| node[:id].to_i }
+          expected_ids = @jason.pluck(:id)
+
+          expect(response_data.length).to eql(3)
+          expect(response_ids).to match_array(expected_ids)
+        end
+
+      end
+
+      describe '#writable_by' do
+
+        before(:each) do
+          @jason = create_list(:writable_node, 3, permitted: 'jason')
+          @gary  = create_list(:writable_node, 4, permitted: 'gary')
+          @ken   = create_list(:writable_node, 5, permitted: 'ken')
+        end
+
+        it 'can filter only nodes with a given writable permission' do
+          get api_v1_nodes_path, params: { "filter[writable_by]": "gary" }
+
+          json = JSON.parse(response.body, symbolize_names: true)
+          response_data = json[:data]
+          response_ids = response_data.map { |node| node[:id].to_i }
+          expected_ids = @gary.pluck(:id)
+
+          expect(response_data.length).to eql(4)
+          expect(response_ids).to match_array(expected_ids)
+        end
+
+      end
+
+      describe '#executable_by' do
+
+        before(:each) do
+          @jason = create_list(:executable_node, 5, permitted: 'jason')
+          @gary  = create_list(:executable_node, 6, permitted: 'gary')
+          @ken   = create_list(:executable_node, 9, permitted: 'ken')
+        end
+
+        it 'can filter only nodes with a given executable permission' do
+          get api_v1_nodes_path, params: { "filter[executable_by]": "ken" }
+
+          json = JSON.parse(response.body, symbolize_names: true)
+          response_data = json[:data]
+          response_ids = response_data.map { |node| node[:id].to_i }
+          expected_ids = @ken.pluck(:id)
+
+          expect(response_data.length).to eql(9)
+          expect(response_ids).to match_array(expected_ids)
+        end
+
+      end
+
     end
   end
 
