@@ -69,11 +69,6 @@ RSpec.describe 'Nodes', type: :feature do
 
     describe 'adding nodes' do
       it 'can add a new child node' do
-        # p @program1.owner.email
-        # p user.email
-
-        # This is because it's done all via the API...
-
         expect do
           page.find('div', class: 'node', text: @program1.name).click
           page.fill_in 'New Node:', :with => 'child'
