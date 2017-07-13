@@ -9,6 +9,20 @@ RSpec.describe 'API::V1::Nodes', type: :request do
     }
   end
 
+  let(:root) {
+    n = build(:node, name: 'root')
+    n.save(validate: false)
+    n
+  }
+
+  let(:program1) {
+    n = build(:node, name: 'program1', parent: root, owner: create(:user))
+    n.save(validate: false)
+    n
+  }
+
+  let(:user) { create(:user) }
+
   describe 'GET' do
 
     let(:user) { user = create(:user) }
@@ -16,7 +30,7 @@ RSpec.describe 'API::V1::Nodes', type: :request do
     before(:each) do
       sign_in user
 
-      node = create(:node, cost_code: "S1234", description: "Here is my node")
+      node = create(:node, cost_code: "S1234", description: "Here is my node", parent: program1)
 
       get api_v1_node_path(node), headers: headers
     end
@@ -39,10 +53,10 @@ RSpec.describe 'API::V1::Nodes', type: :request do
       sign_in user
     end
 
-    let!(:proposals) { create_list(:node, 3, cost_code: "S1234", description: "This is a proposal") }
-    let!(:nodes) { create_list(:node, 2) }
+    let!(:proposals) { create_list(:node, 3, cost_code: "S1234", description: "This is a proposal", parent: program1) }
+    let!(:nodes) { create_list(:node, 2, parent: program1) }
     let!(:user) { create(:user) }
-    let!(:deactivated_proposals) { create_list(:node, 2, deactivated_by: user, deactivated_datetime: DateTime.now, cost_code: "S1234") }
+    let!(:deactivated_proposals) { create_list(:node, 2, deactivated_by: user, deactivated_datetime: DateTime.now, cost_code: "S1234", parent: program1) }
 
     context 'when using a value of _none for cost_code' do
 
@@ -54,7 +68,7 @@ RSpec.describe 'API::V1::Nodes', type: :request do
       end
 
       it 'returns only the nodes without a cost code' do
-        expect(@json[:data].length).to eql(2)
+        expect(@json[:data].length).to eql(4)
       end
 
     end
@@ -78,9 +92,9 @@ RSpec.describe 'API::V1::Nodes', type: :request do
       json = JSON.parse(response.body, symbolize_names: true)
       response_data = json[:data]
       response_ids = response_data.map { |node| node[:id].to_i }
-      expected_ids = (proposals + nodes).pluck(:id)
+      expected_ids = (proposals + nodes + [root, program1]).pluck(:id)
 
-      expect(response_data.length).to eql(5)
+      expect(response_data.length).to eql(7)
       expect(response_ids).to match_array(expected_ids)
     end
 
@@ -110,9 +124,9 @@ RSpec.describe 'API::V1::Nodes', type: :request do
       describe '#readable_by' do
 
         before(:each) do
-          @jason = create_list(:readable_node, 3, permitted: 'jason')
-          @gary  = create_list(:readable_node, 3, permitted: 'gary')
-          @ken   = create_list(:readable_node, 3, permitted: 'ken')
+          @jason = create_list(:readable_node, 3, parent: program1, permitted: 'jason')
+          @gary  = create_list(:readable_node, 3, parent: program1, permitted: 'gary')
+          @ken   = create_list(:readable_node, 3, parent: program1, permitted: 'ken')
         end
 
         it 'can filter only nodes with a given readable permission' do
@@ -132,9 +146,9 @@ RSpec.describe 'API::V1::Nodes', type: :request do
       describe '#writable_by' do
 
         before(:each) do
-          @jason = create_list(:writable_node, 3, permitted: 'jason')
-          @gary  = create_list(:writable_node, 4, permitted: 'gary')
-          @ken   = create_list(:writable_node, 5, permitted: 'ken')
+          @jason = create_list(:writable_node, 3, parent: program1, permitted: 'jason')
+          @gary  = create_list(:writable_node, 4, parent: program1, permitted: 'gary')
+          @ken   = create_list(:writable_node, 5, parent: program1, permitted: 'ken')
         end
 
         it 'can filter only nodes with a given writable permission' do
@@ -154,9 +168,9 @@ RSpec.describe 'API::V1::Nodes', type: :request do
       describe '#executable_by' do
 
         before(:each) do
-          @jason = create_list(:executable_node, 5, permitted: 'jason')
-          @gary  = create_list(:executable_node, 6, permitted: 'gary')
-          @ken   = create_list(:executable_node, 9, permitted: 'ken')
+          @jason = create_list(:executable_node, 5, parent: program1, permitted: 'jason')
+          @gary  = create_list(:executable_node, 6, parent: program1, permitted: 'gary')
+          @ken   = create_list(:executable_node, 9, parent: program1, permitted: 'ken')
         end
 
         it 'can filter only nodes with a given executable permission' do
@@ -177,13 +191,12 @@ RSpec.describe 'API::V1::Nodes', type: :request do
   end
 
   describe 'CREATE #create' do
-    let(:user) { create(:user) }
+    let(:different_user){ create(:user) }
     before(:each) do
       sign_in user
 
-      @root = create(:node, parent_id: nil, name: 'root')
-      @prog1 = create(:node, parent_id: @root.id, name: 'Program 1')
-      @prog2 = create(:node, parent_id: @root.id, name: 'prog2', owner: user)
+      @prog1 = create(:node, parent_id: program1.id, name: 'Program 1', owner: different_user)
+      @prog2 = create(:node, parent_id: program1.id, name: 'prog2', owner: user)
     end
 
     context 'when user does not have write permissions on the parent node (root)' do
@@ -191,7 +204,7 @@ RSpec.describe 'API::V1::Nodes', type: :request do
         params = { data: {
             type: 'nodes',
             attributes: { name: 'Bananas' },
-            relationships: { parent: { data: { type: 'nodes', id: @root.id } } },
+            relationships: { parent: { data: { type: 'nodes', id: root.id } } },
           }
         }
         post api_v1_nodes_path, params: params.to_json, headers: headers
@@ -234,10 +247,8 @@ RSpec.describe 'API::V1::Nodes', type: :request do
     before(:each) do
       sign_in user
 
-      @root = create(:node, parent_id: nil, name: 'root')
-      @prog1 = create(:node, parent_id: @root.id, name: 'prog1', owner: different_user)
-      @node1 = create(:node, parent_id: @prog1.id, name: 'node1', owner: user)
-      @node2 = create(:node, parent_id: @prog1.id, name: 'node2', owner: different_user)
+      @node1 = create(:node, parent_id: program1.id, name: 'node1', owner: user)
+      @node2 = create(:node, parent_id: program1.id, name: 'node2', owner: different_user)
     end
 
     context 'when user does not have write permissions on the node' do
@@ -274,10 +285,9 @@ RSpec.describe 'API::V1::Nodes', type: :request do
     let(:different_user){ create(:user) }
     before(:each) do
       sign_in user
-      @root = create(:node, parent_id: nil, name: 'root')
-      @prog1 = create(:node, parent_id: @root.id, name: 'prog1', owner: user)
-      @prog2 = create(:node, parent_id: @root.id, name: 'prog2', owner: different_user)
-      @prog3 = create(:node, parent_id: @root.id, name: 'prog3', owner: user)
+      @prog1 = create(:node, parent_id: program1.id, name: 'prog1', owner: user)
+      @prog2 = create(:node, parent_id: program1.id, name: 'prog2', owner: different_user)
+      @prog3 = create(:node, parent_id: program1.id, name: 'prog3', owner: user)
       @node1 = create(:node, parent_id: @prog1.id, name: 'node1', owner: user)
     end
 
@@ -286,7 +296,7 @@ RSpec.describe 'API::V1::Nodes', type: :request do
         params = {
           data: {
             type: 'nodes',
-            id: @root.id,
+            id: root.id,
           },
           relationship: 'parent',
           node_id: @node1.id,
@@ -333,16 +343,15 @@ RSpec.describe 'API::V1::Nodes', type: :request do
 
     before do
       sign_in user
-      @root = create(:node, parent_id: nil, name: 'root')
-      @prog1 = create(:node, parent_id: @root.id, name: 'prog1', owner: user)
+      @prog1 = create(:node, parent_id: program1.id, name: 'prog1', owner: user)
       @node1 = create(:node, parent_id: @prog1.id, name: 'node1', owner: user)
       @node2 = create(:node, parent_id: @prog1.id, name: 'node2', owner: different_user)
     end
 
     context 'when the node is under the root node' do
       it 'returns a 403' do
-        delete api_v1_node_path(@prog1)
-        expect(@prog1.reload).to be_active
+        delete api_v1_node_path(program1)
+        expect(program1.reload).to be_active
       end
     end
 

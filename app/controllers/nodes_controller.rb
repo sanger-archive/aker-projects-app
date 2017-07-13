@@ -79,7 +79,7 @@ class NodesController < ApplicationController
   private
 
   def set_child
-    @child = NodeForm.new(parent: @node)
+    @child = NodeForm.new(parent_id: @node.id)
   end
 
   def current_node
@@ -91,7 +91,7 @@ class NodesController < ApplicationController
   end
 
   def node_form_params
-    params.require(:node_form).permit(:name, :parent_id, :description, :cost_code)
+    params.require(:node_form).permit(NodeForm::ATTRIBUTES)
   end
 
 end
