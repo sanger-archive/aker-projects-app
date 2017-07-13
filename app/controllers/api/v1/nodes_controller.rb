@@ -5,6 +5,7 @@ module Api
       include AkerAuthenticationGem::AuthController
   	  include AkerPermissionControllerConfig
 
+      skip_authenticate_user
       skip_authorization_check only: [:index, :show]
 
       def create
