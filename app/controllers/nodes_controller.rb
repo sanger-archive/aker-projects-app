@@ -29,17 +29,14 @@ class NodesController < ApplicationController
     # Everyone is allowed to create a node under root
     authorize! :write, parent_node unless parent_node.root?
 
-    @node = Node.new(node_params)
+    @node_form = NodeForm.new(node_form_params.merge(owner: current_user))
 
-    @node.owner = current_user
-
-    if @node.save
+    if @node_form.save
       flash[:success] = "Node created"
-      @node.set_collection if @node.level==2
     else
       flash[:danger] = "Failed to create node"
     end
-    redirect_to node_path(@node.parent_id)
+    redirect_to node_path(@node_form.parent_id)
   end
 
   def edit
@@ -55,7 +52,7 @@ class NodesController < ApplicationController
     authorize! :write, current_node
 
     respond_to do |format|
-      if @node.update_attributes(node_params)
+      if @node.update_attributes(node_form_params)
         format.html { redirect_to node_path(@node.parent_id), flash: { success: "Node updated" }}
         format.json { render json: @node, status: :ok }
       else
@@ -82,7 +79,7 @@ class NodesController < ApplicationController
   private
 
   def set_child
-    @child = Node.new(parent: @node)
+    @child = NodeForm.new(parent: @node)
   end
 
   def current_node
@@ -90,11 +87,11 @@ class NodesController < ApplicationController
   end
 
   def parent_node
-    Node.find_by_id(node_params[:parent_id])
+    Node.find_by_id(node_form_params[:parent_id])
   end
 
-  def node_params
-    params.require(:node).permit(:name, :parent_id, :description, :cost_code)
+  def node_form_params
+    params.require(:node_form).permit(:name, :parent_id, :description, :cost_code)
   end
 
 end
