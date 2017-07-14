@@ -1,4 +1,5 @@
 require 'rails_helper'
+require 'cancan/matchers'
 
 RSpec.describe Node, type: :model do
 
@@ -340,6 +341,45 @@ RSpec.describe Node, type: :model do
 
     it 'returns all active children' do
     	expect(program1.active_children).to match_array(@active_children)
+    end
+  end
+
+  describe '#accessible' do
+    let(:user) { nil }
+    let(:owner) { create(:user, email: 'jeff') }
+    subject(:ability) { Ability.new(user) }
+    let(:node) do
+      n = create(:node, parent: program1, owner: owner)
+      n.permissions.create([{ permitted: 'dirk', permission_type: :write }, { permitted: 'mygroup', permission_type: :write }])
+      n
+    end
+
+    context 'when the user has permission' do
+      let(:user) { create(:user, email: 'dirk') }
+      it { should be_able_to(:read, node) }
+      it { should be_able_to(:write, node) }
+      it { should_not be_able_to(:spend, node) }
+    end
+
+    context 'when the user has no permission' do
+      let(:user) { create(:user, email: 'fred') }
+      it { should be_able_to(:read, node) }
+      it { should_not be_able_to(:write, node) }
+      it { should_not be_able_to(:spend, node) }
+    end
+
+    context 'when the user owns the node' do
+      let(:user) { owner }
+      it { should be_able_to(:read, node) }
+      it { should be_able_to(:write, node) }
+      it { should_not be_able_to(:spend, node) }
+    end
+
+    context 'when the user has group permission' do
+      let(:user) { create(:user, email: 'zog', groups: ['world', 'mygroup']) }
+      it { should be_able_to(:read, node) }
+      it { should be_able_to(:write, node) }
+      it { should_not be_able_to(:spend, node) }
     end
   end
 end
