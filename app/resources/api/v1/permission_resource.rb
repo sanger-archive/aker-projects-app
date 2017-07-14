@@ -5,7 +5,7 @@ module Api
       immutable
       model_name '::AkerPermissionGem::Permission'
       has_one :accessible, polymorphic: true
-      attributes :r, :w, :x, :permitted
+      attributes :permission_type, :permitted
 
     end
   end

@@ -132,6 +132,8 @@ RSpec.describe 'API::V1::Nodes', type: :request do
         it 'can filter only nodes with a given readable permission' do
           get api_v1_nodes_path, params: { "filter[readable_by]": "jason" }
 
+          expect(response).to have_http_status :ok
+
           json = JSON.parse(response.body, symbolize_names: true)
           response_data = json[:data]
           response_ids = response_data.map { |node| node[:id].to_i }
@@ -165,16 +167,16 @@ RSpec.describe 'API::V1::Nodes', type: :request do
 
       end
 
-      describe '#executable_by' do
+      describe '#spendable_by' do
 
         before(:each) do
-          @jason = create_list(:executable_node, 5, parent: program1, permitted: 'jason')
-          @gary  = create_list(:executable_node, 6, parent: program1, permitted: 'gary')
-          @ken   = create_list(:executable_node, 9, parent: program1, permitted: 'ken')
+          @jason = create_list(:spendable_node, 5, parent: program1, permitted: 'jason')
+          @gary  = create_list(:spendable_node, 6, parent: program1, permitted: 'gary')
+          @ken   = create_list(:spendable_node, 9, parent: program1, permitted: 'ken')
         end
 
-        it 'can filter only nodes with a given executable permission' do
-          get api_v1_nodes_path, params: { "filter[executable_by]": "ken" }
+        it 'can filter only nodes with a given spend permission' do
+          get api_v1_nodes_path, params: { "filter[spendable_by]": "ken" }
 
           json = JSON.parse(response.body, symbolize_names: true)
           response_data = json[:data]

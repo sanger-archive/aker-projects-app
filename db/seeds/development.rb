@@ -3,7 +3,6 @@ root.save(validate: false)
 
 cancer = Node.new(name: "Cancer, Aging & Somatic Mutations", parent: root)
 cancer.save(validate: false)
-
 cellular_genetics = Node.new(name: "Cellular Genetics", parent: root)
 cellular_genetics.save(validate: false)
 human_genetics = Node.new(name: "Human Genetics", parent: root)
@@ -15,12 +14,9 @@ malaria.save(validate: false)
 pathogens = Node.new(name: "Pathogens", parent: root)
 pathogens.save(validate: false)
 
-cancer.permissions.create([{permitted: 'world', r: true, w: true}])
-cellular_genetics.permissions.create([{permitted: 'world', r: true, w: true}])
-human_genetics.permissions.create([{permitted: 'world', r: true, w: true}])
-infection_genomics.permissions.create([{permitted: 'world', r: true, w: true}])
-malaria.permissions.create([{permitted: 'world', r: true, w: true}])
-pathogens.permissions.create([{permitted: 'world', r: true, w: true}])
+[cancer, cellular_genetics, human_genetics, infection_genomics, malaria, pathogens].each do |program|
+  program.permissions.create([{permitted: 'world', permission_type: :read}, {permitted: 'world', permission_type: :write}])
+end
 
 Collection.create([
   { set_id: "f6017957-9c62-48b8-b3d6-794986e95ee6", collector_type: "Node", collector_id: cancer.id },

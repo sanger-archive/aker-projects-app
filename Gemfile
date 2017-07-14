@@ -16,7 +16,7 @@ gem 'coffee-rails', '~> 4.2'
 #gem 'aker_authentication_gem', :github => 'emrojo/aker-authentication'
 gem 'aker_credentials_gem', :github => 'sanger/aker-credentials'
 gem 'aker_authentication_gem', :github => 'sanger/aker-authentication'
-gem 'aker_permission_gem', :github => 'sanger/aker-permission'
+gem 'aker_permission_gem', :github => 'harrietc52/aker-permission', :branch => 'a117_order_work_if_i_am_spender'
 
 # Use jquery as the JavaScript library
 gem 'jquery-rails'
@@ -40,7 +40,6 @@ gem 'loading_mask'
 gem 'json_api_client', github: 'sanger/json_api_client'
 
 gem 'aker-set-client', :github => 'sanger/aker-set-client'
-gem 'aker_permission_gem', :github => 'sanger/aker-permission'
 
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console

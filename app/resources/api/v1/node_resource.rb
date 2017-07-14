@@ -33,15 +33,15 @@ module Api
       }
 
       filter :readable_by, apply: ->(records, value, _options) {
-        records.joins(:permissions).where('permissions.r': true, 'permissions.permitted': value)
+        records.joins(:permissions).where('permissions.permission_type': 'read', 'permissions.permitted': value)
       }
 
       filter :writable_by, apply: ->(records, value, _options) {
-        records.joins(:permissions).where('permissions.w': true, 'permissions.permitted': value)
+        records.joins(:permissions).where('permissions.permission_type': 'write', 'permissions.permitted': value)
       }
 
-      filter :executable_by, apply: ->(records, value, _options) {
-        records.joins(:permissions).where('permissions.x': true, 'permissions.permitted': value)
+      filter :spendable_by, apply: ->(records, value, _options) {
+        records.joins(:permissions).where('permissions.permission_type': 'spend', 'permissions.permitted': value)
       }
 
       def meta(options)

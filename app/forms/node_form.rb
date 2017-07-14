@@ -39,8 +39,8 @@ class NodeForm
 
   def create_objects
     ActiveRecord::Base.transaction do
-      n = Node.create!(name: name, cost_code: cost_code, description: description, parent_id: parent_id, owner: @owner)
-      n.permissions.create!(convert_permissions.values)
+      node = Node.create!(name: name, cost_code: cost_code, description: description, parent_id: parent_id, owner: @owner)
+      node.permissions.create!(convert_permissions)
     end
   rescue
     false
@@ -50,47 +50,27 @@ class NodeForm
     ActiveRecord::Base.transaction do
       node = Node.find(id)
       node.update_attributes(name: name, cost_code: cost_code, description: description, parent_id: parent_id)
-      permitted = convert_permissions
-      world = permitted['world'] || { w: false, x: false }
-      owner_permissions = permitted[owner.email] || { x: false }
-      permitted['world'] = { permitted: 'world', r: true, w: world[:w], x: world[:x] }
-      permitted[owner.email] = { permitted: owner.email, r: true, w: true, x: owner_permissions[:x] }
-      node.permissions.each do |perm|
-        new_perm = permitted[perm.permitted]
-        if !new_perm
-          perm.destroy()
-        else
-          if [:r, :w, :x].any? { |ptype| new_perm[ptype]!=perm.send(ptype.to_s) }
-            perm.update_attributes!(new_perm)
-            permitted.delete!(perm.permitted)
-          end
-        end
-      end
-      node.permissions.create!(permitted.values)
+      node.permissions.destroy_all
+      node.set_permissions
+      node.permissions.create!(convert_permissions)
     end
   rescue
     false
   end
 
   def convert_permissions
-    permitted = { }
-    add_to_permission(permitted, user_writers, false, :w)
-    add_to_permission(permitted, group_writers, true, :w)
-    add_to_permission(permitted, user_spenders, false, :x)
-    add_to_permission(permitted, group_spenders, true, :x)
+    permitted = []
+    add_to_permission(permitted, user_writers, false, :write)
+    add_to_permission(permitted, group_writers, true, :write)
+    add_to_permission(permitted, user_spenders, false, :spend)
+    add_to_permission(permitted, group_spenders, true, :spend)
     permitted
   end
 
   def add_to_permission(permitted, people, is_group, permission_type)
     people&.each do |name|
       name = fixname(name, is_group)
-      perm = permitted[name]
-      if perm
-        perm[permission_type] = true
-      else
-        perm = { permitted: name, r: true, permission_type => true }
-        permitted[name] = perm
-      end
+      permitted.push({ permitted: name, permission_type: permission_type })
     end
   end
 

@@ -73,19 +73,19 @@ RSpec.describe NodesController, type: :controller do
         expect { post :create, params: { node_form: { parent_id: @prog.id, name: "Bananas", user_writers: 'dirk,jeff@sanger.ac.uk', group_writers: 'team_gamma,team_DELTA', user_spenders: 'DIRK@sanger.ac.uk', group_spenders: 'team_delta,team_epsilon' } } }.to change{Node.all.count}.by(1)
         node = Node.find_by(name: "Bananas")
         expect(node).not_to be_nil
-        expect(node.permitted?('dirk@sanger.ac.uk', :w)).to be_truthy
-        expect(node.permitted?('dirk@sanger.ac.uk', :x)).to be_truthy
-        expect(node.permitted?('jeff@sanger.ac.uk', :w)).to be_truthy
-        expect(node.permitted?('jeff@sanger.ac.uk', :x)).to be_falsey
-        expect(node.permitted?('world', :r)).to be_truthy
-        expect(node.permitted?('world', :w)).to be_falsey
-        expect(node.permitted?('team_delta', :w)).to be_truthy
-        expect(node.permitted?('team_delta', :x)).to be_truthy
-        expect(node.permitted?('team_gamma', :w)).to be_truthy
-        expect(node.permitted?('team_gamma', :x)).to be_falsey
-        expect(node.permitted?(user.email, :r)).to be_truthy
-        expect(node.permitted?(user.email, :w)).to be_truthy
-        expect(node.permitted?(user.email, :x)).to be_falsey
+        expect(node.permitted?('dirk@sanger.ac.uk', :write)).to be_truthy
+        expect(node.permitted?('dirk@sanger.ac.uk', :spend)).to be_truthy
+        expect(node.permitted?('jeff@sanger.ac.uk', :write)).to be_truthy
+        expect(node.permitted?('jeff@sanger.ac.uk', :spend)).to be_falsey
+        expect(node.permitted?('world', :read)).to be_truthy
+        expect(node.permitted?('world', :write)).to be_falsey
+        expect(node.permitted?('team_delta', :write)).to be_truthy
+        expect(node.permitted?('team_delta', :spend)).to be_truthy
+        expect(node.permitted?('team_gamma', :write)).to be_truthy
+        expect(node.permitted?('team_gamma', :spend)).to be_falsey
+        expect(node.permitted?(user.email, :read)).to be_truthy
+        expect(node.permitted?(user.email, :write)).to be_truthy
+        expect(node.permitted?(user.email, :spend)).to be_falsey
       end
     end
 

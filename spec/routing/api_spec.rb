@@ -2,19 +2,19 @@ require 'rails_helper'
 
 RSpec.describe 'API routing', type: :routing do
 
+  let(:root) {
+    n = build(:node, name: 'root')
+    n.save(validate: false)
+    n
+  }
+
+  let(:program1) {
+    n = build(:node, name: 'program1', parent: root, owner: create(:user))
+    n.save(validate: false)
+    n
+  }
+
   describe 'Node' do
-
-    let(:root) {
-      n = build(:node, name: 'root')
-      n.save(validate: false)
-      n
-    }
-
-    let(:program1) {
-      n = build(:node, name: 'program1', parent: root, owner: create(:user))
-      n.save(validate: false)
-      n
-    }
 
     before(:each) do
       @node = create(:node, parent: program1)
@@ -55,7 +55,7 @@ RSpec.describe 'API routing', type: :routing do
   describe 'Collection' do
 
     before(:each) do
-      @collection = create(:collection, set_id: SecureRandom.uuid)
+      @collection = create(:collection, set_id: SecureRandom.uuid, collector: program1)
     end
 
     it 'routes to the index' do

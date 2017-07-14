@@ -17,8 +17,8 @@ class Node < ApplicationRecord
 
 	has_many :nodes, class_name: 'Node', foreign_key: 'parent_id', dependent: :restrict_with_error
 	belongs_to :parent, class_name: 'Node', required: false
-  belongs_to :deactivated_by, class_name: "User"
-  belongs_to :owner, class_name: "User"
+  belongs_to :deactivated_by, class_name: "User", required: false
+  belongs_to :owner, class_name: "User", required: true
 
   before_save :sanitise_blank_cost_code
   before_create :create_uuid
