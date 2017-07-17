@@ -23,10 +23,6 @@ class NodeForm
     @owner = attributes[:owner]
   end
 
-  def parent_id
-    @parent_id ||= parent&.id
-  end
-
   def save
     #TODO valid? currently does nothing
     valid? && (id ? update_objects : create_objects)
@@ -71,7 +67,7 @@ class NodeForm
   def update_objects
     ActiveRecord::Base.transaction do
       node = Node.find(id)
-      node.update_attributes(name: name, cost_code: cost_code, description: description, parent_id: parent_id)
+      node.update_attributes!(name: name, cost_code: cost_code, description: description, parent_id: parent_id)
       node.permissions.destroy_all
       node.set_permissions
       node.permissions.create!(convert_permissions)

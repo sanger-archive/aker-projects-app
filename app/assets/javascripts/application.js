@@ -36,7 +36,6 @@ $(document).on("turbolinks:load", function() {
 
 window.aker = {};
 window.aker.selectize_element = function(index, el) {
-  console.log(el)
   $(el).selectize({
     plugins: ['remove_button'],
     delimiter: ',',

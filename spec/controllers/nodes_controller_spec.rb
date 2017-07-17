@@ -128,7 +128,7 @@ RSpec.describe NodesController, type: :controller do
 
     context "when a user does have write permissions on the node" do
       it "should update the node" do
-        put :update, params: { id: @program3.id, node: { id: @program3.id, name: "test"} }
+        put :update, params: { id: @program3.id, node_form: { id: @program3.id, name: "test", parent_id: program1.id } }
         @program3.reload
         expect(@program3.name).to eq "test"
       end
@@ -136,7 +136,7 @@ RSpec.describe NodesController, type: :controller do
 
     context "when a user does not have write permissions on the node" do
       it "should not update the node" do
-        put :update, params: { id: @program2.id, node: { id: @program2.id, name: "test"} }
+        put :update, params: { id: @program2.id, node_form: { id: @program2.id, name: "test", parent_id: program1.id } }
         @program2.reload
         expect(@program2.name).to eq "program2"
       end
