@@ -24,7 +24,7 @@ class NodeForm
   end
 
   def parent_id
-    @parent_id ||= parent.id
+    @parent_id ||= parent&.id
   end
 
   def save

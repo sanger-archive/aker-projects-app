@@ -1,8 +1,8 @@
 <%= bootstrap_form_for(@nodeform, remote: true, url: node_path(@node), method: :put) do |f| %>
 	<div class="field">
-		<%= render "node_form", f: f %>
+		<%= render "node_form", f: f, write_permission: check_write_permission_for_node(@node) %>
 		<%= link_to 'Back', :back, class: 'btn btn-primary' %>
-		<%= f.submit("Update") %>
+		<%= f.submit("Update", disabled: !check_write_permission_for_node(@node)) %>
 	</div>
 <% end %>
 

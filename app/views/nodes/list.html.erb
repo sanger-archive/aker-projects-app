@@ -47,7 +47,7 @@
         </ul>
       <% end %>
 
-      <% unless @node.root? %>
+      <% if (!@node.root? && check_write_permission_for_node(@node)) %>
         <h4>Add child node</h4>
         <%= bootstrap_form_for(@child, url: nodes_path, method: "post") do |f| %>
           <%= render "node_form", f: f %>

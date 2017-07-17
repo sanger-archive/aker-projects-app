@@ -1,5 +1,6 @@
 root = Node.new(name: "root")
 root.save(validate: false)
+root.permissions.create([{permitted: 'world', permission_type: :read}])
 
 cancer = Node.new(name: "Cancer, Aging & Somatic Mutations", parent: root)
 cancer.save(validate: false)

@@ -1,8 +1,12 @@
+<div class="modal-header">
+  <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+  <h4 class="modal-title" id="myModalLabel"><%= check_write_permission_for_node(@node) ? "Edit" : "Current" %> Node</h4>
+</div>
 <%= bootstrap_form_for(@nodeform, remote: true, url: node_path(@node), method: :put, accept: :json,) do |f| %>
   <div class="field">
-  	<%= render "node_form", f: f %>
+  	<%= render "node_form", f: f, write_permission: check_write_permission_for_node(@node) %>
   	<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
   	<%= hidden_field_tag(:source, 'tree') %>
-    <%= f.submit("Update", class: 'btn btn-primary') %>
+    <%= f.submit("Update", class: 'btn btn-primary', disabled: !check_write_permission_for_node(@node)) %>
   </div>
 <% end %>

@@ -79,6 +79,8 @@ class NodesController < ApplicationController
     end
   end
 
+  helper_method :check_write_permission_for_node
+
   private
 
   def set_form
@@ -99,6 +101,10 @@ class NodesController < ApplicationController
 
   def node_form_params
     params.require(:node_form).permit(NodeForm::ATTRIBUTES)
+  end
+
+  def check_write_permission_for_node(node)
+    Ability.new(current_user).can?(:write, node)
   end
 
 end
