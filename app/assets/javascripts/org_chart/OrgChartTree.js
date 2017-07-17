@@ -86,9 +86,9 @@
       if (!$(event.target).is('.edge')) {
         this.selectNode($node);
         //$('#edit-panel').css('visibility', 'visible');
-        $('#edit-panel button').prop('disabled', false);
-        $('#edit-panel input').prop('disabled', false);
-        $('#btn-delete-nodes').prop('disabled', this.hasChildren($node));
+        $('#edit-panel input').prop('disabled', !data.writable);
+        $('#btn-add-nodes').prop('disabled', !data.writable);
+        $('#btn-delete-nodes').prop('disabled', this.hasChildren($node) || !data.writable);
       }
     }, this));
 

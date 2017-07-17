@@ -40,8 +40,10 @@
           <% @node.active_children.each do |c| %>
              <li>
                 <b><%= linknode(c) %></b>
+                <% if check_write_permission_for_node(c) %>
                   (<%= edit_node(c) %> /
                   <%= delete_node(c) %>)
+                <% end %>
               </li>
           <% end %>
         </ul>

@@ -5,7 +5,7 @@ module Api
       has_many :nodes
       has_many :permissions, class_name: 'Permission', relation_name: :permissions
       has_one :parent
-      attributes :name, :cost_code, :description, :node_uuid
+      attributes :name, :cost_code, :description, :node_uuid, :writable
 
       before_create :set_owner
 
@@ -56,6 +56,10 @@ module Api
 
       def set_owner
         @model.owner = context[:current_user]
+      end
+
+      def writable
+        Ability.new(context[:current_user]).can?(:write, @model)
       end
 
     end
