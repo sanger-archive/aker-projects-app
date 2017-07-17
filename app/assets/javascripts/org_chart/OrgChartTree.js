@@ -70,11 +70,13 @@
 
   proto.selectNode = function(node) {
     $('#selected-node').val(node.attr('title')).data('node', node);
+    $('#new-node').val('');
   };
 
   proto.unselectNode = function() {
     $('#selected-node').data('node', null);
     $('#selected-node').val('');
+    $('#new-node').val('');
   };
 
   proto.createTreeNode = function($node, data) {

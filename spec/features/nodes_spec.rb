@@ -21,6 +21,7 @@ RSpec.describe 'Nodes', type: :feature do
   let!(:program2) {
     n = build(:node, name: 'program2', parent: root)
     n.save!(validate: false)
+    n.permissions.create!(permitted: user.email, permission_type: :write)
     n
   }
 
@@ -149,9 +150,7 @@ RSpec.describe 'Nodes', type: :feature do
         allow(SetClient::Set).to receive(:find).and_return([double(Set, name: '(DISABLED)')])
 
         page.find('div', class: 'node', text: proj2.name).click
-        click_button 'Delete'
-        wait_for_ajax
-        expect(proj2.reload).to be_active
+        expect(page).not_to have_button('Delete')
       end
 
       context 'when a node is the only one visible' do
@@ -172,24 +171,24 @@ RSpec.describe 'Nodes', type: :feature do
       end
     end
 
-    describe 'reset' do
+    describe 'selecting a node' do
 
       context 'after selecting a node and filling in New Node' do
 
         before do
-          page.find('div', class: 'node', text: root.name).click
-          page.fill_in 'New Node:', :with => 'child'
+          page.find('div', class: 'node', text: program2.name).click
+          page.fill_in 'New Node:', with: 'child'
         end
 
         it 'deselects the node' do
+          expect(page.find_by_id('selected-node').value).to eq program2.name
+          page.find('div', class: 'node', text: root.name).click
           expect(page.find_by_id('selected-node').value).to eq root.name
-          click_button 'Reset'
-          expect(page.find_by_id('selected-node').value).to eq ''
         end
 
         it 'clears the New Node input' do
           expect(page.find_by_id('new-node').value).to eq 'child'
-          click_button 'Reset'
+          page.find('div', class: 'node', text: root.name).click
           expect(page.find_by_id('new-node').value).to eq ''
         end
       end
@@ -216,19 +215,35 @@ RSpec.describe 'Nodes', type: :feature do
   end
 
   context 'when i visit node#id#show page' do |variable|
-    before do
-      @program11 = create(:node, name: "program11", parent: program1)
-      visit list_node_path(program1.id)
-    end
+    context 'when the node is writable' do
+      before do
+        @program11 = create(:node, name: "program11", parent: program1)
+        @program11.permissions.create(permitted: user.email, permission_type: :write)
+        visit list_node_path(program1.id)
+      end
 
-    it "displays the children of the node" do
+      it "displays the children of the node with edit and delete links" do
         expect(page).to have_content('program11')
         expect(page).to have_content('Edit')
         expect(page).to have_content('Delete')
+      end
+    end
+    context 'when the node is not writable' do
+      before do
+        @program11 = create(:node, name: "program11", parent: program1)
+        visit list_node_path(program1.id)
+      end
+
+      it "displays the children of the node without edit and delete links" do
+        expect(page).to have_content('program11')
+        expect(page).not_to have_content('Edit')
+        expect(page).not_to have_content('Delete')
+      end
     end
 
     context 'when node is a proposal' do
       before do
+        @program11 = create(:node, name: "program11", parent: program1)
         @proposal = create(:node, cost_code: "S1234", description: "My super proposal", parent: program1)
         visit node_path(@proposal)
       end
