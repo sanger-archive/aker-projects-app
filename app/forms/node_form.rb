@@ -18,9 +18,6 @@ class NodeForm
   def initialize(attributes = {})
     ATTRIBUTES.each do |attribute|
       value = attributes[attribute]
-      if value && JOINED_LISTS.include?(attribute)
-        value = value.split(',')
-      end
       send("#{attribute}=", value)
     end
     @owner = attributes[:owner]
@@ -35,7 +32,32 @@ class NodeForm
     valid? && (id ? update_objects : create_objects)
   end
 
+  def self.from_node(node)
+    new(id: node.id, parent_id: node.parent_id, name: node.name, description: node.description,
+        cost_code: node.cost_code, user_writers: node_permitted(node, :write, false),
+        group_writers: node_permitted(node, :write, true),
+        user_spenders: node_permitted(node, :spend, false),
+        group_spenders: node_permitted(node, :spend, true))
+  end
+
   private
+
+  def self.node_permitted(node, permission_type, groups)
+    permission_type = permission_type.to_sym
+    perms = node.permissions.select { |p| p.permission_type.to_sym==permission_type && p.permitted.include?('@')!=groups }.
+      map { |p| p.permitted }
+    if permission_type==:read
+      if groups
+        perms.delete('world')
+      elsif node.owner&.email
+        perms.delete(node.owner.email.downcase)
+      end
+    end
+    if permission_type==:write && !groups && node.owner&.email
+      perms.delete(node.owner.email.downcase)
+    end
+    perms.join(',')
+  end
 
   def create_objects
     ActiveRecord::Base.transaction do
@@ -68,17 +90,16 @@ class NodeForm
   end
 
   def add_to_permission(permitted, people, is_group, permission_type)
-    people&.each do |name|
+    people&.split(',')&.each do |name|
       name = fixname(name, is_group)
       permitted.push({ permitted: name, permission_type: permission_type })
     end
   end
 
   def fixname(name, is_group)
-    unless (is_group || name.include?('@'))
-      name += '@sanger.ac.uk'
-    end
-    name.downcase
+    name = name.strip.downcase
+    name += '@sanger.ac.uk' unless (is_group || name.include?('@'))
+    return name
   end
 
 end

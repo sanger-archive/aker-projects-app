@@ -1,0 +1,9 @@
+<%= f.text_field(:name, {autocomplete: 'off'}) %>
+<%= f.text_field :description %>
+<%= f.text_field :cost_code %>
+<%= f.hidden_field :parent_id %>
+<%= f.hidden_field :id %>
+<%= f.text_field :user_writers, data: { behavior: "selectize" } %>
+<%= f.text_field :group_writers, data: { behavior: "selectize" } %>
+<%= f.text_field :user_spenders, data: { behavior: "selectize" } %>
+<%= f.text_field :group_spenders, data: { behavior: "selectize" } %>

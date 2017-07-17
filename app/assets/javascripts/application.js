@@ -31,18 +31,21 @@ $(document).on("turbolinks:load", function() {
     $(document).one('turbolinks:before-visit', orgTree.stopUpdating.bind(orgTree))
   });
 
-  $("[data-behavior~=selectize]").each(function(index, el) {
-    console.log(el)
-    $(el).selectize({
-      plugins: ['remove_button'],
-      delimiter: ',',
-      persist: false,
-      create: function(input) {
-          return {
-              value: input,
-              text: input
-          }
-      }
-    });
-  });
+  $("[data-behavior~=selectize]").each(window.aker.selectize_element);
 });
+
+window.aker = {};
+window.aker.selectize_element = function(index, el) {
+  console.log(el)
+  $(el).selectize({
+    plugins: ['remove_button'],
+    delimiter: ',',
+    persist: false,
+    create: function(input) {
+      return {
+          value: input,
+          text: input
+      }
+    }
+  });
+};

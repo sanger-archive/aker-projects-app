@@ -1,6 +1,8 @@
-<%= bootstrap_form_for(@node, remote: true, accept: :json) do |f| %>
-	<%= render "fields", f: f %>
-	<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-	<%= hidden_field_tag(:source, 'tree') %>
-  <%= f.submit("Update", class: 'btn btn-primary') %>
+<%= bootstrap_form_for(@nodeform, remote: true, url: node_path(@node), method: :put, accept: :json,) do |f| %>
+  <div class="field">
+  	<%= render "node_form", f: f %>
+  	<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+  	<%= hidden_field_tag(:source, 'tree') %>
+    <%= f.submit("Update", class: 'btn btn-primary') %>
+  </div>
 <% end %>

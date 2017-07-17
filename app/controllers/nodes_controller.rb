@@ -42,6 +42,8 @@ class NodesController < ApplicationController
   def edit
     authorize! :read, current_node
 
+    set_form
+
     respond_to do |format|
       format.html
       format.js { render template: 'nodes/modal' }
@@ -52,7 +54,8 @@ class NodesController < ApplicationController
     authorize! :write, current_node
 
     respond_to do |format|
-      if @node.update_attributes(node_form_params)
+      @node_form = NodeForm.new(node_form_params)
+      if @node_form.save
         format.html { redirect_to node_path(@node.parent_id), flash: { success: "Node updated" }}
         format.json { render json: @node, status: :ok }
       else
@@ -77,6 +80,10 @@ class NodesController < ApplicationController
   end
 
   private
+
+  def set_form
+    @nodeform = NodeForm.from_node(@node)
+  end
 
   def set_child
     @child = NodeForm.new(parent_id: @node.id)

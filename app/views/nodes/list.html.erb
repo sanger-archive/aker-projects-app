@@ -50,14 +50,7 @@
       <% unless @node.root? %>
         <h4>Add child node</h4>
         <%= bootstrap_form_for(@child, url: nodes_path, method: "post") do |f| %>
-          <%= f.text_field(:name, {autocomplete: 'off'}) %>
-          <%= f.text_field :description %>
-          <%= f.text_field :cost_code %>
-          <%= f.hidden_field :parent_id %>
-          <%= f.text_field :user_writers, data: { behavior: "selectize" } %>
-          <%= f.text_field :group_writers, data: { behavior: "selectize" } %>
-          <%= f.text_field :user_spenders, data: { behavior: "selectize" } %>
-          <%= f.text_field :group_spenders, data: { behavior: "selectize" } %>
+          <%= render "node_form", f: f %>
           <%= f.submit("Create") %>
         <% end %>
       <% end %>
