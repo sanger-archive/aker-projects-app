@@ -11,8 +11,6 @@ class NodeForm
 
   ATTRIBUTES = [:id, :parent_id, :name, :description, :cost_code, :user_writers, :group_writers, :user_spenders, :group_spenders]
 
-  JOINED_LISTS = [:user_writers, :group_writers, :user_spenders, :group_spenders]
-
   attr_accessor *ATTRIBUTES
 
   def initialize(attributes = {})
@@ -30,13 +28,14 @@ class NodeForm
 
   def self.from_node(node)
     new(id: node.id, parent_id: node.parent_id, name: node.name, description: node.description,
-        cost_code: node.cost_code, user_writers: node_permitted(node, :write, false),
+        cost_code: node.cost_code, owner: node.owner,
+        user_writers: node_permitted(node, :write, false),
         group_writers: node_permitted(node, :write, true),
         user_spenders: node_permitted(node, :spend, false),
         group_spenders: node_permitted(node, :spend, true))
   end
 
-  private
+private
 
   def self.node_permitted(node, permission_type, groups)
     permission_type = permission_type.to_sym
