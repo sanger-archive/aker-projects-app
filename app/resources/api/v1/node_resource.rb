@@ -59,7 +59,7 @@ module Api
       end
 
       def writable
-        Ability.new(context[:current_user]).can?(:write, @model)
+        context[:current_user].present? && Ability.new(context[:current_user]).can?(:write, @model)
       end
 
     end

@@ -1,7 +1,6 @@
 module Api
   module V1
     class NodesController < JSONAPI::ResourceController
-      include JWTCredentials
       include AkerAuthenticationGem::AuthController
   	  include AkerPermissionControllerConfig
 
