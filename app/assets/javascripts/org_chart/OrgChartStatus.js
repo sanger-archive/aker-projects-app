@@ -7,8 +7,15 @@
 
   var proto = OrgChartStatus.prototype;
 
-  proto.onErrorConnection = function() {
+  proto.onErrorConnection = function(response, codeId, status) {
+    if (response.status===403) {
+      this.onForbidden(response, status);
+    }
     this.resetTree();
+  };
+
+  proto.onForbidden = function(response, status) {
+    alert(status+": "+response.responseJSON.message);
   };
 
   proto.updateChartOnChanges = function() {

@@ -1,12 +1,4 @@
 GIT
-  remote: git://github.com/harrietc52/aker-permission.git
-  revision: 8415e4b4338e27ae494640d98b3ce27103c6499c
-  branch: a117_order_work_if_i_am_spender
-  specs:
-    aker_permission_gem (0.2.0)
-      cancancan
-
-GIT
   remote: git://github.com/sanger/aker-authentication.git
   revision: 09c11204f386071fb194d97bcbf36abd248378f2
   specs:
@@ -25,6 +17,13 @@ GIT
     aker_credentials_gem (0.1.0)
       jwt
       request_store
+
+GIT
+  remote: git://github.com/sanger/aker-permission.git
+  revision: 2310855f9cb9db86130f239dde039e5daf32d6ad
+  specs:
+    aker_permission_gem (0.3.0)
+      cancancan
 
 GIT
   remote: git://github.com/sanger/aker-set-client.git
@@ -418,4 +417,4 @@ DEPENDENCIES
   zipkin-tracer
 
 BUNDLED WITH
-   1.15.1
+   1.15.2
