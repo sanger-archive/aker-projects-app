@@ -20,7 +20,7 @@ GIT
 
 GIT
   remote: git://github.com/sanger/aker-permission.git
-  revision: 2310855f9cb9db86130f239dde039e5daf32d6ad
+  revision: 6a8ec93b04d12d5dbd579654a2cc8f0574d05a2f
   specs:
     aker_permission_gem (0.3.0)
       cancancan
