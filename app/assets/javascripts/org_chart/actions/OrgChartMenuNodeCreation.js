@@ -40,7 +40,7 @@
         'children': [{ name: newNodeName, relationship: relationship, id: id }]
       });*/
       $('#chart-container').orgchart('addChildren', $node, {
-        'children': [{ name: newNodeName, relationship: relationship, id: id }]
+        'children': [{ name: newNodeName, relationship: relationship, id: id, writable: true }]
       });
     } else {
       // Relationship will always be "has parent, has sibling(s), no children"
@@ -51,7 +51,8 @@
           'siblings': [{
             'name': newNodeName,
             'relationship': relationship,
-            'id': id
+            'id': id,
+            'writable': true
           }]
         }
       );
@@ -66,7 +67,7 @@
         },
         url : '/api/v1/nodes/',
         type : 'POST',
-        data : JSON.stringify({ data: { type: 'nodes', attributes: { name: newName}, relationships: { parent: { data: { type: 'nodes', id: parentId }}} }})
+        data : JSON.stringify({ data: { type: 'nodes', attributes: { name: newName }, relationships: { parent: { data: { type: 'nodes', id: parentId }}} }})
     }).then(
       $.proxy(this.onCreateNode, this),
       $.proxy(this.onErrorCreateNode, this)

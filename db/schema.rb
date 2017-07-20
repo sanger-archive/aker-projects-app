@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170703111758) do
+ActiveRecord::Schema.define(version: 20170713162254) do
 
   create_table "collections", force: :cascade do |t|
     t.string   "set_id"
@@ -31,22 +31,23 @@ ActiveRecord::Schema.define(version: 20170703111758) do
     t.integer  "deactivated_by_id"
     t.datetime "deactivated_datetime"
     t.string   "node_uuid"
+    t.integer  "owner_id"
     t.index ["cost_code"], name: "index_nodes_on_cost_code"
     t.index ["deactivated_by_id"], name: "index_nodes_on_deactivated_by_id"
     t.index ["name"], name: "index_nodes_on_name"
+    t.index ["owner_id"], name: "index_nodes_on_owner_id"
     t.index ["parent_id"], name: "index_nodes_on_parent_id"
   end
 
   create_table "permissions", force: :cascade do |t|
-    t.string   "permitted",                       null: false
-    t.boolean  "r",               default: false, null: false
-    t.boolean  "w",               default: false, null: false
-    t.boolean  "x",               default: false, null: false
-    t.string   "accessible_type",                 null: false
-    t.integer  "accessible_id",                   null: false
-    t.datetime "created_at",                      null: false
-    t.datetime "updated_at",                      null: false
+    t.string   "permitted",       null: false
+    t.string   "permission_type", null: false
+    t.string   "accessible_type", null: false
+    t.integer  "accessible_id",   null: false
+    t.datetime "created_at",      null: false
+    t.datetime "updated_at",      null: false
     t.index ["accessible_type", "accessible_id"], name: "index_permissions_on_accessible_type_and_accessible_id"
+    t.index ["permitted", "permission_type", "accessible_id", "accessible_type"], name: "index_permissions_on_various", unique: true
     t.index ["permitted"], name: "index_permissions_on_permitted"
   end
 

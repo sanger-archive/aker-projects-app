@@ -10,15 +10,27 @@ class Node < ApplicationRecord
   validates :deactivated_datetime, absence: true, if: :active?
   validate :validate_deactivate, unless: :active?
   validate :validate_name_active_uniqueness, if: :active?
+  validate :validate_node_is_not_root
+  validate :validate_node_parent_is_not_root
+  validate :validate_node_cant_move_to_under_root
+  validate :validate_node_cant_move_from_under_root
 
 	has_many :nodes, class_name: 'Node', foreign_key: 'parent_id', dependent: :restrict_with_error
 	belongs_to :parent, class_name: 'Node', required: false
-  belongs_to :deactivated_by, class_name: "User"
+  belongs_to :deactivated_by, class_name: "User", required: false
+  belongs_to :owner, class_name: "User", required: true
 
   before_save :sanitise_blank_cost_code
   before_create :create_uuid
+  before_destroy :validate_root_node_cant_be_destroyed, :validate_root_under_node_cant_be_destroyed
+
+  after_create :set_permissions
 
   scope :active, -> { where(deactivated_by_id: nil) }
+
+  def set_permissions
+    set_default_permission(owner.email) if owner
+  end
 
   def create_uuid
     self.node_uuid ||= SecureRandom.uuid
@@ -48,11 +60,6 @@ class Node < ApplicationRecord
     parents.reverse
   end
 
-  # Create a collection for this node if it doesn't have one
-  def set_collection
-    self.collection = build_collection if collection.nil? && !@no_collection
-  end
-
   # A Node is active when its deactivated_by column is null
   def active?
     deactivated_by_id.nil?
@@ -80,6 +87,44 @@ class Node < ApplicationRecord
   def validate_name_active_uniqueness
     if Node.where(name: name, deactivated_by_id: nil).any? { |n| n.id != id }
       errors.add(:name, "must be unique.")
+    end
+  end
+
+  def validate_node_is_not_root
+    unless self.parent_id
+      errors.add(:base, "The root node cannot be created/updated.")
+    end
+  end
+
+  def validate_node_parent_is_not_root
+    if self.parent&.root?
+      errors.add(:base, "The node can not be created under root.")
+    end
+  end
+
+  def validate_node_cant_move_to_under_root
+    former_parent = parent_id_was ? Node.find(parent_id_was) : nil
+    if !former_parent&.root? && parent&.root?
+      errors.add(:base, "A node can not be moved to under the root node.")
+    end
+  end
+
+  def validate_node_cant_move_from_under_root
+    former_parent = parent_id_was ? Node.find(parent_id_was) : nil
+    if former_parent&.root? && !parent&.root?
+      errors.add(:base, "A node can not be moved from under the root node.")
+    end
+  end
+
+  def validate_root_node_cant_be_destroyed
+    if self.root?
+      errors.add(:base, "The root node can not be deleted")
+    end
+  end
+
+  def validate_root_under_node_cant_be_destroyed
+    if self.parent&.root?
+      errors.add(:base, "A node under the root node can not be deleted")
     end
   end
 
