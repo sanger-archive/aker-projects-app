@@ -10,11 +10,11 @@
     this.selectNode($node);
     // We get the nodeId of the currently selected node
 
-    var url = '/nodes/'+this.selectedNode().attr('id'); 
+    var url = '/nodes/'+this.selectedNode().attr('id');
 
     // We call jQuery's load method to fetch the html content of /nodes/:id/edit.js
     // and load it into the modal body
-    $('#editNodeModal').modal('show'); 
+    $('#editNodeModal').modal('show');
     $('div.modal-body', '#editNodeModal').load(url+ '/edit.js', $.proxy(this.onLoadUpdateNodeForm, this));
   };
 
@@ -29,7 +29,8 @@
       .on('ajax:success', $.proxy(this.onSuccessfulFormUpdateNode, this))
       .on('ajax:error', function(e, data, status, xhr) {
         $('form', 'div.modal-body').render_form_errors('node', data.responseJSON);
-      })
+      });
+    $("[data-behavior~=selectize]", 'div.modal-body').each(window.aker.selectize_element);
   };
 
   proto.onSuccessfulFormUpdateNode = function(e, data, status, xhr) {
@@ -51,7 +52,7 @@
   };
 
   proto.onUpdateNode = function(id, event) {
-  };  
+  };
 
   proto.updateNode = function(id, event) {
     return $.ajax({
@@ -63,7 +64,7 @@
         type : 'PATCH',
         data : JSON.stringify({ data: { type: 'nodes', id: id }})
     }).then(
-      $.proxy(this.onUpdateNode, this, id, event), 
+      $.proxy(this.onUpdateNode, this, id, event),
       $.proxy(this.onErrorConnection, this)
     ).then(
       $.proxy(this.keepTreeUpdate, this),

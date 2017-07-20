@@ -163,6 +163,7 @@
   // value of input#selected-node).
   proto.selectNode = function(node) {
     $('#selected-node').val(node.attr('title')).data('node', node);
+    $('#new-node').val('');
   };
 
   // unselectNode()
@@ -175,6 +176,7 @@
   proto.unselectNode = function() {
     $('#selected-node').data('node', null);
     $('#selected-node').val('');
+    $('#new-node').val('');
   };
 
   // createTreeNode()
@@ -204,11 +206,12 @@
       // If it's not and edge (link between nodes) then it must be a node.
       if (!$(event.target).is('.edge')) {
         this.selectNode($node);
+
         // Enables the use of the menu to Add/Remove/Update info in the currently selected node
-        $('#edit-panel button').prop('disabled', false);
-        $('#edit-panel input').prop('disabled', false);
-        // Only able to delete nodes if it does not have childrens
-        $('#btn-delete-nodes').prop('disabled', this.hasChildren($node));
+        //$('#edit-panel').css('visibility', 'visible');
+        $('#edit-panel input').prop('disabled', !data.writable);
+        $('#btn-add-nodes').prop('disabled', !data.writable);
+        $('#btn-delete-nodes').prop('disabled', this.hasChildren($node) || !data.writable);
       }
     }, this));
     // On double click, opens the updating node window
