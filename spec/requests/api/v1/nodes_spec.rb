@@ -9,12 +9,28 @@ RSpec.describe 'API::V1::Nodes', type: :request do
     }
   end
 
+  let(:root) {
+    n = build(:node, name: 'root')
+    n.save(validate: false)
+    n
+  }
+
+  let(:program1) {
+    n = build(:node, name: 'program1', parent: root, owner: create(:user))
+    n.save(validate: false)
+    n
+  }
+
+  let(:user) { create(:user) }
+
   describe 'GET' do
+
+    let(:user) { user = create(:user) }
+
     before(:each) do
-      user = create(:user)
       sign_in user
 
-      node = create(:node, cost_code: "S1234", description: "Here is my node")
+      node = create(:node, cost_code: "S1234", description: "Here is my node", parent: program1)
 
       get api_v1_node_path(node), headers: headers
     end
@@ -37,10 +53,10 @@ RSpec.describe 'API::V1::Nodes', type: :request do
       sign_in user
     end
 
-    let!(:proposals) { create_list(:node, 3, cost_code: "S1234", description: "This is a proposal") }
-    let!(:nodes) { create_list(:node, 2) }
+    let!(:proposals) { create_list(:node, 3, cost_code: "S1234", description: "This is a proposal", parent: program1) }
+    let!(:nodes) { create_list(:node, 2, parent: program1) }
     let!(:user) { create(:user) }
-    let!(:deactivated_proposals) { create_list(:node, 2, deactivated_by: user, deactivated_datetime: DateTime.now, cost_code: "S1234") }
+    let!(:deactivated_proposals) { create_list(:node, 2, deactivated_by: user, deactivated_datetime: DateTime.now, cost_code: "S1234", parent: program1) }
 
     context 'when using a value of _none for cost_code' do
 
@@ -52,7 +68,7 @@ RSpec.describe 'API::V1::Nodes', type: :request do
       end
 
       it 'returns only the nodes without a cost code' do
-        expect(@json[:data].length).to eql(2)
+        expect(@json[:data].length).to eql(4)
       end
 
     end
@@ -76,9 +92,9 @@ RSpec.describe 'API::V1::Nodes', type: :request do
       json = JSON.parse(response.body, symbolize_names: true)
       response_data = json[:data]
       response_ids = response_data.map { |node| node[:id].to_i }
-      expected_ids = (proposals + nodes).pluck(:id)
+      expected_ids = (proposals + nodes + [root, program1]).pluck(:id)
 
-      expect(response_data.length).to eql(5)
+      expect(response_data.length).to eql(7)
       expect(response_ids).to match_array(expected_ids)
     end
 
@@ -102,111 +118,258 @@ RSpec.describe 'API::V1::Nodes', type: :request do
       response_data = JSON.parse(response.body, symbolize_names: true)[:data]
       expect(response_data[:id].to_i).to eq(node.id)
     end
+
+    describe 'permissions' do
+
+      describe '#readable_by' do
+
+        before(:each) do
+          @jason = create_list(:readable_node, 3, parent: program1, permitted: 'jason')
+          @gary  = create_list(:readable_node, 3, parent: program1, permitted: 'gary')
+          @ken   = create_list(:readable_node, 3, parent: program1, permitted: 'ken')
+        end
+
+        it 'can filter only nodes with a given readable permission' do
+          get api_v1_nodes_path, params: { "filter[readable_by]": "jason" }
+
+          expect(response).to have_http_status :ok
+
+          json = JSON.parse(response.body, symbolize_names: true)
+          response_data = json[:data]
+          response_ids = response_data.map { |node| node[:id].to_i }
+          expected_ids = @jason.pluck(:id)
+
+          expect(response_data.length).to eql(3)
+          expect(response_ids).to match_array(expected_ids)
+        end
+
+      end
+
+      describe '#writable_by' do
+
+        before(:each) do
+          @jason = create_list(:writable_node, 3, parent: program1, permitted: 'jason')
+          @gary  = create_list(:writable_node, 4, parent: program1, permitted: 'gary')
+          @ken   = create_list(:writable_node, 5, parent: program1, permitted: 'ken')
+        end
+
+        it 'can filter only nodes with a given writable permission' do
+          get api_v1_nodes_path, params: { "filter[writable_by]": "gary" }
+
+          json = JSON.parse(response.body, symbolize_names: true)
+          response_data = json[:data]
+          response_ids = response_data.map { |node| node[:id].to_i }
+          expected_ids = @gary.pluck(:id)
+
+          expect(response_data.length).to eql(4)
+          expect(response_ids).to match_array(expected_ids)
+        end
+
+      end
+
+      describe '#spendable_by' do
+
+        before(:each) do
+          @jason = create_list(:spendable_node, 5, parent: program1, permitted: 'jason')
+          @gary  = create_list(:spendable_node, 6, parent: program1, permitted: 'gary')
+          @ken   = create_list(:spendable_node, 9, parent: program1, permitted: 'ken')
+        end
+
+        it 'can filter only nodes with a given spend permission' do
+          get api_v1_nodes_path, params: { "filter[spendable_by]": "ken" }
+
+          json = JSON.parse(response.body, symbolize_names: true)
+          response_data = json[:data]
+          response_ids = response_data.map { |node| node[:id].to_i }
+          expected_ids = @ken.pluck(:id)
+
+          expect(response_data.length).to eql(9)
+          expect(response_ids).to match_array(expected_ids)
+        end
+
+      end
+
+    end
   end
 
-  describe 'creating' do
+  describe 'CREATE #create' do
+    let(:different_user){ create(:user) }
     before(:each) do
-      user = create(:user)
       sign_in user
 
-      @root = create(:node, parent_id: nil, name: 'root')
+      @prog1 = create(:node, parent_id: program1.id, name: 'Program 1', owner: different_user)
+      @prog2 = create(:node, parent_id: program1.id, name: 'prog2', owner: user)
     end
 
-    context 'when creating a node at level 2' do
-      it 'creates a collection for the node' do
+    context 'when user does not have write permissions on the parent node (root)' do
+      it 'returns 403' do
         params = { data: {
             type: 'nodes',
             attributes: { name: 'Bananas' },
-            relationships: { parent: { data: { type: 'nodes', id: @root.id } } },
+            relationships: { parent: { data: { type: 'nodes', id: root.id } } },
           }
         }
-        expect_any_instance_of(Node).to receive(:set_collection)
+        post api_v1_nodes_path, params: params.to_json, headers: headers
+        expect(response).to have_http_status(:forbidden)
+      end
+    end
+
+    context 'when user does not have write permissions on the parent node' do
+      it 'returns 403' do
+        params = { data: {
+            type: 'nodes',
+            attributes: { name: 'Cherries' },
+            relationships: { parent: { data: { type: 'nodes', id: @prog1.id } } },
+          }
+        }
+        post api_v1_nodes_path, params: params.to_json, headers: headers
+        expect(response).to have_http_status(:forbidden)
+      end
+    end
+
+    context 'when user does have write permissions on the parent node' do
+      it 'returns 201' do
+        params = { data: {
+            type: 'nodes',
+            attributes: { name: 'Bananas' },
+            relationships: { parent: { data: { type: 'nodes', id: @prog2.id } } },
+          }
+        }
         post api_v1_nodes_path, params: params.to_json, headers: headers
         expect(response).to have_http_status(:created)
       end
     end
-    context 'when creating a node at level 3' do
+  end
 
-      before do
-        @prog = create(:node, parent_id: @root.id, name: 'prog')
-      end
+  describe 'UPDATE #update' do
 
-      it 'does not create a collection for the node' do
+    let(:user){ create(:user) }
+    let(:different_user) { create(:user) }
+
+    before(:each) do
+      sign_in user
+
+      @node1 = create(:node, parent_id: program1.id, name: 'node1', owner: user)
+      @node2 = create(:node, parent_id: program1.id, name: 'node2', owner: different_user)
+    end
+
+    context 'when user does not have write permissions on the node' do
+      it 'returns a 403' do
         params = { data: {
+            id: @node2.id,
             type: 'nodes',
-            attributes: { name: 'Bananas' },
-            relationships: { parent: { data: { type: 'nodes', id: @prog.id } } },
+            attributes: { name: 'Bananas' }
           }
         }
-        expect_any_instance_of(Node).not_to receive(:set_collection)
-        post api_v1_nodes_path, params: params.to_json, headers: headers
-        expect(response).to have_http_status(:created)
+
+        patch api_v1_node_path(@node2), params: params.to_json, headers: headers
+        expect(response).to have_http_status(:forbidden)
+      end
+    end
+
+    context 'when user does have write permissions on the node' do
+      it 'returns a 200' do
+        params = { data: {
+            id: @node1.id,
+            type: 'nodes',
+            attributes: { name: 'Strawberries' }
+          }
+        }
+        patch api_v1_node_path(@node1), params: params.to_json, headers: headers
+        expect(response).to have_http_status(:ok)
       end
     end
   end
 
-  describe 'updating relationship' do
+  describe 'UPDATE #update_relationship' do
+
+    let(:user){ create(:user) }
+    let(:different_user){ create(:user) }
     before(:each) do
-      user = create(:user)
       sign_in user
-      @root = create(:node, parent_id: nil, name: 'root')
+      @prog1 = create(:node, parent_id: program1.id, name: 'prog1', owner: user)
+      @prog2 = create(:node, parent_id: program1.id, name: 'prog2', owner: different_user)
+      @prog3 = create(:node, parent_id: program1.id, name: 'prog3', owner: user)
+      @node1 = create(:node, parent_id: @prog1.id, name: 'node1', owner: user)
     end
 
-    context 'when moving a node to level 2' do
-      before do
-        @prog = create(:node, parent_id: @root.id, name: 'prog')
-        @node = create(:node, parent_id: @prog.id, name: 'node')
-      end
-
-      it 'creates a collection for the node' do
+    context 'when moving a node to under the root node' do
+      it 'returns a 403' do
         params = {
           data: {
             type: 'nodes',
-            id: @root.id,
+            id: root.id,
           },
           relationship: 'parent',
-          node_id: @node.id,
+          node_id: @node1.id,
         }
-        expect_any_instance_of(Node).to receive(:set_collection)
-        patch api_v1_node_relationships_parent_path(@node), params: params.to_json, headers: headers
-        expect(response).to have_http_status(:no_content)
+        patch api_v1_node_relationships_parent_path(@node1), params: params.to_json, headers: headers
+        expect(response).to have_http_status(:forbidden)
       end
     end
 
-    context 'when moving a node to level 3' do
-      before do
-        @prog1 = create(:node, parent_id: @root.id, name: 'prog1')
-        @prog2 = create(:node, parent_id: @root.id, name: 'prog2')
-        @node = create(:node, parent_id: @prog1.id, name: 'node')
-      end
-
-      it 'does not create a collection for the node' do
+    context 'when user does not have write permissions on the destination parent node' do
+      it 'does not update the relationship' do
         params = {
           data: {
             type: 'nodes',
             id: @prog2.id,
           },
           relationship: 'parent',
-          node_id: @node.id,
+          node_id: @node1.id,
         }
-        expect_any_instance_of(Node).not_to receive(:set_collection)
-        patch api_v1_node_relationships_parent_path(@node), params: params.to_json, headers: headers
+        patch api_v1_node_relationships_parent_path(@node1), params: params.to_json, headers: headers
+        expect(response).to have_http_status(:forbidden)
+      end
+    end
+
+    context 'when user does have write permissions on the destination parent node' do
+      it 'successfully updates relationship' do
+        params = {
+          data: {
+            type: 'nodes',
+            id: @prog1.id,
+          },
+          relationship: 'parent',
+          node_id: @node1.id,
+        }
+        patch api_v1_node_relationships_parent_path(@node1), params: params.to_json, headers: headers
         expect(response).to have_http_status(:no_content)
       end
     end
   end
 
-  describe 'delete' do
+  describe 'DELETE #destroy' do
+    let(:user){ create(:user) }
+    let(:different_user) { create(:user) }
 
     before do
-      user = create(:user)
       sign_in user
-      @node = create(:node)
+      @prog1 = create(:node, parent_id: program1.id, name: 'prog1', owner: user)
+      @node1 = create(:node, parent_id: @prog1.id, name: 'node1', owner: user)
+      @node2 = create(:node, parent_id: @prog1.id, name: 'node2', owner: different_user)
     end
 
-    it 'deactivates the node' do
-      delete api_v1_node_path(@node)
-      expect(@node.reload).not_to be_active
+    context 'when the node is under the root node' do
+      it 'returns a 403' do
+        delete api_v1_node_path(program1)
+        expect(program1.reload).to be_active
+      end
     end
+
+    context 'when user does not have write permissions on the node' do
+      it 'returns a 403' do
+        delete api_v1_node_path(@node2)
+        expect(@node2.reload).to be_active
+      end
+    end
+
+    context 'when user does have write permissions on the node' do
+      it 'returns a 202' do
+        delete api_v1_node_path(@node1)
+        expect(@node1.reload).not_to be_active
+      end
+    end
+
   end
 end

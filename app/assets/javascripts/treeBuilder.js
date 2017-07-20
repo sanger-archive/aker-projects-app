@@ -30,6 +30,7 @@
       var ret = {
         cost_code: parent.attributes['cost-code'],
         id : parent.id,
+        writable : parent.attributes['writable'],
         state: {
           expanded: expandedIds.indexOf(parent.id)>=0
         }

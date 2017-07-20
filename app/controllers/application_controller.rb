@@ -3,6 +3,7 @@ class ApplicationController < ActionController::Base
 
   include AkerAuthenticationGem::AuthController
   include JWTCredentials
+  include AkerPermissionControllerConfig
 
   layout :layout
 

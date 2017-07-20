@@ -70,11 +70,13 @@
 
   proto.selectNode = function(node) {
     $('#selected-node').val(node.attr('title')).data('node', node);
+    $('#new-node').val('');
   };
 
   proto.unselectNode = function() {
     $('#selected-node').data('node', null);
     $('#selected-node').val('');
+    $('#new-node').val('');
   };
 
   proto.createTreeNode = function($node, data) {
@@ -86,9 +88,9 @@
       if (!$(event.target).is('.edge')) {
         this.selectNode($node);
         //$('#edit-panel').css('visibility', 'visible');
-        $('#edit-panel button').prop('disabled', false);
-        $('#edit-panel input').prop('disabled', false);
-        $('#btn-delete-nodes').prop('disabled', this.hasChildren($node));
+        $('#edit-panel input').prop('disabled', !data.writable);
+        $('#btn-add-nodes').prop('disabled', !data.writable);
+        $('#btn-delete-nodes').prop('disabled', this.hasChildren($node) || !data.writable);
       }
     }, this));
 
