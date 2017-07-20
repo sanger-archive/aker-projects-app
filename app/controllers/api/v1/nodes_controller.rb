@@ -9,7 +9,7 @@ module Api
 
       def create
         authorize! :create, Node, message: 'You are not authorized to create this node.'
-        authorize! :write, parent_node
+        authorize! :write, parent_node, message: 'You are not authorized to create children nodes under the selected parent node'
         super
       end
 
@@ -26,7 +26,7 @@ module Api
 
       def update_relationship
         authorize! :write, update_current_node, message: 'You are not authorized to update this node.'
-        authorize! :write, update_parent_node
+        authorize! :write, update_parent_node, message: 'You are not authorized to update children nodes under the selected parent node'
         super
       end
 
