@@ -23,7 +23,7 @@ class NodeForm
 
   def save
     #TODO valid? currently does nothing
-    valid? && (id ? update_objects : create_objects)
+    valid? && (id.present? ? update_objects : create_objects)
   end
 
   def self.from_node(node)
