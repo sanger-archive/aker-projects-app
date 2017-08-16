@@ -85,7 +85,7 @@ RSpec.describe NodesController, type: :controller do
         expect(node.permitted?('team_gamma', :spend)).to be_falsey
         expect(node.permitted?(user.email, :read)).to be_truthy
         expect(node.permitted?(user.email, :write)).to be_truthy
-        expect(node.permitted?(user.email, :spend)).to be_falsey
+        expect(node.permitted?(user.email, :spend)).to be_truthy
       end
     end
 

@@ -372,7 +372,7 @@ RSpec.describe Node, type: :model do
       let(:user) { owner }
       it { should be_able_to(:read, node) }
       it { should be_able_to(:write, node) }
-      it { should_not be_able_to(:spend, node) }
+      it { should be_able_to(:spend, node) }
     end
 
     context 'when the user has group permission' do

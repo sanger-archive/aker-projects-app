@@ -96,6 +96,7 @@ RSpec.describe NodeForm do
         expected = [
           [user.email, :read],
           [user.email, :write],
+          [user.email, :spend],
           ['world', :read],
           ['dirk@sanger.ac.uk', :write],
           ['jeff@sanger.ac.uk', :write],
@@ -130,6 +131,7 @@ RSpec.describe NodeForm do
         expected = [
           [user.email, :read],
           [user.email, :write],
+          [user.email, :spend],
           ['world', :read],
           ['dirk@sanger.ac.uk', :write],
           ['jeff@sanger.ac.uk', :write],
