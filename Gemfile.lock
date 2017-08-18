@@ -12,9 +12,9 @@ GIT
 
 GIT
   remote: git://github.com/sanger/aker-credentials.git
-  revision: ab120405c8a55506ff400921ab6cbd4472c8c6bc
+  revision: d6a7bfbe1dd7175f8eb5a41dec78a672451dcef7
   specs:
-    aker_credentials_gem (0.1.0)
+    aker_credentials_gem (0.1.1)
       jwt
       request_store
 

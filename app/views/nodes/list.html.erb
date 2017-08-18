@@ -25,6 +25,10 @@
         <h2><%= @node.name %></h2>
       <% end %>
 
+      <% if @node.owner %>
+        <p><b>Owner:</b> <%= @node.owner.email %></p>
+      <% end %>
+
       <% if @node.description? %>
         <p><b>Description: </b> <%= @node.description %></p>
       <% end %>

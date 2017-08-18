@@ -14,5 +14,9 @@ class ApplicationController < ActionController::Base
     is_a?(Devise::SessionsController) ? "login_application" : "application"
   end
 
+  def current_user
+    return @x_auth_user if @x_auth_user && @x_auth_user.email!='guest'
+    warden.authenticate(scope: :user)
+  end
 
 end

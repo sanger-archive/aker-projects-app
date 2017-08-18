@@ -22,8 +22,8 @@ class NodeForm
   end
 
   def save
-    #TODO valid? currently does nothing
-    valid? && (id ? update_objects : create_objects)
+    # valid? currently does nothing
+    valid? && (id.present? ? update_objects : create_objects)
   end
 
   def self.from_node(node)
@@ -41,14 +41,7 @@ private
     permission_type = permission_type.to_sym
     perms = node.permissions.select { |p| p.permission_type.to_sym==permission_type && p.permitted.include?('@')!=groups }.
       map { |p| p.permitted }
-    if permission_type==:read
-      if groups
-        perms.delete('world')
-      elsif node.owner&.email
-        perms.delete(node.owner.email.downcase)
-      end
-    end
-    if permission_type==:write && !groups && node.owner&.email
+    if !groups && node.owner&.email
       perms.delete(node.owner.email.downcase)
     end
     perms.join(',')
@@ -57,7 +50,7 @@ private
   def create_objects
     ActiveRecord::Base.transaction do
       node = Node.create!(name: name, cost_code: cost_code, description: description, parent_id: parent_id, owner: @owner)
-      node.permissions.create!(convert_permissions)
+      node.permissions.create!(convert_permissions(@owner))
     end
   rescue
     false
@@ -69,26 +62,28 @@ private
       node.update_attributes!(name: name, cost_code: cost_code, description: description, parent_id: parent_id)
       node.permissions.destroy_all
       node.set_permissions
-      node.permissions.create!(convert_permissions)
+      node.permissions.create!(convert_permissions(node.owner))
     end
   rescue
     false
   end
 
-  def convert_permissions
+  def convert_permissions(owner)
+    owner_email = owner&.email&.strip&.downcase
     permitted = []
-    add_to_permission(permitted, user_writers, false, :write)
-    add_to_permission(permitted, group_writers, true, :write)
-    add_to_permission(permitted, user_spenders, false, :spend)
-    add_to_permission(permitted, group_spenders, true, :spend)
+    add_to_permission(permitted, user_writers, false, :write, owner_email)
+    add_to_permission(permitted, group_writers, true, :write, owner_email)
+    add_to_permission(permitted, user_spenders, false, :spend, owner_email)
+    add_to_permission(permitted, group_spenders, true, :spend, owner_email)
     permitted
   end
 
-  def add_to_permission(permitted, people, is_group, permission_type)
-    people&.split(',')&.each do |name|
-      name = fixname(name, is_group)
-      permitted.push({ permitted: name, permission_type: permission_type })
-    end
+  def add_to_permission(permitted, people, is_group, permission_type, owner_email)
+    return unless people
+    people.split(',').map { |name| fixname(name, is_group) }.
+      uniq.
+      reject { |name| name==owner_email }.
+      each { |name| permitted.push({ permitted: name, permission_type: permission_type })}
   end
 
   def fixname(name, is_group)
