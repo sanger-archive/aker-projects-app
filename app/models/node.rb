@@ -29,7 +29,10 @@ class Node < ApplicationRecord
   scope :active, -> { where(deactivated_by_id: nil) }
 
   def set_permissions
-    set_default_permission(owner.email) if owner
+    if owner
+      set_default_permission(owner.email)
+      self.permissions.create(permitted: owner.email, permission_type: :spend)
+    end
   end
 
   def create_uuid
