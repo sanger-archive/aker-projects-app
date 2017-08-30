@@ -41,8 +41,6 @@ RSpec.describe 'Nodes', type: :feature do
 
   before(:each) do
     sign_in user
-
-    allow(SetClient::Set).to receive(:create).and_return(double('Set', id: SecureRandom.uuid))
   end
 
   context 'when I visit the node#show page', js: true do
@@ -129,8 +127,6 @@ RSpec.describe 'Nodes', type: :feature do
       end
 
       it 'cannot delete a node under root' do
-        allow(SetClient::Set).to receive(:find).and_return([double(Set, name: '(DISABLED)')])
-
         page.find('div', class: 'node', text: program1.name).click
         click_button 'Delete'
         wait_for_ajax
@@ -138,8 +134,6 @@ RSpec.describe 'Nodes', type: :feature do
       end
 
       it 'can delete a node lower down owned by the user' do
-        allow(SetClient::Set).to receive(:find).and_return([double(Set, name: '(DISABLED)')])
-
         page.find('div', class: 'node', text: proj.name).click
         click_button 'Delete'
         wait_for_ajax
@@ -147,8 +141,6 @@ RSpec.describe 'Nodes', type: :feature do
       end
 
       it 'cannot delete a node lower down owned by another user' do
-        allow(SetClient::Set).to receive(:find).and_return([double(Set, name: '(DISABLED)')])
-
         page.find('div', class: 'node', text: proj2.name).click
         expect(page).not_to have_button('Delete')
       end

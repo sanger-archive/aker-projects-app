@@ -39,8 +39,6 @@ gem 'loading_mask'
 
 gem 'json_api_client', github: 'sanger/json_api_client'
 
-gem 'aker-set-client', :github => 'sanger/aker-set-client'
-
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
   gem 'byebug', platform: :mri
