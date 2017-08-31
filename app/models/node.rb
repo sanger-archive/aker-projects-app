@@ -1,5 +1,4 @@
 class Node < ApplicationRecord
-  include Collector
   include AkerPermissionGem::Accessible
 
   validates :name, presence: true
