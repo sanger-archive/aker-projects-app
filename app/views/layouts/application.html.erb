@@ -10,7 +10,7 @@
 
   <body>
     <nav class="navbar navbar-inverse">
-    <div class="container-fluid">
+    <div class="container">
     <div class="navbar-header">
     <!-- Display the hamburger button if screen isn't wide enough -->
     <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navBar">
@@ -22,7 +22,6 @@
     </div>
     <div class="collapse navbar-collapse" id="navBar">
     <ul class="nav navbar-nav">
-      <%#debugger%>
       <li><%= link_to 'List', list_node_path(@node), id: ('current_page' if params[:action] == 'list') %></li>
       <li><%= link_to 'Tree', tree_node_path(@node), id: ('current_page' if params[:action] == 'tree') %></li>
     </ul>
@@ -33,7 +32,7 @@
     </div>
     </nav>
 
-    <div class="container-fluid" id="content">
+    <div class=<%= params[:action] == 'tree' ? "container-fluid" : "container" %> id="content">
       <h1>WTSI Research Activity Model</h1>
       <%= yield %>
     </div>
