@@ -5,7 +5,7 @@ module Api
       has_many :nodes
       has_many :permissions, class_name: 'Permission', relation_name: :permissions
       has_one :parent
-      attributes :name, :cost_code, :description, :node_uuid, :writable
+      attributes :name, :cost_code, :description, :node_uuid, :writable, :owned_by_current_user
 
       before_create :set_owner
 
@@ -43,6 +43,12 @@ module Api
       filter :spendable_by, apply: ->(records, value, _options) {
         records.joins(:permissions).where('permissions.permission_type': 'spend', 'permissions.permitted': value)
       }
+
+      # check whether the node is owned by the curretly logged-in user
+      # returns a bool
+      def owned_by_current_user
+        @model.owner == context[:current_user]
+      end
 
       def meta(options)
         {
