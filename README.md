@@ -1,5 +1,7 @@
-# README
+# Aker - Study management GUI
 
-You need to `brew install phantomjs` for some of the tests to work.
+# Testing
+## Requirements
+* [PhantomJS](http://phantomjs.org/): `npm install phantomjs -g`
 
-TODO
+To run the test suite, execute: `rake spec`
