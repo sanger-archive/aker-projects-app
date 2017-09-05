@@ -15,10 +15,6 @@ RSpec.describe Node, type: :model do
     n
   }
 
-  before(:each) do
-    allow(SetClient::Set).to receive(:create).and_return(double('Set', id: SecureRandom.uuid))
-  end
-
   it "has a uuid" do
     expect(root).to have_attribute('node_uuid')
   end

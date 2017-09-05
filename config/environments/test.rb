@@ -40,8 +40,6 @@ Rails.application.configure do
   # Raises error for missing translations
   # config.action_view.raise_on_missing_translations = true
 
-  config.set_url = 'http://localhost:3000/api/v1/'
-
   config.fake_ldap = true
   config.jwt_secret_key = 'test'
   config.jwt_exp_time = 2*60

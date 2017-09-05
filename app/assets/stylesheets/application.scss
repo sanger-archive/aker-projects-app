@@ -1,5 +1,5 @@
 @import "bootstrap-sprockets";
-@import "bootstrap";
+@import "paper.min";
 @import "font-awesome-sprockets";
 @import "font-awesome";
 @import "bootstrap-treeview";
@@ -28,4 +28,40 @@
 
 .alert-notice {
   @extend .alert-success;
+}
+
+body {
+  background-color: #e0ebeb;
+}
+
+.container-fluid#content, .container#login, .container#content  {
+  margin-top: 20px;
+  padding-bottom: 10px;
+  background-color: white;
+  margin-bottom: 20px;
+}
+
+.bg-info {
+  background-color: #d9edf7;
+}
+
+h1 {
+  font-size: 40px;
+}
+
+h2 {
+  font-size: 35px;
+}
+
+#current_page {
+  background-color: #0073e6;
+  font-weight: bold;
+}
+
+// show the nodes owned by the currently logged-in user in a different colour
+.orgchart .owned-by-current-user .title {
+  background-color: #009933;
+}
+.orgchart .owned-by-current-user .content {
+  border-color: #009933;
 }

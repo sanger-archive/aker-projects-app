@@ -52,28 +52,4 @@ RSpec.describe 'API routing', type: :routing do
 
   end
 
-  describe 'Collection' do
-
-    before(:each) do
-      @collection = create(:collection, set_id: SecureRandom.uuid, collector: program1)
-    end
-
-    it 'routes to the index' do
-      expect(get: '/api/v1/collections').to be_routable
-    end
-
-    it 'routes to show' do
-      expect(get: "/api/v1/collections/#{@collection.id}").to be_routable
-    end
-
-    it 'does not route to updates' do
-      expect(patch: "/api/v1/collections/#{@collection.id}").to_not be_routable
-    end
-
-    it 'does not route to delete' do
-      expect(delete: "/api/v1/collections/#{@collection.id}").to_not be_routable
-    end
-
-  end
-
 end
