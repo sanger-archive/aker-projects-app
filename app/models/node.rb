@@ -4,7 +4,7 @@ class Node < ApplicationRecord
   validates :name, presence: true
   validates :parent, presence: true, if: :parent_id
   validates_presence_of :description, :allow_blank => true
-  validates :cost_code, :presence => true, :allow_blank => true, format: { with: /\AS[0-9]{4}+\z/ }, :on => [:create, :update]
+  validates :cost_code, :presence => true, :allow_blank => true, format: { with: /\AS[0-9]{4}+\z/, message: 'must be of the format "S" followed by four digits' }, :on => [:create, :update]
   validates :deactivated_datetime, presence: true, unless: :active?
   validates :deactivated_datetime, absence: true, if: :active?
   validate :validate_deactivate, unless: :active?
@@ -81,40 +81,40 @@ class Node < ApplicationRecord
 
   def validate_deactivate
     if nodes.reload.any?(&:active?)
-      errors.add(:base, "A node with active children cannot be deactivated.")
+      errors.add(:base, "A node with active children cannot be deactivated")
     end
   end
 
   # Name must be unique within the scope of active nodes
   def validate_name_active_uniqueness
     if Node.where(name: name, deactivated_by_id: nil).any? { |n| n.id != id }
-      errors.add(:name, "must be unique.")
+      errors.add(:name, "must be unique")
     end
   end
 
   def validate_node_is_not_root
     unless self.parent_id
-      errors.add(:base, "The root node cannot be created/updated.")
+      errors.add(:base, "The root node cannot be created/updated")
     end
   end
 
   def validate_node_parent_is_not_root
     if self.parent&.root?
-      errors.add(:base, "The node can not be created under root.")
+      errors.add(:base, "The node can not be created under root")
     end
   end
 
   def validate_node_cant_move_to_under_root
     former_parent = parent_id_was ? Node.find(parent_id_was) : nil
     if !former_parent&.root? && parent&.root?
-      errors.add(:base, "A node can not be moved to under the root node.")
+      errors.add(:base, "A node can not be moved to under the root node")
     end
   end
 
   def validate_node_cant_move_from_under_root
     former_parent = parent_id_was ? Node.find(parent_id_was) : nil
     if former_parent&.root? && !parent&.root?
-      errors.add(:base, "A node can not be moved from under the root node.")
+      errors.add(:base, "A node can not be moved from under the root node")
     end
   end
 

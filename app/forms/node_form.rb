@@ -35,6 +35,10 @@ class NodeForm
         group_spenders: node_permitted(node, :spend, true))
   end
 
+  def error_messages
+    @node.errors
+  end
+
 private
 
   def self.node_permitted(node, permission_type, groups)
@@ -49,8 +53,13 @@ private
 
   def create_objects
     ActiveRecord::Base.transaction do
-      node = Node.create!(name: name, cost_code: cost_code, description: description, parent_id: parent_id, owner: @owner)
-      node.permissions.create!(convert_permissions(@owner))
+      node = Node.new(name: name, cost_code: cost_code, description: description, parent_id: parent_id, owner: @owner)
+      if node.save
+        node.permissions.create!(convert_permissions(@owner))
+      else
+        @node = node
+        return false
+      end
     end
   rescue
     false
@@ -59,10 +68,14 @@ private
   def update_objects
     ActiveRecord::Base.transaction do
       node = Node.find(id)
-      node.update_attributes!(name: name, cost_code: cost_code, description: description, parent_id: parent_id)
-      node.permissions.destroy_all
-      node.set_permissions
-      node.permissions.create!(convert_permissions(node.owner))
+      if node.update_attributes(name: name, cost_code: cost_code, description: description, parent_id: parent_id)
+        node.permissions.destroy_all
+        node.set_permissions
+        node.permissions.create!(convert_permissions(node.owner))
+      else
+        @node = node
+        return false
+      end
     end
   rescue
     false

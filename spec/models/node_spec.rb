@@ -202,7 +202,7 @@ RSpec.describe Node, type: :model do
   describe '#update' do
     it "the root node cannot be updated" do
       root.update_attributes(name: 'Still root')
-      expect(root.errors[:base]).to eq ["The root node cannot be created/updated."]
+      expect(root.errors[:base]).to eq ["The root node cannot be created/updated"]
     end
   end
 

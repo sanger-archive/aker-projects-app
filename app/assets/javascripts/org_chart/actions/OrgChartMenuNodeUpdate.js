@@ -28,7 +28,7 @@
       })
       .on('ajax:success', $.proxy(this.onSuccessfulFormUpdateNode, this))
       .on('ajax:error', function(e, data, status, xhr) {
-        $('form', 'div.modal-body').render_form_errors('node', data.responseJSON);
+        $('form', 'div.modal-body').render_form_errors('node_form', data.responseJSON);
       });
     $("[data-behavior~=selectize]", 'div.modal-body').each(window.aker.selectize_element);
   };
