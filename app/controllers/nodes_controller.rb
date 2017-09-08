@@ -61,11 +61,8 @@ class NodesController < ApplicationController
         format.json { render json: @node, status: :ok }
       else
         format.html {
-          flash[:error] = []
+          flash[:error] = @node_form.error_messages.full_messages
           redirect_to edit_node_path(@node.id)
-          @node_form.error_messages.full_messages.each do |error_message|
-            flash[:error] << error_message
-          end
         }
         format.json { render json: @node_form.error_messages, status: :unprocessable_entity }
       end

@@ -53,11 +53,10 @@ private
 
   def create_objects
     ActiveRecord::Base.transaction do
-      node = Node.new(name: name, cost_code: cost_code, description: description, parent_id: parent_id, owner: @owner)
-      if node.save
-        node.permissions.create!(convert_permissions(@owner))
+      @node = Node.new(name: name, cost_code: cost_code, description: description, parent_id: parent_id, owner: @owner)
+      if @node.save
+        @node.permissions.create!(convert_permissions(@owner))
       else
-        @node = node
         return false
       end
     end
@@ -67,13 +66,12 @@ private
 
   def update_objects
     ActiveRecord::Base.transaction do
-      node = Node.find(id)
-      if node.update_attributes(name: name, cost_code: cost_code, description: description, parent_id: parent_id)
-        node.permissions.destroy_all
-        node.set_permissions
-        node.permissions.create!(convert_permissions(node.owner))
+      @node = Node.find(id)
+      if @node.update_attributes(name: name, cost_code: cost_code, description: description, parent_id: parent_id)
+        @node.permissions.destroy_all
+        @node.set_permissions
+        @node.permissions.create!(convert_permissions(@node.owner))
       else
-        @node = node
         return false
       end
     end
