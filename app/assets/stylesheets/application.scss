@@ -58,10 +58,39 @@ h2 {
   font-weight: bold;
 }
 
+// Set variables for owned and editable nodes
+$editable-colour: #009e9e;
+$owned-colour: #009933;
+
 // show the nodes owned by the currently logged-in user in a different colour
-.orgchart .owned-by-current-user .title {
-  background-color: #009933;
+.orgchart .owned-by-current-user {
+  .title {
+    background-color: $owned-colour;
+  }
+  .content {
+    border-color: $owned-colour;
+  }
 }
-.orgchart .owned-by-current-user .content {
-  border-color: #009933;
+
+// Highlight notes editable by current user
+.orgchart .editable-by-current-user {
+  .title {
+    background-color: $editable-colour;
+  }
+  .content {
+    border-color: $editable-colour;
+  }
+}
+
+// Show the appropriate colours on the node legend
+.node-legend {
+  font-weight: bold;
+  color: white;
+  border-radius: 3px;
+  &#owned {
+    background-color: $owned-colour;
+  }
+  &#editable {
+    background-color: $editable-colour;
+  }
 }

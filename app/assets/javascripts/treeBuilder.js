@@ -26,11 +26,15 @@
       expandedIds = [];
     }
     return parentNodes.reduce(function(memo, parent) {
+      var classes = ""
+      if (parent.attributes['editable-by-current-user']) classes += 'editable-by-current-user '
+      if (parent.attributes['owned-by-current-user']) classes = 'owned-by-current-user '
+
 
       var ret = {
         cost_code: parent.attributes['cost-code'],
         id : parent.id,
-        className: parent.attributes['owned-by-current-user'] ? 'owned-by-current-user' : '',
+        className: classes,
         writable : parent.attributes['writable'],
         state: {
           expanded: expandedIds.indexOf(parent.id)>=0

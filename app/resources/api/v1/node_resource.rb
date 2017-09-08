@@ -5,7 +5,7 @@ module Api
       has_many :nodes
       has_many :permissions, class_name: 'Permission', relation_name: :permissions
       has_one :parent
-      attributes :name, :cost_code, :description, :node_uuid, :writable, :owned_by_current_user
+      attributes :name, :cost_code, :description, :node_uuid, :writable, :owned_by_current_user, :editable_by_current_user
 
       before_create :set_owner
 
@@ -48,6 +48,21 @@ module Api
       # returns a bool
       def owned_by_current_user
         @model.owner == context[:current_user]
+      end
+
+      def editable_by_current_user
+        if @model.owner.nil?
+          return false
+        elsif @model.permissions.where(permitted: context[:current_user].email, permission_type: "write").count > 0
+          return true
+        else
+          context[:current_user].groups.each do |group|
+            if @model.permissions.where(permitted: group, permission_type: "write").count > 0
+              return true
+            end
+          end
+          return false
+        end
       end
 
       def meta(options)
