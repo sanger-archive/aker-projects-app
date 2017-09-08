@@ -96,8 +96,8 @@ RSpec.describe 'Nodes', type: :feature do
       it 'can add a new child node' do
         expect do
           page.find('div', class: 'node', text: program1.name).click
-          page.fill_in 'New Node:', :with => 'child'
-          click_button 'Add Child Node'
+          page.fill_in 'New Article:', :with => 'child'
+          click_button 'Add Article'
           wait_for_ajax
         end.to change{program1.nodes.count}.by(1)
       end
@@ -169,7 +169,7 @@ RSpec.describe 'Nodes', type: :feature do
 
         before do
           page.find('div', class: 'node', text: program2.name).click
-          page.fill_in 'New Node:', with: 'child'
+          page.fill_in 'New Article:', with: 'child'
         end
 
         it 'deselects the node' do
