@@ -51,7 +51,7 @@ module Api
       end
 
       def editable_by_current_user
-        if @model.owner.nil?
+        if @model.owner.nil? || context[:current_user].nil?
           return false
         elsif @model.permissions.where(permitted: context[:current_user].email, permission_type: "write").count > 0
           return true
