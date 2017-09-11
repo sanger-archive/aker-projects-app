@@ -55,12 +55,16 @@ class NodesController < ApplicationController
 
     respond_to do |format|
       @node_form = NodeForm.new(node_form_params)
+
       if @node_form.save
         format.html { redirect_to node_path(@node.parent_id), flash: { success: "Node updated" }}
         format.json { render json: @node, status: :ok }
       else
-        format.html { redirect_to edit_node_path(@node.id), flash: { danger: "Failed to update node" }}
-        format.json { render json: @node.errors, status: :unprocessable_entity }
+        format.html {
+          flash[:error] = @node_form.error_messages.full_messages
+          redirect_to edit_node_path(@node.id)
+        }
+        format.json { render json: @node_form.error_messages, status: :unprocessable_entity }
       end
     end
   end
