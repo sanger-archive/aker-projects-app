@@ -1,20 +1,24 @@
+<div>
+  <span class="node-legend" id="owned">Green articles</span> are owned by you<br>
+  <span class="node-legend" id="editable">Teal articles</span> are those which you have been given permission to edit
+</div>
 <%= render "show", locals: { tab: 'tree' } do %>
   <div id="tree" class="tab-pane active">
 
 
     <form id="edit-panel" style="padding-top:1em;" class="form-inline">
       <div class="form-group">
-        <label for="selected-node" class="selected-node-group">Selected Node:</label>
+        <label for="selected-node" class="selected-node-group">Selected Article:</label>
         <input type="text" readonly autocomplete="off" class="form-control" id="selected-node" class="selected-node-group" disabled="disabled">
       </div>
       &nbsp;
       <div class="form-group">
-        <label for="new-node">New Node:</label>
+        <label for="new-node">New Article:</label>
         <input type="text" autocomplete="off" class="form-control" id="new-node">
       </div>
       &nbsp;
 
-      <button type="button" class="btn btn-success" id="btn-add-nodes" disabled="disabled">Add Child Node</button>
+      <button type="button" class="btn btn-success" id="btn-add-nodes" disabled="disabled">Add Article</button>
       &nbsp;
       <button type="button" class="btn btn-danger"  id="btn-delete-nodes" disabled="disabled">Delete</button>
     </form>
