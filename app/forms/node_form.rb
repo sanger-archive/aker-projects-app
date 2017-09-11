@@ -53,12 +53,8 @@ private
 
   def create_objects
     ActiveRecord::Base.transaction do
-      @node = Node.new(name: name, cost_code: cost_code, description: description, parent_id: parent_id, owner: @owner)
-      if @node.save
-        @node.permissions.create!(convert_permissions(@owner))
-      else
-        return false
-      end
+      @node = Node.create!(name: name, cost_code: cost_code, description: description, parent_id: parent_id, owner: @owner)
+      @node.permissions.create!(convert_permissions(@owner))
     end
   rescue
     false
