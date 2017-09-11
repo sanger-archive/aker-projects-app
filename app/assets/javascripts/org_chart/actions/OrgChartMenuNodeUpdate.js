@@ -34,9 +34,8 @@
   };
 
   proto.onSuccessfulFormUpdateNode = function(e, data, status, xhr) {
-    // If the name has updated, we need to update the node
-    this.selectedNode().find('div.title').text(data['name']);
-    this.selectedNode().find('div.content').text(data['cost_code']);
+    // If the node has updated, we need reload the tree to show changes
+    this.loadTree();
 
     // Show a success message
     $('div.modal-body', '#editNodeModal').prepend('<div class="alert alert-success">Update successful</div>');
@@ -49,6 +48,7 @@
       });
       $('#editNodeModal').modal('hide');
     }, 500);
+
   };
 
   proto.onUpdateNode = function(id, event) {

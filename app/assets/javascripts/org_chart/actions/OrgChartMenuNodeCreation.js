@@ -57,6 +57,8 @@
         }
       );
     }
+    // Reload the tree when a new node is added (to apply HTML styles)
+    this.loadTree();
   };
 
   proto.createNode = function(newName, parentId) {
