@@ -1,6 +1,7 @@
 GIT
   remote: git://github.com/sanger/aker-credentials.git
-  revision: 17a09b629d785affe01ccc4ea0b124cf30d5bdc3
+  revision: adaf251d67433d74dd0e7094cc0300a9d9f189e5
+  branch: noguest
   specs:
     aker_credentials_gem (0.1.2)
       jwt
@@ -8,9 +9,9 @@ GIT
 
 GIT
   remote: git://github.com/sanger/aker-permission.git
-  revision: 6a8ec93b04d12d5dbd579654a2cc8f0574d05a2f
+  revision: 39dead14c5ad4da60271dc2408a3208333b89407
   specs:
-    aker_permission_gem (0.3.0)
+    aker_permission_gem (0.4.0)
       cancancan
 
 GIT

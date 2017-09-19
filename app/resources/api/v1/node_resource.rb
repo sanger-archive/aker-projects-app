@@ -47,7 +47,7 @@ module Api
       # check whether the node is owned by the current user.
       # returns a bool
       def owned_by_current_user
-        context[:current_user]!=nil && @model.owner_email == context[:current_user].email
+        context[:current_user] && @model.owner_email == context[:current_user].email
       end
 
       def editable_by_current_user
@@ -85,7 +85,7 @@ module Api
       end
 
       def writable
-        context[:current_user].present? && Ability.new(context[:current_user]).can?(:write, @model)
+        context[:current_user] && Ability.new(context[:current_user]).can?(:write, @model)
       end
 
     end

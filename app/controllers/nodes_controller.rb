@@ -82,7 +82,7 @@ class NodesController < ApplicationController
     end
   end
 
-  helper_method :check_write_permission_for_node
+  helper_method :check_write_permission_for_node, :jwt_provided?
 
   private
 
@@ -107,7 +107,7 @@ class NodesController < ApplicationController
   end
 
   def check_write_permission_for_node(node)
-    Ability.new(current_user).can?(:write, node)
+    current_user && Ability.new(current_user).can?(:write, node)
   end
 
 end
