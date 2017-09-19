@@ -1,9 +1,11 @@
 require 'rails_helper'
+require 'ostruct'
 
 RSpec.describe NodeForm do
-  let(:user) { create(:user) }
+  let(:user) { OpenStruct.new(email: 'user@sanger.ac.uk', groups: ['world']) }
+
   describe '#new' do
-    let(:form) { NodeForm.new(name: 'dirk', description: 'foo', cake: 'banana', owner: user, group_writers: 'zombies,pirates') }
+    let(:form) { NodeForm.new(name: 'dirk', description: 'foo', cake: 'banana', owner_email: user.email, group_writers: 'zombies,pirates') }
 
     it 'has the attributes specified that are in the ATTRIBUTES list' do
       expect(form.name).to eq 'dirk'
@@ -18,7 +20,7 @@ RSpec.describe NodeForm do
       expect(form.group_spenders).to be_nil
     end
     it 'has the owner specified' do
-      expect(form.instance_variable_get('@owner')).to eq(user)
+      expect(form.instance_variable_get('@owner_email')).to eq(user.email)
     end
   end
 
@@ -34,7 +36,7 @@ RSpec.describe NodeForm do
         build(:permission, permitted: 'jeff@sanger.ac.uk', permission_type: :spend),
       ]
       build(:node, id: 17, parent_id: 16, name: 'mynode', description: 'desc',
-          cost_code: 'S1234', permissions: permissions, owner: user)
+          cost_code: 'S1234', permissions: permissions, owner_email: user.email)
     end
     let(:form) { NodeForm.from_node(node) }
 
@@ -46,7 +48,7 @@ RSpec.describe NodeForm do
       expect(form.cost_code).to eq('S1234')
     end
     it 'has the owner specified' do
-      expect(form.instance_variable_get('@owner')).to eq(user)
+      expect(form.instance_variable_get('@owner_email')).to eq(user.email)
     end
     it 'has the correct permissions' do
       expect(form.user_writers).to eq('dirk@sanger.ac.uk')
@@ -69,11 +71,11 @@ RSpec.describe NodeForm do
       pr
     end
     let(:project) do
-      pr = create(:node, name: 'project', description: 'desc', cost_code: 'S1234', parent: program, owner: user)
+      pr = create(:node, name: 'project', description: 'desc', cost_code: 'S1234', parent: program, owner_email: user.email)
     end
 
     context 'when the form represents a new node' do
-      let(:form) { NodeForm.new(name: 'jelly', description: 'foo', parent_id: program.id, owner: user, cost_code: 'S1234', user_writers: 'dirk,jeff', group_writers: 'zombies,   PIRATES', user_spenders: 'DIRK', group_spenders: 'ninjas') }
+      let(:form) { NodeForm.new(name: 'jelly', description: 'foo', parent_id: program.id, owner_email: user.email, cost_code: 'S1234', user_writers: 'dirk,jeff', group_writers: 'zombies,   PIRATES', user_spenders: 'DIRK', group_spenders: 'ninjas') }
 
       before { @result = form.save }
 
@@ -87,7 +89,7 @@ RSpec.describe NodeForm do
         expect(node.description).to eq('foo')
         expect(node.parent).to eq(program)
         expect(node.id).not_to be_nil
-        expect(node.owner).to eq(user)
+        expect(node.owner_email).to eq(user.email)
       end
 
       it 'sets up the correct permissions' do
@@ -122,7 +124,7 @@ RSpec.describe NodeForm do
         expect(node.description).to eq('foo')
         expect(node.cost_code).to eq('S0000')
         expect(node.parent).to eq(program)
-        expect(node.owner).to eq(user) # no change
+        expect(node.owner_email).to eq(user.email) # no change
       end
 
       it 'sets up the correct permissions' do
@@ -145,7 +147,7 @@ RSpec.describe NodeForm do
     end
 
     context 'when the node cannot be created' do
-      let(:form) { NodeForm.new(name: 'jelly', description: 'foo', parent_id: program.id, owner: user, cost_code: 'S1234', user_writers: 'dirk,jeff', group_writers: 'zombies,   PIRATES', user_spenders: 'DIRK', group_spenders: 'ninjas') }
+      let(:form) { NodeForm.new(name: 'jelly', description: 'foo', parent_id: program.id, owner_email: user.email, cost_code: 'S1234', user_writers: 'dirk,jeff', group_writers: 'zombies,   PIRATES', user_spenders: 'DIRK', group_spenders: 'ninjas') }
       it "returns false and doesn't create the node" do
         allow(form).to receive(:convert_permissions).and_raise('Kaboom')
         expect(form.save).to be_falsey

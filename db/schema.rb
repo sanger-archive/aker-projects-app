@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170830155909) do
+ActiveRecord::Schema.define(version: 20170918143645) do
 
   create_table "nodes", force: :cascade do |t|
     t.string   "name"
@@ -19,14 +19,13 @@ ActiveRecord::Schema.define(version: 20170830155909) do
     t.datetime "updated_at",           null: false
     t.text     "description"
     t.string   "cost_code"
-    t.integer  "deactivated_by_id"
     t.datetime "deactivated_datetime"
     t.string   "node_uuid"
-    t.integer  "owner_id"
+    t.string   "owner_email"
+    t.string   "deactivated_by"
     t.index ["cost_code"], name: "index_nodes_on_cost_code"
-    t.index ["deactivated_by_id"], name: "index_nodes_on_deactivated_by_id"
     t.index ["name"], name: "index_nodes_on_name"
-    t.index ["owner_id"], name: "index_nodes_on_owner_id"
+    t.index ["owner_email"], name: "index_nodes_on_owner_email"
     t.index ["parent_id"], name: "index_nodes_on_parent_id"
   end
 
@@ -40,20 +39,6 @@ ActiveRecord::Schema.define(version: 20170830155909) do
     t.index ["accessible_type", "accessible_id"], name: "index_permissions_on_accessible_type_and_accessible_id"
     t.index ["permitted", "permission_type", "accessible_id", "accessible_type"], name: "index_permissions_on_various", unique: true
     t.index ["permitted"], name: "index_permissions_on_permitted"
-  end
-
-  create_table "users", force: :cascade do |t|
-    t.string   "email",               default: "", null: false
-    t.datetime "remember_created_at"
-    t.integer  "sign_in_count",       default: 0,  null: false
-    t.datetime "current_sign_in_at"
-    t.datetime "last_sign_in_at"
-    t.string   "current_sign_in_ip"
-    t.string   "last_sign_in_ip"
-    t.datetime "created_at",                       null: false
-    t.datetime "updated_at",                       null: false
-    t.string   "remember_token"
-    t.index ["email"], name: "index_users_on_email", unique: true
   end
 
 end

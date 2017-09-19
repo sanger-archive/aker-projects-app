@@ -7,30 +7,29 @@ class Node < ApplicationRecord
   validates :cost_code, :presence => true, :allow_blank => true, format: { with: /\AS[0-9]{4}+\z/, message: 'must be of the format "S" followed by four digits' }, :on => [:create, :update]
   validates :deactivated_datetime, presence: true, unless: :active?
   validates :deactivated_datetime, absence: true, if: :active?
+  validates :owner_email, presence: true
+
   validate :validate_deactivate, unless: :active?
   validate :validate_name_active_uniqueness, if: :active?
   validate :validate_node_is_not_root
-  validate :validate_node_parent_is_not_root
   validate :validate_node_cant_move_to_under_root
   validate :validate_node_cant_move_from_under_root
 
 	has_many :nodes, class_name: 'Node', foreign_key: 'parent_id', dependent: :restrict_with_error
 	belongs_to :parent, class_name: 'Node', required: false
-  belongs_to :deactivated_by, class_name: "User", required: false
-  belongs_to :owner, class_name: "User", required: true
 
   before_save :sanitise_blank_cost_code
   before_create :create_uuid
-  before_destroy :validate_root_node_cant_be_destroyed, :validate_root_under_node_cant_be_destroyed
+  before_destroy :validate_root_node_cant_be_destroyed
 
   after_create :set_permissions
 
-  scope :active, -> { where(deactivated_by_id: nil) }
+  scope :active, -> { where(deactivated_by: nil) }
 
   def set_permissions
-    if owner
-      set_default_permission(owner.email)
-      self.permissions.create(permitted: owner.email, permission_type: :spend)
+    if owner_email
+      set_default_permission(owner_email)
+      self.permissions.create(permitted: owner_email, permission_type: :spend)
     end
   end
 
@@ -64,13 +63,13 @@ class Node < ApplicationRecord
 
   # A Node is active when its deactivated_by column is null
   def active?
-    deactivated_by_id.nil?
+    deactivated_by.nil?
   end
 
-  def deactivate(user)
+  def deactivate(user_email)
     return true unless active?
-    raise ArgumentError, "Node must be deactivated by a User" unless user.id
-    update_attributes(deactivated_by: user, deactivated_datetime: DateTime.now)
+    raise ArgumentError, "Node must be deactivated by a User" unless user_email
+    update_attributes(deactivated_by: user_email, deactivated_datetime: DateTime.now)
   end
 
   def active_children
@@ -87,7 +86,7 @@ class Node < ApplicationRecord
 
   # Name must be unique within the scope of active nodes
   def validate_name_active_uniqueness
-    if Node.where(name: name, deactivated_by_id: nil).any? { |n| n.id != id }
+    if Node.where(name: name, deactivated_by: nil).any? { |n| n.id != id }
       errors.add(:name, "must be unique")
     end
   end
@@ -98,35 +97,23 @@ class Node < ApplicationRecord
     end
   end
 
-  def validate_node_parent_is_not_root
-    if self.parent&.root?
-      errors.add(:base, "The node can not be created under root")
-    end
-  end
-
   def validate_node_cant_move_to_under_root
     former_parent = parent_id_was ? Node.find(parent_id_was) : nil
     if !former_parent&.root? && parent&.root?
-      errors.add(:base, "A node can not be moved to under the root node")
+      errors.add(:base, "A node cannot be moved to under the root node")
     end
   end
 
   def validate_node_cant_move_from_under_root
     former_parent = parent_id_was ? Node.find(parent_id_was) : nil
     if former_parent&.root? && !parent&.root?
-      errors.add(:base, "A node can not be moved from under the root node")
+      errors.add(:base, "A node cannot be moved from under the root node")
     end
   end
 
   def validate_root_node_cant_be_destroyed
     if self.root?
-      errors.add(:base, "The root node can not be deleted")
-    end
-  end
-
-  def validate_root_under_node_cant_be_destroyed
-    if self.parent&.root?
-      errors.add(:base, "A node under the root node can not be deleted")
+      errors.add(:base, "The root node cannot be deleted")
     end
   end
 

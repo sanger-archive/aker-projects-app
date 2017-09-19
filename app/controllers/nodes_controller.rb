@@ -1,6 +1,5 @@
 class NodesController < ApplicationController
 
-  include AkerAuthenticationGem::AuthController
   include AkerPermissionControllerConfig
 
   before_action :current_node, except: :create
@@ -29,7 +28,7 @@ class NodesController < ApplicationController
     # Everyone is allowed to create a node under root
     authorize! :write, parent_node
 
-    @node_form = NodeForm.new(node_form_params.merge(owner: current_user))
+    @node_form = NodeForm.new(node_form_params.merge(owner_email: current_user.email))
 
     if @node_form.save
       flash[:success] = "Node created"
@@ -74,7 +73,7 @@ class NodesController < ApplicationController
 
     @parent_id = @node.parent_id
 
-    if @node.deactivate(current_user)
+    if @node.deactivate(current_user.email)
       flash[:success] = "Node deleted"
       redirect_to node_path(@parent_id)
     else

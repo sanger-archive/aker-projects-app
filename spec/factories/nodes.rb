@@ -4,9 +4,9 @@ FactoryGirl.define do
     cost_code nil
     description nil
     parent_id nil
-    deactivated_by_id nil
+    deactivated_by nil
     deactivated_datetime nil
-    association :owner, factory: :user
+    owner_email 'owner@sanger.ac.uk'
 
     # Usage: create(:readable_node, permitted: 'cs24')
     #

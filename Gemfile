@@ -15,7 +15,6 @@ gem 'coffee-rails', '~> 4.2'
 
 #gem 'aker_authentication_gem', :github => 'emrojo/aker-authentication'
 gem 'aker_credentials_gem', :github => 'sanger/aker-credentials'
-gem 'aker_authentication_gem', :github => 'sanger/aker-authentication'
 gem 'aker_permission_gem', :github => 'sanger/aker-permission'
 
 # Use jquery as the JavaScript library
