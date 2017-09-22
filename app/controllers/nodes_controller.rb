@@ -108,7 +108,7 @@ class NodesController < ApplicationController
   end
 
   def check_write_permission_for_node(node)
-    Ability.new(current_user).can?(:write, node)
+    Ability.new(current_user).can?(:write, node) && !node.world_node?
   end
 
 end
