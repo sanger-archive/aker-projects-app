@@ -1,5 +1,7 @@
 Rails.application.configure do
   # Settings specified here will take precedence over those in config/application.rb.
+  # NOTE: This doesn't need to go into staging.rb. nginx will handle it.
+  config.relative_url_root = '/study'
 
   # In the development environment your application's code is reloaded on
   # every request. This slows down response time but is perfect for development

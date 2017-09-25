@@ -67,7 +67,7 @@
             'Accept' : 'application/vnd.api+json',
             'Content-Type' : 'application/vnd.api+json'
         },
-        url : '/api/v1/nodes/',
+        url : Routes.api_v1_nodes_path(),
         type : 'POST',
         data : JSON.stringify({ data: { type: 'nodes', attributes: { name: newName }, relationships: { parent: { data: { type: 'nodes', id: parentId }}} }})
     }).then(

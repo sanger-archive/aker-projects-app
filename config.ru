@@ -2,6 +2,8 @@
 
 require_relative 'config/environment'
 
-map '/study' do
+# Use config.app_mount_dir only if it's been set to something other than an
+# empty string. Otherwise, use default of /
+map Rails.application.config.app_mount_dir || '/' do
   run Rails.application
 end

@@ -10,7 +10,7 @@
     this.selectNode($node);
     // We get the nodeId of the currently selected node
 
-    var url = '/nodes/'+this.selectedNode().attr('id');
+    var url = Routes.node_path(this.selectedNode().attr('id'));
 
     // We call jQuery's load method to fetch the html content of /nodes/:id/edit.js
     // and load it into the modal body
@@ -60,7 +60,7 @@
             'Accept' : 'application/vnd.api+json',
             'Content-Type' : 'application/vnd.api+json'
         },
-        url : '/api/v1/nodes/'+event.draggedNode[0].id+'/relationships/parent',
+        url : Routes.api_v1_node_relationships_parent_path(event.draggedNode[0].id),
         type : 'PATCH',
         data : JSON.stringify({ data: { type: 'nodes', id: id }})
     }).then(

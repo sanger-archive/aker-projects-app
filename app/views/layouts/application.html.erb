@@ -18,7 +18,7 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="navbar-brand" href="#">Aker</a>
+          <a class="navbar-brand" href="<%= root_url %>">Aker</a>
         </div>
         <div class="collapse navbar-collapse" id="navBar">
           <ul class="nav navbar-nav">
@@ -31,7 +31,7 @@
                 <%= link_to 'Log out', Rails.configuration.logout_url, method: :delete if Rails.configuration.logout_url %>
               <% else %>
                 <%= link_to 'Log in', Rails.configuration.login_url if Rails.configuration.login_url %>
-              <% end %>  
+              <% end %>
             </li>
           </ul>
         </div>

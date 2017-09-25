@@ -14,10 +14,13 @@
 //= require jquery_ujs
 //= require turbolinks
 //= require bootstrap-sprockets
+//= require js-routes
 //= require_tree ./org_chart/actions/
 //= require_tree ./org_chart
 //= require_tree .
 //= require loading_mask
+
+Routes.configure({ prefix: '<%= Rails.configuration.app_mount_dir %>' })
 
 $(document).on("turbolinks:load", function() {
   $('#side_menu_tree').each(function() {

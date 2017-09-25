@@ -34,6 +34,7 @@ gem 'bootstrap_form'
 gem 'active_model_serializers'
 gem 'zipkin-tracer'
 gem 'loading_mask'
+gem 'js-routes'
 
 gem 'json_api_client', github: 'sanger/json_api_client'
 
