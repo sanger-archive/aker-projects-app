@@ -55,11 +55,6 @@ RSpec.describe 'Nodes', type: :feature do
       expect(page).to have_link('program2', href: node_path(program2.id))
     end
 
-    it "you can edit or delete program level nodes" do
-      expect(page).to have_content('Edit')
-      expect(page).to have_content('Delete')
-    end
-
   end
 
   context 'when I visit the Tree Hierarchy', js: true do
