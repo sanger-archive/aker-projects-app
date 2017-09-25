@@ -4,4 +4,4 @@ require_relative 'config/environment'
 
 map '/study' do
   run Rails.application
-done
+end
