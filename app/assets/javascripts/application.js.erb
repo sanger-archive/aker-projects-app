@@ -20,7 +20,7 @@
 //= require_tree .
 //= require loading_mask
 
-Routes.configure({ prefix: '<%= Rails.configuration.app_mount_dir %>' })
+Routes.configure({ prefix: '<%= Rails.application.config.relative_url_root %>' })
 
 $(document).on("turbolinks:load", function() {
   $('#side_menu_tree').each(function() {

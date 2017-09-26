@@ -22,10 +22,6 @@ module Projects
       g.assets false
     end
 
-    # Override this is an environment file to mount the whole app in a subdirectory
-    # e.g. config.app_mount_dir = '/study'
-    config.app_mount_dir = ''
-
     config.ldap = config_for(:ldap)
 
     config.autoload_paths += %W("#{config.root}/app/forms")
