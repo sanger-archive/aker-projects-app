@@ -53,7 +53,7 @@ class Node < ApplicationRecord
   # can be clear that these nodes cannot be edited (even though they have world edit
   # permission)
   def world_node?
-    parent_id == 1
+    !root? && parent.root?
   end
 
   # Gets the parents of a node,
