@@ -12,7 +12,7 @@
   };
 
   proto.loadSidebar = function() {
-    $.get('/api/v1/nodes?include=nodes.parent', function(response) {
+    $.get(Routes.api_v1_nodes_path({'include': 'nodes.parent'}), function(response) {
 
       $('#side_menu_tree').treeview({
         data: TreeBuilder.createFrom(response.data, false, window.currentNodeId),

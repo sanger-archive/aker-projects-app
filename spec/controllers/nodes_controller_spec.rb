@@ -2,7 +2,8 @@ require 'rails_helper'
 
 RSpec.describe NodesController, type: :controller do
 
-  let(:user) { create(:user) }
+  let(:user) { OpenStruct.new(email: 'user@sanger.ac.uk', groups: ['world']) }
+  let(:different_user) { OpenStruct.new(email: 'other@sanger.ac.uk', groups: ['world']) }
 
   let(:root) {
     n = build(:node, name: 'root')
@@ -11,21 +12,20 @@ RSpec.describe NodesController, type: :controller do
   }
 
   let(:program1) {
-    n = build(:node, name: 'program1', parent: root, owner: user)
+    n = build(:node, name: 'program1', parent: root, owner_email: user.email)
     n.save(validate: false)
     n
   }
 
   setup do
-    sign_in user
+    allow(controller).to receive(:current_user).and_return(user)
   end
 
   describe 'DELETE #destroy' do
 
     context "when a user does not have write permission on the node" do
-      let(:different_user) { create(:user) }
       before do
-        @program2 = create(:node, name: "program2", parent: program1, owner: different_user)
+        @program2 = create(:node, name: "program2", parent: program1, owner_email: different_user.email)
       end
 
       it "should not delete the node" do
@@ -35,7 +35,7 @@ RSpec.describe NodesController, type: :controller do
 
     context "when a user does have write permission on the node" do
       before do
-        @program3 = create(:node, name: "program3", parent: program1, owner: user)
+        @program3 = create(:node, name: "program3", parent: program1, owner_email: user.email)
       end
 
       it "should delete the node" do
@@ -45,7 +45,7 @@ RSpec.describe NodesController, type: :controller do
       end
 
       it "should not delete a node with children" do
-        @program4 = create(:node, name: "program4", parent: @program3, owner: user)
+        @program4 = create(:node, name: "program4", parent: @program3, owner_email: user.email)
         delete :destroy, params: { id: @program3 }
         expect(@program3.reload).to be_active
         expect(flash[:danger]).to match('A node with active children cannot be deactivated')
@@ -54,9 +54,8 @@ RSpec.describe NodesController, type: :controller do
   end
 
   describe 'CREATE #create' do
-    let(:different_user) { create(:user) }
     setup do
-      @program2 = create(:node, name: "program2", parent: program1, owner: different_user)
+      @program2 = create(:node, name: "program2", parent: program1, owner_email: different_user.email)
     end
 
     context "when the parent is the root node" do
@@ -67,7 +66,7 @@ RSpec.describe NodesController, type: :controller do
 
     context 'when permissions are specified' do
       before do
-        @prog = create(:node, name: "prog", parent: program1, owner: user)
+        @prog = create(:node, name: "prog", parent: program1, owner_email: user.email)
       end
       it "should create a new node" do
         expect { post :create, params: { node_form: { parent_id: @prog.id, name: "Bananas", user_writers: 'dirk,jeff@sanger.ac.uk', group_writers: 'team_gamma,team_DELTA', user_spenders: 'DIRK@sanger.ac.uk', group_spenders: 'team_delta,team_epsilon' } } }.to change{Node.all.count}.by(1)
@@ -97,7 +96,7 @@ RSpec.describe NodesController, type: :controller do
 
     context "when a user does have write permission on the parent node" do
       before do
-        @prog = create(:node, name: "prog", parent: program1, owner: user)
+        @prog = create(:node, name: "prog", parent: program1, owner_email: user.email)
       end
       it "should create a new node" do
         expect { post :create, params: { node_form: { parent_id: @prog.id, name: "Bananas" } } }.to change{Node.all.count}.by(1)
@@ -106,24 +105,21 @@ RSpec.describe NodesController, type: :controller do
 
     describe 'owner' do
       it "should set the owner" do
-        parent = create(:node, name: "parent", parent: program1, owner: user)
+        parent = create(:node, name: "parent", parent: program1, owner_email: user.email)
         post :create, params: { node_form: { parent_id: parent.id, name: "Bananas" } }
 
         n = Node.find_by(name: "Bananas")
         expect(n).not_to be_nil
-        expect(n.owner).not_to be_nil
-        expect(n.owner).to eq(user)
+        expect(n.owner_email).to eq(user.email)
       end
     end
   end
 
   describe 'EDIT #update' do
 
-    let(:different_user) { create(:user) }
-
     setup do
-      @program2 = create(:node, name: "program2", parent: program1, owner: different_user)
-      @program3 = create(:node, name: "program3", parent: program1, owner: user)
+      @program2 = create(:node, name: "program2", parent: program1, owner_email: different_user.email)
+      @program3 = create(:node, name: "program3", parent: program1, owner_email: user.email)
     end
 
     context "when a user does have write permissions on the node" do

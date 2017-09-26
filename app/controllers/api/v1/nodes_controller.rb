@@ -1,10 +1,9 @@
 module Api
   module V1
     class NodesController < JSONAPI::ResourceController
-      include AkerAuthenticationGem::AuthController
+      include JWTCredentials
   	  include AkerPermissionControllerConfig
 
-      skip_authenticate_user
       skip_authorization_check only: [:index, :show]
 
       def create
@@ -20,7 +19,7 @@ module Api
 
       def destroy
         authorize! :write, current_node, message: 'You are not authorized to delete this node.'
-        @node.deactivate(current_user)
+        @node.deactivate(current_user.email)
         super
       end
 

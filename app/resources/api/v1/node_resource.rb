@@ -29,7 +29,7 @@ module Api
       }
 
       filter :active, default: "true", apply: -> (records, value, _options) {
-        (value[0].downcase == "true") ? records.where(deactivated_by_id: nil) : records.where.not(deactivated_by_id: nil)
+        (value[0].downcase == "true") ? records.where(deactivated_by: nil) : records.where.not(deactivated_by: nil)
       }
 
       filter :readable_by, apply: ->(records, value, _options) {
@@ -44,25 +44,28 @@ module Api
         records.joins(:permissions).where('permissions.permission_type': 'spend', 'permissions.permitted': value)
       }
 
-      # check whether the node is owned by the curretly logged-in user
+      # check whether the node is owned by the current user.
       # returns a bool
       def owned_by_current_user
-        @model.owner == context[:current_user]
+        context[:current_user] && @model.owner_email == context[:current_user].email
       end
 
       def editable_by_current_user
-        if @model.owner.nil? || context[:current_user].nil?
-          return false
-        elsif @model.permissions.where(permitted: context[:current_user].email, permission_type: "write").count > 0
-          return true
-        else
-          context[:current_user].groups.each do |group|
-            if @model.permissions.where(permitted: group, permission_type: "write").count > 0
-              return true
-            end
-          end
+        if context[:current_user].nil?
           return false
         end
+        if @model.owner_email && @model.owner_email==context[:current_user].email
+          return true
+        end
+        if @model.permissions.where(permitted: context[:current_user].email, permission_type: "write").count > 0
+          return true
+        end
+        context[:current_user].groups.each do |group|
+          if @model.permissions.where(permitted: group, permission_type: "write").count > 0
+            return true
+          end
+        end
+        return false
       end
 
       def meta(options)
@@ -72,15 +75,17 @@ module Api
       end
 
       def remove
-        @model.deactivate(context[:current_user])
+        unless @model.deactivate(context[:current_user]&.email)
+          raise JSONAPI::Exceptions::BadRequest, "This node cannot be deactivated"
+        end
       end
 
       def set_owner
-        @model.owner = context[:current_user]
+        @model.owner_email = context[:current_user]&.email
       end
 
       def writable
-        context[:current_user].present? && Ability.new(context[:current_user]).can?(:write, @model)
+        context[:current_user] && Ability.new(context[:current_user]).can?(:write, @model)
       end
 
     end

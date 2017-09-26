@@ -73,7 +73,7 @@
 
   proto.keepTreeUpdate = function() {
     var defer = $.Deferred();
-    return $.get('/api/v1/nodes?include=nodes.parent', $.proxy(function(response, status, promise) {
+    return $.get(Routes.api_v1_nodes_path({'include': 'nodes.parent'}), $.proxy(function(response, status, promise) {
       if (this._treeIsDown) {
         return this.resetTree().then($.proxy(function() {
           this._treeIsDown = false;

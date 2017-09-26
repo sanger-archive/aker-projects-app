@@ -10,26 +10,32 @@
 
   <body>
     <nav class="navbar navbar-inverse">
-    <div class="container">
-    <div class="navbar-header">
-    <!-- Display the hamburger button if screen isn't wide enough -->
-    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navBar">
-      <span class="icon-bar"></span>
-      <span class="icon-bar"></span>
-      <span class="icon-bar"></span>
-    </button>
-    <a class="navbar-brand" href="#">Aker</a>
-    </div>
-    <div class="collapse navbar-collapse" id="navBar">
-    <ul class="nav navbar-nav">
-      <li><%= link_to 'List', list_node_path(@node), id: ('current_page' if params[:action] == 'list') %></li>
-      <li><%= link_to 'Tree', tree_node_path(@node), id: ('current_page' if params[:action] == 'tree') %></li>
-    </ul>
-    <ul class="nav navbar-nav navbar-right">
-      <li><%= link_to 'Log Out', destroy_user_session_url, method: :delete if user_signed_in? %></li>
-    </ul>
-    </div>
-    </div>
+      <div class="container">
+        <div class="navbar-header">
+        <!-- Display the hamburger button if screen isn't wide enough -->
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navBar">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="<%= root_url %>">Aker</a>
+        </div>
+        <div class="collapse navbar-collapse" id="navBar">
+          <ul class="nav navbar-nav">
+            <li><%= link_to 'List', list_node_path(@node), id: ('current_page' if params[:action] == 'list') %></li>
+            <li><%= link_to 'Tree', tree_node_path(@node), id: ('current_page' if params[:action] == 'tree') %></li>
+          </ul>
+          <ul class="nav navbar-nav navbar-right">
+            <li>
+              <% if jwt_provided? %>
+                <%= link_to 'Log out', Rails.configuration.logout_url, method: :delete if Rails.configuration.logout_url %>
+              <% else %>
+                <%= link_to 'Log in', Rails.configuration.login_url if Rails.configuration.login_url %>
+              <% end %>
+            </li>
+          </ul>
+        </div>
+      </div>
     </nav>
 
     <div class=<%= params[:action] == 'tree' ? "container-fluid" : "container" %> id="content">

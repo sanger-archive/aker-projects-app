@@ -9,7 +9,7 @@ RSpec.describe 'API routing', type: :routing do
   }
 
   let(:program1) {
-    n = build(:node, name: 'program1', parent: root, owner: create(:user))
+    n = build(:node, name: 'program1', parent: root, owner_email: 'user@sanger.ac.uk')
     n.save(validate: false)
     n
   }

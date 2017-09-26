@@ -1,5 +1,7 @@
 Rails.application.configure do
   # Settings specified here will take precedence over those in config/application.rb.
+  # NOTE: This doesn't need to go into staging.rb. nginx will handle it.
+  # config.relative_url_root = '/study'
 
   # In the development environment your application's code is reloaded on
   # every request. This slows down response time but is perfect for development
@@ -56,4 +58,9 @@ Rails.application.configure do
   config.jwt_secret_key = 'development'
   config.jwt_exp_time = 2*60
   config.jwt_nbf_time = 1*60
+
+  config.default_jwt_user = { email: ENV.fetch('USER', 'user')+'@sanger.ac.uk', groups: ['world'] }
+
+  config.login_url = '#'
+  config.logout_url = '#'
 end
