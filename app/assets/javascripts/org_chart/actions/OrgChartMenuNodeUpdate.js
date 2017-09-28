@@ -15,7 +15,7 @@
     // We call jQuery's load method to fetch the html content of /nodes/:id/edit.js
     // and load it into the modal body
     $('#editNodeModal').modal('show');
-    $('div.modal-body', '#editNodeModal').load(url+ '/edit.js', $.proxy(this.onLoadUpdateNodeForm, this));
+    $('div.modal-content', '#editNodeModal').load(url+ '/edit.js', $.proxy(this.onLoadUpdateNodeForm, this));
   };
 
   proto.onLoadUpdateNodeForm = function(response, status, xhr) {
@@ -43,9 +43,6 @@
     // Setting a timeout so the user can see the update was successful just before closing
     // the modal window
     setTimeout(function() {
-      $('#editNodeModal input').each(function(input) {
-        $(input).val('');
-      });
       $('#editNodeModal').modal('hide');
     }, 500);
 
