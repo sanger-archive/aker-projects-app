@@ -1,10 +1,11 @@
 require 'rails_helper'
+require 'ostruct'
 
 RSpec.describe 'Nodes', type: :feature do
 
-  let(:user) { create(:user) }
+  let(:user) { OpenStruct.new(email: 'user@sanger.ac.uk', groups: ['world']) }
 
-  let(:user2) { create(:user) }
+  let(:user2) { OpenStruct.new(email: 'user2@sanger.ac.uk', groups: ['world']) }
 
   let!(:root) {
     n = build(:node, name: 'root')
@@ -13,7 +14,7 @@ RSpec.describe 'Nodes', type: :feature do
   }
 
   let!(:program1) {
-    n = build(:node, name: 'program1', parent: root, owner: user)
+    n = build(:node, name: 'program1', parent: root, owner_email: user.email)
     n.save!(validate: false)
     n
   }
@@ -32,15 +33,15 @@ RSpec.describe 'Nodes', type: :feature do
   }
 
   let!(:proj) {
-    create(:node, name: 'proj1', parent: program3, owner: user)
+    create(:node, name: 'proj1', parent: program3, owner_email: user.email)
   }
 
   let!(:proj2) {
-    create(:node, name: 'proj2', parent: program3, owner: user2)
+    create(:node, name: 'proj2', parent: program3, owner_email: user2.email)
   }
 
   before(:each) do
-    sign_in user
+    allow_any_instance_of(JWTCredentials).to receive(:current_user).and_return(user)
   end
 
   context 'when I visit the node#show page', js: true do
@@ -53,11 +54,6 @@ RSpec.describe 'Nodes', type: :feature do
       expect(page).to have_content('Sanger Programs')
       expect(page).to have_link('program1', href: node_path(program1.id))
       expect(page).to have_link('program2', href: node_path(program2.id))
-    end
-
-    it "you can edit or delete program level nodes" do
-      expect(page).to have_content('Edit')
-      expect(page).to have_content('Delete')
     end
 
   end
@@ -123,14 +119,6 @@ RSpec.describe 'Nodes', type: :feature do
         it 'disables the delete button' do
           expect(page.find_by_id('btn-delete-nodes').disabled?).to be false
         end
-
-      end
-
-      it 'cannot delete a node under root' do
-        page.find('div', class: 'node', text: program1.name).click
-        click_button 'Delete'
-        wait_for_ajax
-        expect(program1.reload).to be_active
       end
 
       it 'can delete a node lower down owned by the user' do

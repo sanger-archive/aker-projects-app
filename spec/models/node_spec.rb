@@ -1,7 +1,10 @@
 require 'rails_helper'
 require 'cancan/matchers'
+require 'ostruct'
 
 RSpec.describe Node, type: :model do
+
+  let(:user) { OpenStruct.new(email: 'user@sanger.ac.uk', groups: ['world']) }
 
   let(:root) {
     n = build(:node, name: 'root', parent_id: nil)
@@ -10,7 +13,7 @@ RSpec.describe Node, type: :model do
   }
 
   let(:program1) {
-    n = build(:node, name: 'program1', parent: root, owner: create(:user))
+    n = build(:node, name: 'program1', parent: root, owner_email: user.email)
     n.save(validate: false)
     n
   }
@@ -55,7 +58,7 @@ RSpec.describe Node, type: :model do
   end
 
   it "is valid when deactivated" do
-    expect(build(:node, deactivated_by: create(:user), deactivated_datetime: DateTime.now, parent: program1)).to be_valid
+    expect(build(:node, deactivated_by: user.email, deactivated_datetime: DateTime.now, parent: program1)).to be_valid
   end
 
   it "is valid when active" do
@@ -67,7 +70,7 @@ RSpec.describe Node, type: :model do
   end
 
   it "is not valid with a deactivated_by but no deactivated_datetime" do
-    expect(build(:node, deactivated_by: create(:user), deactivated_datetime: nil, parent: program1)).not_to be_valid
+    expect(build(:node, deactivated_by: user.email, deactivated_datetime: nil, parent: program1)).not_to be_valid
   end
 
   it "is valid to be active and have active children" do
@@ -76,15 +79,13 @@ RSpec.describe Node, type: :model do
   end
 
   it "is valid to be active and have inactive children" do
-    user = create(:user)
-    children = create_list(:node, 3, deactivated_by: user, deactivated_datetime: DateTime.now, parent: program1)
+    children = create_list(:node, 3, deactivated_by: user.email, deactivated_datetime: DateTime.now, parent: program1)
     expect(program1.nodes).to eq children
   end
 
   it "is valid to be active and have partially inactive children" do
-    user = create(:user)
     children = create_list(:node, 2,  deactivated_by: nil, deactivated_datetime: nil, parent: program1)
-    children += create_list(:node, 2, deactivated_by: user, deactivated_datetime: DateTime.now, parent: program1)
+    children += create_list(:node, 2, deactivated_by: user.email, deactivated_datetime: DateTime.now, parent: program1)
     expect(program1.nodes).to eq children
   end
 
@@ -93,13 +94,12 @@ RSpec.describe Node, type: :model do
   end
 
   it "is valid to be inactive and have no children" do
-    expect(create(:node, deactivated_by: create(:user), deactivated_datetime: DateTime.now, parent: program1)).to be_valid
+    expect(create(:node, deactivated_by: user.email, deactivated_datetime: DateTime.now, parent: program1)).to be_valid
   end
 
   it "is valid to be inactive and have inactive children" do
-    user = create(:user)
     prog1 = create(:node, parent: program1)
-    children = create_list(:node, 3, deactivated_by: user, deactivated_datetime: DateTime.now, parent: prog1)
+    children = create_list(:node, 3, deactivated_by: user.email, deactivated_datetime: DateTime.now, parent: prog1)
     expect(prog1.nodes).to eq children
     prog1.deactivated_by = user
     prog1.deactivated_datetime = DateTime.now
@@ -107,21 +107,19 @@ RSpec.describe Node, type: :model do
   end
 
   it "is invalid to be inactive and have active children" do
-    user = create(:user)
     prog1 = create(:node, parent: program1)
     children = create_list(:node, 3, parent: prog1)
     expect(prog1.nodes).to eq children
-    prog1.deactivated_by = user
+    prog1.deactivated_by = user.email
     prog1.deactivated_datetime = DateTime.now
     expect(prog1).not_to be_valid
   end
 
   it "is invalid to be inactive and have partially inactive children" do
-    user = create(:user)
     prog1 = create(:node, parent: program1)
     children = create_list(:node, 2, deactivated_by: nil, deactivated_datetime: nil, parent: prog1)
-    children += create_list(:node, 2, deactivated_by: user, deactivated_datetime: DateTime.now, parent: prog1)
-    prog1.deactivated_by = user
+    children += create_list(:node, 2, deactivated_by: user.email, deactivated_datetime: DateTime.now, parent: prog1)
+    prog1.deactivated_by = user.email
     prog1.deactivated_datetime = DateTime.now
     expect(prog1).not_to be_valid
   end
@@ -132,45 +130,35 @@ RSpec.describe Node, type: :model do
 	 end
 
   it "is valid to create a node with the same name as a deactivated node" do
-  	user = create(:user)
-  	deactivated_node = create(:node, deactivated_by: user, deactivated_datetime: DateTime.now, parent: program1)
+  	deactivated_node = create(:node, deactivated_by: user.email, deactivated_datetime: DateTime.now, parent: program1)
   	expect(build(:node, name: deactivated_node.name, parent: program1)).to be_valid
   end
 
   it "is invalid to create a root node" do
-    user = create(:user)
     root.reload
     expect(build(:node, name: 'root', parent: nil)).not_to be_valid
   end
 
   it "is invalid to create a node under root" do
-    user = create(:user)
     expect(build(:node, name: 'prog1', parent: root)).not_to be_valid
   end
 
   it "is invalid to move a node to under root" do
-    user = create(:user)
     node =  build(:node, name: 'prog1', parent: program1)
     node.update_attributes(parent_id: root.id)
     expect(node).not_to be_valid
   end
 
   it "is invalid to move a node from under root" do
-    user = create(:user)
-    program3 = create(:node, name: 'program3', parent: program1, owner: user)
-    program4 = build(:node, name: 'program4', parent: root, owner: user)
+    program3 = create(:node, name: 'program3', parent: program1, owner_email: user.email)
+    program4 = build(:node, name: 'program4', parent: root, owner_email: user.email)
     program4.save(validate: false)
     expect(program4.update_attributes(parent_id: program3.id)).to eq false
   end
 
   it "is invalid to destroy the root node" do
     root.destroy
-    expect(root.errors[:base]).to eq ["The root node can not be deleted"]
-  end
-
-  it "is invalid to destroy a node under the root node" do
-    program1.destroy
-    expect(program1.errors[:base]).to eq ["A node under the root node can not be deleted"]
+    expect(root.errors[:base]).to eq ["The root node cannot be deleted"]
   end
 
   context '#create' do
@@ -207,17 +195,12 @@ RSpec.describe Node, type: :model do
   end
 
   describe '#destroy' do
-    it 'the root node can not be destroyed' do
+    it 'the root node cannot be destroyed' do
       root.destroy
-      expect(root.errors[:base]).to eq ["The root node can not be deleted"]
+      expect(root.errors[:base]).to eq ["The root node cannot be deleted"]
     end
 
-    it 'a node under the root node can not be destroyed' do
-      program1.destroy
-      expect(program1.errors[:base]).to eq ["A node under the root node can not be deleted"]
-    end
-
-    it 'a node with children can not be destroyed' do
+    it 'a node with children cannot be destroyed' do
       node1 = create(:node, name: 'node1', parent: program1)
       node2 = create(:node, name: 'node2', parent: node1)
       node1.destroy
@@ -254,7 +237,7 @@ RSpec.describe Node, type: :model do
 
     context 'when deactivated_by is a user' do
       before do
-        @node = build(:node, deactivated_by: create(:user), parent: program1)
+        @node = build(:node, deactivated_by: user.email, parent: program1)
       end
 
       it 'is not active' do
@@ -266,9 +249,8 @@ RSpec.describe Node, type: :model do
   describe "#active" do
     context 'when some things are active' do
       before do
-        user = create(:user)
         @active_nodes = create_list(:node, 3, parent: program1)
-        @inactive_nodes = create_list(:node, 2, deactivated_by: user, deactivated_datetime: DateTime.now, parent: program1)
+        @inactive_nodes = create_list(:node, 2, deactivated_by: user.email, deactivated_datetime: DateTime.now, parent: program1)
         @all_active_nodes = @active_nodes+[program1, root]
       end
 
@@ -286,14 +268,13 @@ RSpec.describe Node, type: :model do
     context 'when node is active' do
       before do
         @node = create(:node, parent: program1)
-        @user = create(:user)
-        @node.deactivate(@user)
+        @node.deactivate(user.email)
       end
       it 'should not be active' do
         expect(@node).not_to be_active
       end
       it 'should be deactivated_by the given user' do
-        expect(@node.deactivated_by).to eq(@user)
+        expect(@node.deactivated_by).to eq(user.email)
       end
       it 'should have a deactivated datetime' do
         expect(@node.deactivated_datetime).not_to be_nil
@@ -302,37 +283,28 @@ RSpec.describe Node, type: :model do
     context 'when node is already deactivated' do
       before do
         @deactivation_time = 3.days.ago
-        @user1 = create(:user)
-        @user2 = create(:user)
-        @node = create(:node, deactivated_by: @user1, deactivated_datetime: @deactivation_time, parent: program1)
-        @node.deactivate(@user2)
+        @user1 = OpenStruct.new(email: 'user1@sanger.ac.uk', groups: ['world'])
+        @user2 = OpenStruct.new(email: 'user2@sanger.ac.uk', groups: ['world'])
+        @node = create(:node, deactivated_by: @user1.email, deactivated_datetime: @deactivation_time, parent: program1)
+        @node.deactivate(@user2.email)
       end
       it 'should still not be active' do
         expect(@node).not_to be_active
       end
       it 'should still be deactivated_by the original deactivating user' do
-        expect(@node.deactivated_by).to eq(@user1)
+        expect(@node.deactivated_by).to eq(@user1.email)
       end
       it 'should still have the original deactivated_datetime' do
         expect(@node.deactivated_datetime).to eq(@deactivation_time)
       end
-    end
-    context 'when user does not have an id' do
-    	before do
-    		@user = build(:user)
-    	end
-    	it 'raises an ArgumentError' do
-    		expect { program1.deactivate(@user) }.to raise_error(ArgumentError)
-    	end
     end
   end
 
   describe '#active_children' do
 
   	before do
-  		user = create(:user)
   		@active_children = create_list(:node, 2,  deactivated_by: nil, deactivated_datetime: nil, parent: program1)
-  		@deactivated_children = create_list(:node, 2, deactivated_by: user, deactivated_datetime: DateTime.now, parent: program1)
+  		@deactivated_children = create_list(:node, 2, deactivated_by: user.email, deactivated_datetime: DateTime.now, parent: program1)
   	end
 
     it 'returns all active children' do
@@ -341,24 +313,23 @@ RSpec.describe Node, type: :model do
   end
 
   describe '#accessible' do
-    let(:user) { nil }
-    let(:owner) { create(:user, email: 'jeff') }
+    let(:owner) { OpenStruct.new(email: 'jeff@email', groups: ['world']) }
     subject(:ability) { Ability.new(user) }
     let(:node) do
-      n = create(:node, parent: program1, owner: owner)
-      n.permissions.create([{ permitted: 'dirk', permission_type: :write }, { permitted: 'mygroup', permission_type: :write }])
+      n = create(:node, parent: program1, owner_email: owner.email)
+      n.permissions.create([{ permitted: 'dirk@email', permission_type: :write }, { permitted: 'mygroup', permission_type: :write }])
       n
     end
 
     context 'when the user has permission' do
-      let(:user) { create(:user, email: 'dirk') }
+      let(:user) { OpenStruct.new(email: 'dirk@email', groups: ['world']) }
       it { should be_able_to(:read, node) }
       it { should be_able_to(:write, node) }
       it { should_not be_able_to(:spend, node) }
     end
 
     context 'when the user has no permission' do
-      let(:user) { create(:user, email: 'fred') }
+      let(:user) { OpenStruct.new(email: 'fred@email', groups: ['world']) }
       it { should be_able_to(:read, node) }
       it { should_not be_able_to(:write, node) }
       it { should_not be_able_to(:spend, node) }
@@ -372,7 +343,7 @@ RSpec.describe Node, type: :model do
     end
 
     context 'when the user has group permission' do
-      let(:user) { create(:user, email: 'zog', groups: ['world', 'mygroup']) }
+      let(:user) { OpenStruct.new(email: 'zog@email', groups: ['world', 'mygroup']) }
       it { should be_able_to(:read, node) }
       it { should be_able_to(:write, node) }
       it { should_not be_able_to(:spend, node) }

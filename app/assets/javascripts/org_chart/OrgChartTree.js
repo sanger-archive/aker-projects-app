@@ -54,7 +54,7 @@
   proto.loadTree = function() {
     var defer = $.Deferred(); // Returned value
     var self = this;
-    return $.get('/api/v1/nodes?include=nodes.parent', $.proxy(function(response) {
+    return $.get(Routes.api_v1_nodes_path({'include': 'nodes.parent'}), $.proxy(function(response) {
       // Remove the previous display of the tree (if there is one)
       $('#tree-hierarchy').html('');
 
@@ -125,7 +125,7 @@
   // If we AJAX call to the server for the parent node fails, it will perform the handler onErrorConnection
   // It returns the promise indicating if the action was successful
   proto.onDrop = function(event) {
-    $.get('/api/v1/nodes/'+event.dropZone[0].id, $.proxy(function(response) {
+    $.get(Routes.api_v1_node_path(event.dropZone[0].id), $.proxy(function(response) {
       this.updateNode(response.data.id, event);
     }, this)).fail($.proxy(this.onErrorConnection, this));
   };

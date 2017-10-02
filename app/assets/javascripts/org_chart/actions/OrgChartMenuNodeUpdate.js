@@ -10,12 +10,12 @@
     this.selectNode($node);
     // We get the nodeId of the currently selected node
 
-    var url = '/nodes/'+this.selectedNode().attr('id');
+    var url = Routes.node_path(this.selectedNode().attr('id'));
 
     // We call jQuery's load method to fetch the html content of /nodes/:id/edit.js
     // and load it into the modal body
     $('#editNodeModal').modal('show');
-    $('div.modal-body', '#editNodeModal').load(url+ '/edit.js', $.proxy(this.onLoadUpdateNodeForm, this));
+    $('div.modal-content', '#editNodeModal').load(url+ '/edit.js', $.proxy(this.onLoadUpdateNodeForm, this));
   };
 
   proto.onLoadUpdateNodeForm = function(response, status, xhr) {
@@ -43,9 +43,6 @@
     // Setting a timeout so the user can see the update was successful just before closing
     // the modal window
     setTimeout(function() {
-      $('#editNodeModal input').each(function(input) {
-        $(input).val('');
-      });
       $('#editNodeModal').modal('hide');
     }, 500);
 
@@ -60,7 +57,7 @@
             'Accept' : 'application/vnd.api+json',
             'Content-Type' : 'application/vnd.api+json'
         },
-        url : '/api/v1/nodes/'+event.draggedNode[0].id+'/relationships/parent',
+        url : Routes.api_v1_node_relationships_parent_path(event.draggedNode[0].id),
         type : 'PATCH',
         data : JSON.stringify({ data: { type: 'nodes', id: id }})
     }).then(

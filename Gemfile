@@ -13,10 +13,8 @@ gem 'coffee-rails', '~> 4.2'
 # See https://github.com/rails/execjs#readme for more supported runtimes
 # gem 'therubyracer', platforms: :ruby
 
-#gem 'aker_authentication_gem', :github => 'emrojo/aker-authentication'
-gem 'aker_credentials_gem', :github => 'sanger/aker-credentials'
-gem 'aker_authentication_gem', :github => 'sanger/aker-authentication'
-gem 'aker_permission_gem', :github => 'sanger/aker-permission'
+gem 'aker_credentials_gem', github: 'sanger/aker-credentials', branch: 'noguest'
+gem 'aker_permission_gem', github: 'sanger/aker-permission'
 
 # Use jquery as the JavaScript library
 gem 'jquery-rails'
@@ -36,6 +34,7 @@ gem 'bootstrap_form'
 gem 'active_model_serializers'
 gem 'zipkin-tracer'
 gem 'loading_mask'
+gem 'js-routes'
 
 gem 'json_api_client', github: 'sanger/json_api_client'
 

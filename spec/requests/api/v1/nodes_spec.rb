@@ -1,11 +1,19 @@
 require 'rails_helper'
+require 'ostruct'
+require 'jwt'
 
 RSpec.describe 'API::V1::Nodes', type: :request do
+
+  let(:jwt) { JWT.encode({ data: { 'email' => 'user@here.com', 'groups' => ['world'] } }, Rails.configuration.jwt_secret_key, 'HS256') }
+
+  let(:user) { OpenStruct.new(email: 'user@here.com', groups: ['world']) }
+  let(:different_user) { OpenStruct.new(email: 'other@here.com', groups: ['world']) }
 
   let(:headers) do
     {
       "Content-Type": "application/vnd.api+json",
-      "Accept": "application/vnd.api+json"
+      "Accept": "application/vnd.api+json",
+      "HTTP_X_AUTHORISATION": jwt,
     }
   end
 
@@ -16,20 +24,14 @@ RSpec.describe 'API::V1::Nodes', type: :request do
   }
 
   let(:program1) {
-    n = build(:node, name: 'program1', parent: root, owner: create(:user))
+    n = build(:node, name: 'program1', parent: root, owner_email: user.email)
     n.save(validate: false)
     n
   }
 
-  let(:user) { create(:user) }
-
   describe 'GET' do
 
-    let(:user) { user = create(:user) }
-
     before(:each) do
-      sign_in user
-
       node = create(:node, cost_code: "S1234", description: "Here is my node", parent: program1)
 
       get api_v1_node_path(node), headers: headers
@@ -49,14 +51,9 @@ RSpec.describe 'API::V1::Nodes', type: :request do
   end
 
   describe 'filtering' do
-    before(:each) do
-      sign_in user
-    end
-
     let!(:proposals) { create_list(:node, 3, cost_code: "S1234", description: "This is a proposal", parent: program1) }
     let!(:nodes) { create_list(:node, 2, parent: program1) }
-    let!(:user) { create(:user) }
-    let!(:deactivated_proposals) { create_list(:node, 2, deactivated_by: user, deactivated_datetime: DateTime.now, cost_code: "S1234", parent: program1) }
+    let!(:deactivated_proposals) { create_list(:node, 2, deactivated_by: user.email, deactivated_datetime: DateTime.now, cost_code: "S1234", parent: program1) }
 
     context 'when using a value of _none for cost_code' do
 
@@ -193,12 +190,10 @@ RSpec.describe 'API::V1::Nodes', type: :request do
   end
 
   describe 'CREATE #create' do
-    let(:different_user){ create(:user) }
     before(:each) do
-      sign_in user
 
-      @prog1 = create(:node, parent_id: program1.id, name: 'Program 1', owner: different_user)
-      @prog2 = create(:node, parent_id: program1.id, name: 'prog2', owner: user)
+      @prog1 = create(:node, parent_id: program1.id, name: 'Program 1', owner_email: different_user.email)
+      @prog2 = create(:node, parent_id: program1.id, name: 'prog2', owner_email: user.email)
     end
 
     context 'when user does not have write permissions on the parent node (root)' do
@@ -243,14 +238,9 @@ RSpec.describe 'API::V1::Nodes', type: :request do
 
   describe 'UPDATE #update' do
 
-    let(:user){ create(:user) }
-    let(:different_user) { create(:user) }
-
     before(:each) do
-      sign_in user
-
-      @node1 = create(:node, parent_id: program1.id, name: 'node1', owner: user)
-      @node2 = create(:node, parent_id: program1.id, name: 'node2', owner: different_user)
+      @node1 = create(:node, parent_id: program1.id, name: 'node1', owner_email: user.email)
+      @node2 = create(:node, parent_id: program1.id, name: 'node2', owner_email: different_user.email)
     end
 
     context 'when user does not have write permissions on the node' do
@@ -283,14 +273,11 @@ RSpec.describe 'API::V1::Nodes', type: :request do
 
   describe 'UPDATE #update_relationship' do
 
-    let(:user){ create(:user) }
-    let(:different_user){ create(:user) }
     before(:each) do
-      sign_in user
-      @prog1 = create(:node, parent_id: program1.id, name: 'prog1', owner: user)
-      @prog2 = create(:node, parent_id: program1.id, name: 'prog2', owner: different_user)
-      @prog3 = create(:node, parent_id: program1.id, name: 'prog3', owner: user)
-      @node1 = create(:node, parent_id: @prog1.id, name: 'node1', owner: user)
+      @prog1 = create(:node, parent_id: program1.id, name: 'prog1', owner_email: user.email)
+      @prog2 = create(:node, parent_id: program1.id, name: 'prog2', owner_email: different_user.email)
+      @prog3 = create(:node, parent_id: program1.id, name: 'prog3', owner_email: user.email)
+      @node1 = create(:node, parent_id: @prog1.id, name: 'node1', owner_email: user.email)
     end
 
     context 'when moving a node to under the root node' do
@@ -339,34 +326,35 @@ RSpec.describe 'API::V1::Nodes', type: :request do
     end
   end
 
-  describe 'DELETE #destroy' do
-    let(:user){ create(:user) }
-    let(:different_user) { create(:user) }
+  describe 'DELETE #remove' do
 
     before do
-      sign_in user
-      @prog1 = create(:node, parent_id: program1.id, name: 'prog1', owner: user)
-      @node1 = create(:node, parent_id: @prog1.id, name: 'node1', owner: user)
-      @node2 = create(:node, parent_id: @prog1.id, name: 'node2', owner: different_user)
+      @prog1 = build(:node, parent_id: root.id, name: 'prog1', owner_email: user.email)
+      @prog1.save(validate: false)
+      @node1 = create(:node, parent_id: @prog1.id, name: 'node1', owner_email: user.email)
+      @node2 = create(:node, parent_id: @prog1.id, name: 'node2', owner_email: different_user.email)
     end
 
-    context 'when the node is under the root node' do
-      it 'returns a 403' do
-        delete api_v1_node_path(program1)
-        expect(program1.reload).to be_active
+    context 'when the node has children' do
+      it 'returns a 400 and does not delete the node' do
+        delete api_v1_node_path(@prog1), headers: headers
+        expect(response).to have_http_status(:bad_request)
+        expect(@prog1.reload).to be_active
       end
     end
 
     context 'when user does not have write permissions on the node' do
-      it 'returns a 403' do
-        delete api_v1_node_path(@node2)
+      it 'returns a 403 and does not delete the node' do
+        delete api_v1_node_path(@node2), headers: headers
+        expect(response).to have_http_status(:forbidden)
         expect(@node2.reload).to be_active
       end
     end
 
     context 'when user does have write permissions on the node' do
-      it 'returns a 202' do
-        delete api_v1_node_path(@node1)
+      it 'returns a 202 and deletes the node' do
+        delete api_v1_node_path(@node1), headers: headers
+        expect(response).to have_http_status(:accepted)
         expect(@node1.reload).not_to be_active
       end
     end
