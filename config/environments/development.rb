@@ -54,13 +54,14 @@ Rails.application.configure do
   # routes, locales, etc. This feature depends on the listen gem.
   config.file_watcher = ActiveSupport::EventedFileUpdateChecker
   config.fake_ldap = true
-  config.set_url = 'http://localhost:3000/api/v1'
+
   config.jwt_secret_key = 'development'
   config.jwt_exp_time = 2*60
   config.jwt_nbf_time = 1*60
 
   config.default_jwt_user = { email: ENV.fetch('USER', 'user')+'@sanger.ac.uk', groups: ['world'] }
 
-  config.login_url = '#'
-  config.logout_url = '#'
+  config.login_url = 'http://localhost:9010/login'
+  config.logout_url = 'http://localhost:9010/logout'
+  config.auth_service_url = 'http://localhost:9010'
 end

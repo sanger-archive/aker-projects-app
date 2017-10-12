@@ -1,9 +1,10 @@
 GIT
   remote: git://github.com/sanger/aker-credentials.git
-  revision: adaf251d67433d74dd0e7094cc0300a9d9f189e5
-  branch: noguest
+  revision: 26fbd013642ad1b48335bf8a035fe3c3443c8b84
   specs:
-    aker_credentials_gem (0.1.2)
+    aker_credentials_gem (0.2.0)
+      activesupport
+      faraday
       jwt
       request_store
 
@@ -163,7 +164,7 @@ GEM
       activerecord (>= 4.1)
       concurrent-ruby
       railties (>= 4.1)
-    jwt (2.0.0)
+    jwt (2.1.0)
     launchy (2.4.3)
       addressable (~> 2.3)
     libv8 (3.16.14.19)
