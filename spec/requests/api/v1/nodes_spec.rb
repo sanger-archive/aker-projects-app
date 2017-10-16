@@ -84,7 +84,7 @@ RSpec.describe 'API::V1::Nodes', type: :request do
     end
 
     it 'will filter out deactivated nodes by default' do
-      get api_v1_nodes_path
+      get api_v1_nodes_path, headers: headers
 
       json = JSON.parse(response.body, symbolize_names: true)
       response_data = json[:data]
@@ -96,7 +96,7 @@ RSpec.describe 'API::V1::Nodes', type: :request do
     end
 
     it 'can filter out active nodes' do
-      get api_v1_nodes_path, params: { "filter[active]": "false" }
+      get api_v1_nodes_path, params: { "filter[active]": "false" }, headers: headers
 
       json = JSON.parse(response.body, symbolize_names: true)
       response_data = json[:data]
@@ -127,7 +127,7 @@ RSpec.describe 'API::V1::Nodes', type: :request do
         end
 
         it 'can filter only nodes with a given readable permission' do
-          get api_v1_nodes_path, params: { "filter[readable_by]": "jason" }
+          get api_v1_nodes_path, params: { "filter[readable_by]": "jason" }, headers: headers
 
           expect(response).to have_http_status :ok
 
@@ -151,7 +151,7 @@ RSpec.describe 'API::V1::Nodes', type: :request do
         end
 
         it 'can filter only nodes with a given writable permission' do
-          get api_v1_nodes_path, params: { "filter[writable_by]": "gary" }
+          get api_v1_nodes_path, params: { "filter[writable_by]": "gary" }, headers: headers
 
           json = JSON.parse(response.body, symbolize_names: true)
           response_data = json[:data]
@@ -173,7 +173,7 @@ RSpec.describe 'API::V1::Nodes', type: :request do
         end
 
         it 'can filter only nodes with a given spend permission' do
-          get api_v1_nodes_path, params: { "filter[spendable_by]": "ken" }
+          get api_v1_nodes_path, params: { "filter[spendable_by]": "ken" }, headers: headers
 
           json = JSON.parse(response.body, symbolize_names: true)
           response_data = json[:data]

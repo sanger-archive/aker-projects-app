@@ -18,6 +18,7 @@ RSpec.describe NodesController, type: :controller do
   }
 
   setup do
+    allow(controller).to receive(:check_credentials)
     allow(controller).to receive(:current_user).and_return(user)
   end
 

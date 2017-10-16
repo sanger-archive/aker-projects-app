@@ -40,7 +40,8 @@ RSpec.describe 'Nodes', type: :feature do
     create(:node, name: 'proj2', parent: program3, owner_email: user2.email)
   }
 
-  before(:each) do
+  before do
+    allow_any_instance_of(JWTCredentials).to receive(:check_credentials)
     allow_any_instance_of(JWTCredentials).to receive(:current_user).and_return(user)
   end
 
@@ -194,7 +195,7 @@ RSpec.describe 'Nodes', type: :feature do
 
   end
 
-  context 'when i visit node#id#show page' do |variable|
+  context 'when I visit node#id#show page' do |variable|
     context 'when the node is writable' do
       before do
         @program11 = create(:node, name: "program11", parent: program1)
