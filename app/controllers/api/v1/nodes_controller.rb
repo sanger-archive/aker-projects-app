@@ -6,6 +6,8 @@ module Api
 
       skip_authorization_check only: [:index, :show]
 
+      skip_credentials only: [:show]
+
       def create
         authorize! :create, Node, message: 'You are not authorized to create this node.'
         authorize! :write, parent_node, message: 'You are not authorized to create children nodes under the selected parent node'
