@@ -4,4 +4,6 @@ class ApplicationController < ActionController::Base
   include JWTCredentials
   include AkerPermissionControllerConfig
 
+  helper_method :current_user
+
 end
