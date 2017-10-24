@@ -47,4 +47,10 @@ Rails.application.configure do
 
   config.login_url = 'login_url'
   config.logout_url = 'logout_url'
+
+  config.urls = { submission: "",
+                  permissions: "",
+                  sets: "",
+                  projects: "",
+                  work_orders: "" }
 end
