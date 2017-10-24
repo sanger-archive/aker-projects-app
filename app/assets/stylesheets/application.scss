@@ -31,7 +31,11 @@
 }
 
 body {
-  background-color: #e0ebeb;
+  background-color: #f4f4f4;
+}
+
+.navbar {
+  border-radius: 0px;
 }
 
 .container-fluid#content, .container#login, .container#content  {
@@ -39,6 +43,7 @@ body {
   padding-bottom: 10px;
   background-color: white;
   margin-bottom: 20px;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 }
 
 .bg-info {
@@ -95,7 +100,17 @@ $owned-colour: #009933;
   }
 }
 
+// Make textbox underlines clearer
 textarea, textarea.form-control, input.form-control, input[type=text], input[type=password], input[type=email], input[type=number], [type=text].form-control, [type=password].form-control, [type=email].form-control, [type=tel].form-control, [contenteditable].form-control {
     -webkit-box-shadow: inset 0 -2px 0 #ddd;
     box-shadow: inset 0 -2px 0 #ddd;
+}
+
+.navbar-text {
+  color: #b2dbfb !important;
+}
+
+// Align the dropdown menu with the "Aker" button
+.dropdown-menu {
+  margin-left: -14px;
 }
