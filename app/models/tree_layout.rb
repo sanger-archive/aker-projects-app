@@ -1,0 +1,3 @@
+class TreeLayout < ApplicationRecord
+  
+end

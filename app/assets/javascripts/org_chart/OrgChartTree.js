@@ -20,9 +20,10 @@
 
   // Modules that will compose this class
   var MODULES = [
-    OrgChartMenu,        // UI to create, modify and remove some nodes
-    OrgChartStatus,      // Behavioral methods to keep the local copy of the tree up to date with server
-    OrgChartIconChildren // Bugfix/Workaround: Small modification of default behaviour to display children icon
+    OrgChartMenu,         // UI to create, modify and remove some nodes
+    OrgChartStatus,       // Behavioral methods to keep the local copy of the tree up to date with server
+    OrgChartIconChildren, // Bugfix/Workaround: Small modification of default behaviour to display children icon
+    OrgChartPreferences   // Save & Restore current view of the tree for the logged in user
   ];
 
   // Composes this class with the modules
