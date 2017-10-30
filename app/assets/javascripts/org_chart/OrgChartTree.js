@@ -52,16 +52,18 @@
   //
   // The value returned by loadTreee() is a promise that will be resolved successfully if
   // all these tasks have occured successfully
-  proto.loadTree = function() {
+  proto.loadTree = function(opts) {
     var defer = $.Deferred(); // Returned value
     var self = this;
+
     return $.get(Routes.api_v1_nodes_path({'include': 'nodes.parent'}), $.proxy(function(response) {
+      var treeData = TreeBuilder.createFrom(response.data, true)[0];
       // Remove the previous display of the tree (if there is one)
       $('#tree-hierarchy').html('');
 
-      $('#tree-hierarchy').orgchart({
+      var chart = $('#tree-hierarchy').orgchart({
         // Extracts the nodes structure from the Ajax response, and creates a valid JS for orgchart
-        'data' : TreeBuilder.createFrom(response.data, true)[0],
+        'data' : treeData,
         // Max depth to show
         'depth': response.data.length,
         // Custom attribute that we'll use on node creation to set some info inside the created nodes
@@ -83,14 +85,22 @@
       .children('.orgchart')
       // Callback function when a node is actually dropped on another
       .on('nodedropped.orgchart', $.proxy(this.onDrop, this));
+
+      //this.attachTriggerAnyAction(chart);
+      //this.attachTriggerAnyAction($.fn);
+
+
       // Resolves the promise as successful (no exceptions up to this point)
       defer.resolve(true);
+    }, this)).then($.proxy(function() {
+      $(this).trigger('orgchart.restoreStateRequested', opts);
     }, this));
 
     // Returns a promise not resolved yet (this will happen when the Ajax response provided to the $.get
     // has occured)
     return defer;
   };
+
 
   // onBeforeDrop()
   //

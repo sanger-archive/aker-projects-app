@@ -27,6 +27,7 @@
   }  
 
   proto.attachHandlers = function() {
+    //this.restoreUserConfig().then($.proxy(this.loadTree, this));
     this.loadTree();
     this.attachMenuHandlers();
 

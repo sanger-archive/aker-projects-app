@@ -23,9 +23,8 @@
       <button type="button" class="btn btn-danger"  id="btn-delete-nodes" disabled="disabled">Delete</button>
     </form>
 
-    <button type="button" class="btn btn-success" data-user-preferences-save="true">Save</button>
-    <button type="button" class="btn btn-danger" data-user-preferences-restore="true">Restore</button>
-    <button type="button" class="btn btn-danger" data-user-preferences-delete="true">Delete</button>
+      <button type="button" class="btn btn-danger" onmouseover="this.style.opacity=1;" onmouseleave="this.style.opacity=0.5;" style="top: 40px;left: 5px;opacity:0.5;" data-user-preferences-expand="true">Expand</button>
+    
     <br/>
 
     <div class="modal fade" id="editNodeModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
@@ -40,5 +39,6 @@
     </div>
 
     <div id="tree-hierarchy"></div>
+
   </div>
 <% end %>
