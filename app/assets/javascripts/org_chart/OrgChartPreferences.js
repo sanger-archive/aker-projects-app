@@ -12,7 +12,7 @@
   var proto = OrgChartPreferences.prototype;
 
   proto.attachPreferencesHandlers = function() {
-    $('button[data-user-preferences-expand]').on('click', $.proxy(function() {
+    $('[data-user-preferences-expand]').on('click', $.proxy(function() {
       this.loadTree({restoreStateRequested: false}).then($.proxy(this.saveUserConfig, this));
     }, this));
     $(this).on('orgchart.restoreStateRequested', $.proxy(function(event, opts) {
@@ -59,13 +59,24 @@
     return $(cssSelector).map(function(pos, n) { return n.id;}).toArray();
   }
 
-  proto.getLayout = function() {
-    return {
-      'slide-left': getIdsForNodesWithCss('.node.slide-left'),
-      'slide-right': getIdsForNodesWithCss('.node.slide-right'),
-      'slide-up': getIdsForNodesWithCss('.node.slide-up'),
-      'slide-down': getIdsForNodesWithCss('.node.slide-down')
+
+  proto.storeLayoutValue = function (rel, action, memo, node) {
+    var $node = $(node);
+    var state = $('#tree-view').orgchart('getNodeState', $node, rel);
+    if (state.exist && !state.visible) {
+      memo[action].push($node.attr('id'));
     }
+  }
+
+  proto.getLayout = function() {
+    return $('.node').filter($.proxy(function(pos, node) { 
+      return this.isVisibleNode(node); 
+    }, this)).toArray().reduce($.proxy(function(memo,node) {
+      this.storeLayoutValue('parent','hideParent', memo, node);
+      this.storeLayoutValue('children','hideChildren', memo, node);
+      this.storeLayoutValue('siblings','hideSiblings', memo, node);
+      return memo;
+    }, this), {'hideParent': [], 'hideChildren': [], 'hideSiblings': []});
   };
 
   proto.serializeLayout = function() {
@@ -141,8 +152,9 @@
   };
 
   proto.isVisibleNode = function(node) {
-    return !(node.hasClass('slide-up') || node.hasClass('slide-down') || 
-    node.hasClass('slide-left') || node.hasClass('slide-right'));
+    var $node = $(node);
+    return !($node.hasClass('slide-up') || $node.hasClass('slide-down') || 
+    $node.hasClass('slide-left') || $node.hasClass('slide-right'));
   };
 
   proto._applyLayoutAction = function($node, action) {
@@ -155,34 +167,21 @@
 
   proto.applyLayout = function(layout) {
     var id;
-    var keys = ['slide-down', 'slide-up', 'slide-left', 'slide-right'];
+    var keys = ['hideParent', 'hideChildren', 'hideSiblings'];
+
     for (var j=0; j<keys.length; j++) {
       var key = keys[j];
-      for (var i=0; i<layout[key].length; i++) {
-        id = layout[key][i]
-        var $node = $(document.getElementById(id));
-        if (key == 'slide-down') {
-          // We need to execute the action in a node currently displayed, that's why we need to filter
-          // the list of nodes that will be hidden
-          var $firstChildren = $(this.filterNotSlidedNodes(this.childrensFor($node), layout)[0]);
-          this._applyLayoutAction($firstChildren, 'hideParent');
-        }
-        if (key == 'slide-up') {
-          var $parent = this.parentFor($node);
-          this._applyLayoutAction($parent, 'hideChildren');
-        }
-        if (key == 'slide-left') {
-          var $sibling = this.siblingFor($node, 'left');
-          this._applyLayoutAction($sibling, 'hideSiblings');
-        }        
-        if (key == 'slide-right') {
-          var $sibling = this.siblingFor($node, 'right');
-          this._applyLayoutAction($sibling, 'hideSiblings');
+      if (layout[key]) {
+        for (var i=0; i<layout[key].length; i++) {
+          id = layout[key][i]
+          var $node = $(document.getElementById(id));
+          this._applyLayoutAction($node, key);
         }
       }
     }
     return true;
   };
+
 
   proto.saveUserConfig = function() {
     return $.ajax({
