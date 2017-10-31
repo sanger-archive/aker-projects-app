@@ -55,11 +55,6 @@
     return JSON.parse(json.tree_layout.layout);
   };
 
-  function getIdsForNodesWithCss(cssSelector) {
-    return $(cssSelector).map(function(pos, n) { return n.id;}).toArray();
-  }
-
-
   proto.storeLayoutValue = function (rel, action, memo, node) {
     var $node = $(node);
     var state = $('#tree-view').orgchart('getNodeState', $node, rel);
@@ -83,73 +78,6 @@
     return JSON.stringify({tree_layout: {layout: JSON.stringify(this.getLayout())}});
   };
 
-  proto.parentFor = function(node) {
-    return $('#tree-view').orgchart('getRelatedNodes', node, 'parent');
-  };
-
-  proto.childrensFor = function(node) {
-    return $('#tree-view').orgchart('getRelatedNodes', node, 'children');
-  };
-
-  proto.siblingsFor = function(node) {
-    return $('#tree-view').orgchart('getRelatedNodes', node, 'siblings');
-  };
-
-  proto.siblingsIncludingMeFor = function(node) {
-    var siblings = $('#tree-view').orgchart('getRelatedNodes', node, 'siblings');
-    if (siblings.length > 0) {
-      for (var i=0; i<siblings.length; i++) {
-        // I always insert at the left when I am less than the compared value
-        if (parseInt(node[0].id, 10) < parseInt(siblings[i].id, 10)) {
-          siblings.splice(i, 0, node[0])
-          return siblings;
-        }
-      }
-      // The last element is inserted different because is inserted at the right
-      if (parseInt(node[0].id, 10) > parseInt(siblings[siblings.length-1].id, 10)) {
-        siblings.push(node[0]);
-      }
-    }
-    return siblings;
-  };
-
-
-  proto.siblingFor = function(node, direction) {
-    var siblings = this.siblingsIncludingMeFor(node);
-    if (direction) {
-      if (siblings) {
-        var pos = siblings.toArray().findIndex(function(n) {
-          return (n===node[0]);
-        });
-        if (direction == 'left') {
-          if (pos>0) {
-            return $(siblings[pos-1]);
-          } else {
-            return null;
-          }          
-        }
-        if (direction == 'right') {
-          if (pos=== siblings.length) {
-            return null;
-          } else {
-            return $(siblings[pos+1]);
-          }
-        }
-      }
-      
-    }
-    return null;
-  };
-
-  proto.filterNotSlidedNodes = function(nodes, layout) {
-    return $(nodes).filter(function(pos, node) {
-      var out = false;
-      for (var key in layout) {
-        out = out || (layout[key].indexOf(node.id) >= 0);
-      }
-      return !out;
-    });
-  };
 
   proto.isVisibleNode = function(node) {
     var $node = $(node);
@@ -196,10 +124,6 @@
       $.proxy(this.onSaveUserConfig, this), 
       $.proxy(this.onErrorSaveUserConfig, this)
     );
-  };
-
-  proto.resetUserConfig = function() {
-    this.deleteUserConfig().then($.proxy(this.loadTree, this, null));
   };
 
   proto.deleteUserConfig = function() {
