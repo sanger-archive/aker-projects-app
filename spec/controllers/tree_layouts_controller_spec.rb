@@ -127,7 +127,7 @@ RSpec.describe TreeLayoutsController, type: :controller do
           context 'when the user creates a new tree layout' do
             setup do
               @other_layout = "other layout"
-              post :create, {tree_layout: { layout: @other_layout } }
+              post :create, params: {tree_layout: { layout: @other_layout } }
             end
             it 'creates the new tree layout' do
               layouts = TreeLayout.find_by(user_id: @user.email)

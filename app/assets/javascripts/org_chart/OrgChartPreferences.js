@@ -171,7 +171,7 @@
 
     for (var j=0; j<keys.length; j++) {
       var key = keys[j];
-      if (layout[key]) {
+      if (layout && layout[key]) {
         for (var i=0; i<layout[key].length; i++) {
           id = layout[key][i]
           var $node = $(document.getElementById(id));
