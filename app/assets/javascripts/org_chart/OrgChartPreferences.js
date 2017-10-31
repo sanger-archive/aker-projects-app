@@ -1,7 +1,7 @@
 (function($, undefined) {
-  var SAVE_URL = "/study/tree_layouts";
-  var RESTORE_URL = "/study/tree_layouts";
-  var DELETE_URL = "/study/tree_layouts";
+  var SAVE_URL = "/tree_layouts";
+  var RESTORE_URL = "/tree_layouts";
+  var DELETE_URL = "/tree_layouts";
 
   function OrgChartPreferences() {
     this.attachPreferencesHandlers();
@@ -140,6 +140,18 @@
     });
   };
 
+  proto.isVisibleNode = function(node) {
+    return !(node.hasClass('slide-up') || node.hasClass('slide-down') || 
+    node.hasClass('slide-left') || node.hasClass('slide-right'));
+  };
+
+  proto._applyLayoutAction = function($node, action) {
+    if ($node && ($node.length>0)) {
+      if (this.isVisibleNode($node)) {
+        $('#tree-hierarchy').orgchart(action, $node);
+      }
+    }
+  };
 
   proto.applyLayout = function(layout) {
     var id;
@@ -153,28 +165,20 @@
           // We need to execute the action in a node currently displayed, that's why we need to filter
           // the list of nodes that will be hidden
           var $firstChildren = $(this.filterNotSlidedNodes(this.childrensFor($node), layout)[0]);
-          if ($firstChildren) {
-            $('#tree-hierarchy').orgchart('hideParent', $firstChildren);
-          }
+          this._applyLayoutAction($firstChildren, 'hideParent');
         }
         if (key == 'slide-up') {
           var $parent = this.parentFor($node);
-          if ($parent) {
-            $('#tree-hierarchy').orgchart('hideChildren', $parent);
-          }
+          this._applyLayoutAction($parent, 'hideChildren');
         }
         if (key == 'slide-left') {
           var $sibling = this.siblingFor($node, 'left');
-          if ($sibling && ($sibling.length>0)) {
-            $('#tree-hierarchy').orgchart('hideSiblings', $sibling, 'right');
-          }
+          this._applyLayoutAction($sibling, 'hideSiblings');
         }        
         if (key == 'slide-right') {
           var $sibling = this.siblingFor($node, 'right');
-          if ($sibling  && ($sibling.length>0)) {          
-            $('#tree-hierarchy').orgchart('hideSiblings', $sibling, 'left');
-          }
-        }        
+          this._applyLayoutAction($sibling, 'hideSiblings');
+        }
       }
     }
     return true;
