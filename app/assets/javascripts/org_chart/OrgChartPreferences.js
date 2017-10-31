@@ -1,7 +1,7 @@
 (function($, undefined) {
-  var SAVE_URL = "/tree_layouts";
-  var RESTORE_URL = "/tree_layouts";
-  var DELETE_URL = "/tree_layouts";
+  var SAVE_URL = Routes.tree_layouts_path();
+  var RESTORE_URL = Routes.tree_layouts_path();
+  var DELETE_URL = Routes.tree_layouts_path();
 
   function OrgChartPreferences() {
     this.attachPreferencesHandlers();
