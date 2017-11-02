@@ -49,6 +49,7 @@
 
   proto.resetTree = function() {
     this.toggleMask(true);
+    $(this).trigger('orgchart.resetTree');
     return this.loadTree().then($.proxy(this.enableTree, this), $.proxy(this.disableTree, this));
   };
 
