@@ -992,7 +992,7 @@
         }
       })
       .fail(function() {
-        console.log('Failed to creat node')
+        console.log('Failed to create node')
       });
     }
     // Construct the inferior nodes and connectiong lines
