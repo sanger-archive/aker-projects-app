@@ -20,9 +20,9 @@
         setTimeout($.proxy(this.saveUserConfig, this), 500);
       }, this));
       if ((!opts) || (!!opts.restoreStateRequested)) {
-        this.restoreUserConfig();  
+        this.restoreUserConfig();
       }
-    }, this)); 
+    }, this));
   };
 
   proto.onSaveUserConfig = function() {
@@ -37,10 +37,7 @@
     var layout = this.parseLayout(json[0]);
     var success = this.applyLayout(layout);
     if (layout) {
-      //this.info('Tree layout restored');
       return layout;
-    } else {
-      this.onErrorRestoreUserConfig();  
     }
   };
 
@@ -64,8 +61,8 @@
   }
 
   proto.getLayout = function() {
-    return $('.node').filter($.proxy(function(pos, node) { 
-      return this.isVisibleNode(node); 
+    return $('.node').filter($.proxy(function(pos, node) {
+      return this.isVisibleNode(node);
     }, this)).toArray().reduce($.proxy(function(memo,node) {
       this.storeLayoutValue('parent','hideParent', memo, node);
       this.storeLayoutValue('children','hideChildren', memo, node);
@@ -81,7 +78,7 @@
 
   proto.isVisibleNode = function(node) {
     var $node = $(node);
-    return !($node.hasClass('slide-up') || $node.hasClass('slide-down') || 
+    return !($node.hasClass('slide-up') || $node.hasClass('slide-down') ||
     $node.hasClass('slide-left') || $node.hasClass('slide-right'));
   };
 
@@ -118,10 +115,10 @@
           'Content-Type' : 'application/json'
       },
       method: 'POST',
-      url: SAVE_URL, 
+      url: SAVE_URL,
       data: this.serializeLayout()
     }).then(
-      $.proxy(this.onSaveUserConfig, this), 
+      $.proxy(this.onSaveUserConfig, this),
       $.proxy(this.onErrorSaveUserConfig, this)
     );
   };
@@ -131,11 +128,11 @@
       headers : {
           'Accept' : 'application/json',
           'Content-Type' : 'application/json'
-      },      
+      },
       method: 'DELETE',
       url: DELETE_URL
     }).then(
-      $.proxy(this.onDeleteUserConfig, this), 
+      $.proxy(this.onDeleteUserConfig, this),
       $.proxy(this.onErrorDeleteUserConfig, this)
     );
   };
@@ -148,11 +145,11 @@
       headers : {
           'Accept' : 'application/json',
           'Content-Type' : 'application/json'
-      },      
+      },
       method: 'GET',
       url: RESTORE_URL
     }).then(
-      $.proxy(this.onRestoreUserConfig, this), 
+      $.proxy(this.onRestoreUserConfig, this),
       $.proxy(this.onErrorRestoreUserConfig, this)
     );
   };
