@@ -37,10 +37,7 @@
     var layout = this.parseLayout(json[0]);
     var success = this.applyLayout(layout);
     if (layout) {
-      //this.info('Tree layout restored');
       return layout;
-    } else {
-      this.onErrorRestoreUserConfig();  
     }
   };
 
