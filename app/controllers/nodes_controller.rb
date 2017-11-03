@@ -19,6 +19,9 @@ class NodesController < ApplicationController
   end
 
   def tree
+    if TreeLayout.find_by(user_id: current_user.email).nil?
+      TreeLayout.create!(user_id: current_user.email, layout: '{"hideParent":[],"hideChildren":[],"hideSiblings":[]}')
+    end
     authorize! :read, Node
   end
 
