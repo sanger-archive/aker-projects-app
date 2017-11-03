@@ -14,13 +14,19 @@ Rails.application.routes.draw do
     end
   end
 
+  resources :tree_layouts, only: [:create, :index] do
+    collection do
+      delete '', to: 'tree_layouts#destroy'
+    end
+  end
+
   namespace :api do
     namespace :v1 do
-
       # https://github.com/cerebris/jsonapi-resources#routing
       jsonapi_resources :nodes do
         jsonapi_relationships
       end
+
 
     end
   end
