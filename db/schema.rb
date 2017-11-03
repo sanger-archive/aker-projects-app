@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170918143645) do
+ActiveRecord::Schema.define(version: 20171025152542) do
 
   create_table "nodes", force: :cascade do |t|
     t.string   "name"
@@ -39,6 +39,13 @@ ActiveRecord::Schema.define(version: 20170918143645) do
     t.index ["accessible_type", "accessible_id"], name: "index_permissions_on_accessible_type_and_accessible_id"
     t.index ["permitted", "permission_type", "accessible_id", "accessible_type"], name: "index_permissions_on_various", unique: true
     t.index ["permitted"], name: "index_permissions_on_permitted"
+  end
+
+  create_table "tree_layouts", force: :cascade do |t|
+    t.string   "user_id"
+    t.text     "layout"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
 end
