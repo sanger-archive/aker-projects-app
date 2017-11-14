@@ -50,13 +50,6 @@ class Node < ApplicationRecord
     parents.size + 1
   end
 
-  # Returns true if the node is a direct descendant of the root node so the modal
-  # can be clear that these nodes cannot be edited (even though they have world edit
-  # permission)
-  def world_node?
-    !root? && parent.root?
-  end
-
   # Gets the parents of a node,
   # starting from root, ending at the node's direct parent
 	def parents
