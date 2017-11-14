@@ -126,7 +126,7 @@ RSpec.describe Node, type: :model do
       expect(prog1).not_to be_valid
     end
 
-    it "is invalid to creat a node with the same name as another active node" do
+    it "is invalid to create a node with the same name as another active node" do
     	active_node = create(:node, parent: program1)
     	expect(build(:node, name: active_node.name, parent: program1)).not_to be_valid
   	 end
