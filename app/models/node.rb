@@ -18,7 +18,8 @@ class Node < ApplicationRecord
 	has_many :nodes, class_name: 'Node', foreign_key: 'parent_id', dependent: :restrict_with_error
 	belongs_to :parent, class_name: 'Node', required: false
 
-  before_save :sanitise_blank_cost_code
+  before_validation :sanitise_blank_cost_code, :sanitise_name, :sanitise_owner, :sanitise_deactivated_by
+  before_save :sanitise_blank_cost_code, :sanitise_name, :sanitise_owner, :sanitise_deactivated_by
   before_create :create_uuid
   before_destroy :validate_root_node_cant_be_destroyed
 
@@ -81,6 +82,33 @@ class Node < ApplicationRecord
 
   def active_children
     nodes.select(&:active?)
+  end
+
+  def sanitise_name
+    if name
+      sanitised = name.strip.gsub(/\s+/, ' ')
+      if sanitised != name
+        self.name = sanitised
+      end
+    end
+  end
+
+  def sanitise_owner
+    if owner_email
+      sanitised = owner_email.strip.downcase
+      if sanitised != owner_email
+        self.owner_email = sanitised
+      end
+    end
+  end
+
+  def sanitise_deactivated_by
+    if deactivated_by
+      sanitised = deactivated_by.strip.downcase
+      if sanitised != deactivated_by
+        self.deactivated_by = sanitised
+      end
+    end
   end
 
   private
