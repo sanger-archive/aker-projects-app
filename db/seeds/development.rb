@@ -24,5 +24,5 @@ infection_genomics.permissions.create([{permitted: 'kaa@sanger.ac.uk', permissio
 
 # Development only - let anyone edit any node
 [cancer, cellular_genetics, human_genetics, infection_genomics, malaria, pathogens].each do |programme|
-  programme.permissions.where(permitted: "aker").destroy_all
+  programme.permissions.create([{permitted: 'world', permission_type: :write}])
 end
