@@ -22,7 +22,7 @@ malaria.permissions.create([{permitted: 'mjs@sanger.ac.uk', permission_type: :wr
 infection_genomics.permissions.create([{permitted: 'dw2@sanger.ac.uk', permission_type: :write}])
 infection_genomics.permissions.create([{permitted: 'kaa@sanger.ac.uk', permission_type: :write}])
 
-# Remove Aker permissions as the user doesn't exist
+# Development only - let anyone edit any node
 [cancer, cellular_genetics, human_genetics, infection_genomics, malaria, pathogens].each do |programme|
-  programme.permissions.where(permitted: "aker").destroy_all
+  programme.permissions.create([{permitted: 'world', permission_type: :write}])
 end
