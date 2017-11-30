@@ -53,5 +53,11 @@
       <h1>WTSI Research Activity Model</h1>
       <%= yield %>
     </div>
+    <footer style="text-align:center">
+      <% if Projects::Application::VERSION.present? %>
+        <%= 'Version: ' + Projects::Application::VERSION %>
+      <% end %>
+    </footer>
   </body>
+
 </html>
