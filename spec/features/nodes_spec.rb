@@ -2,61 +2,47 @@ require 'rails_helper'
 require 'ostruct'
 
 RSpec.describe 'Nodes', type: :feature do
-
   let(:user) { OpenStruct.new(email: 'user@sanger.ac.uk', groups: ['world']) }
 
   let(:user2) { OpenStruct.new(email: 'user2@sanger.ac.uk', groups: ['world']) }
 
-  let!(:root) {
+  let!(:root) do
     n = build(:node, name: 'root')
     n.save!(validate: false)
     n
-  }
+  end
 
-  let!(:program1) {
+  let!(:program1) do
     n = build(:node, name: 'program1', parent: root, owner_email: user.email)
     n.save!(validate: false)
     n
-  }
+  end
 
-  let!(:program2) {
+  let!(:program2) do
     n = build(:node, name: 'program2', parent: root)
     n.save!(validate: false)
     n.permissions.create!(permitted: user.email, permission_type: :write)
     n
-  }
+  end
 
-  let!(:program3) {
+  let!(:program3) do
     n = build(:node, name: 'program3', parent: root)
     n.save!(validate: false)
     n
-  }
+  end
 
-  let!(:proj) {
+  let!(:proj) do
     create(:node, name: 'proj1', parent: program3, owner_email: user.email)
-  }
+  end
 
-  let!(:proj2) {
+  let!(:proj2) do
     create(:node, name: 'proj2', parent: program3, owner_email: user2.email)
-  }
+  end
 
   before do
     allow_any_instance_of(JWTCredentials).to receive(:check_credentials)
-    allow_any_instance_of(JWTCredentials).to receive(:current_user).and_return(user)
-  end
-
-  context 'when I visit the node#show page', js: true do
-
-    before do
-      visit root_path
-    end
-
-    it 'displays a list of Sanger programs' do
-      expect(page).to have_content('Sanger Programs')
-      expect(page).to have_link('program1', href: node_path(program1.id))
-      expect(page).to have_link('program2', href: node_path(program2.id))
-    end
-
+    allow_any_instance_of(JWTCredentials).to receive(:current_user)
+      .and_return(user)
   end
 
   context 'when I visit the Tree Hierarchy', js: true do
@@ -73,7 +59,6 @@ RSpec.describe 'Nodes', type: :feature do
     end
 
     context 'when I click a node in the tree' do
-
       before do
         page.find('div', class: 'node', text: root.name).click
       end
@@ -86,17 +71,16 @@ RSpec.describe 'Nodes', type: :feature do
         page.find('div', class: 'node', text: program1.name).click
         expect(page.find_by_id('selected-node').value).to eq program1.name
       end
-
     end
 
     describe 'adding nodes' do
       it 'can add a new child node' do
         expect do
           page.find('div', class: 'node', text: program1.name).click
-          page.fill_in 'New Article:', :with => 'child'
-          click_button 'Add Article'
+          page.fill_in 'New Node:', with: 'child'
+          click_button 'Add Node'
           wait_for_ajax
-        end.to change{program1.nodes.count}.by(1)
+        end.to change { program1.nodes.count }.by(1)
       end
     end
 
@@ -109,7 +93,6 @@ RSpec.describe 'Nodes', type: :feature do
         it 'disables the delete button' do
           expect(page.find_by_id('btn-delete-nodes').disabled?).to be true
         end
-
       end
 
       context 'when a node has no children' do
@@ -135,30 +118,27 @@ RSpec.describe 'Nodes', type: :feature do
       end
 
       context 'when a node is the only one visible' do
-
         before do
-          page.find('div', class: 'node', text: program2.name).find('i', class: 'verticalEdge').trigger('click')
+          page.find('div', class: 'node', text: program2.name)
+              .find('i', class: 'verticalEdge').trigger('click')
         end
 
         it 'reloads the whole tree' do
-          # sleep 1
-          expect(page.find('div', class: 'orgchart')).to_not have_content(root.name)
+          expect(page.find('div', class: 'orgchart'))
+            .to_not have_content(root.name)
           page.find('div', class: 'node', text: program2.name).click
           click_button 'Delete'
           wait_for_ajax
           expect(page.find('div', class: 'orgchart')).to have_content(root.name)
         end
-
       end
     end
 
     describe 'selecting a node' do
-
       context 'after selecting a node and filling in New Node' do
-
         before do
           page.find('div', class: 'node', text: program2.name).click
-          page.fill_in 'New Article:', with: 'child'
+          page.fill_in 'New Node:', with: 'child'
         end
 
         it 'deselects the node' do
@@ -176,7 +156,6 @@ RSpec.describe 'Nodes', type: :feature do
     end
 
     describe 'editing nodes' do
-
       context 'Double-clicking a node' do
         before do
           page.find('div', class: 'node', text: program1.name).double_click
@@ -188,65 +167,7 @@ RSpec.describe 'Nodes', type: :feature do
           expect(modal.visible?).to be(true)
           expect(modal.has_css?('form')).to be(true)
         end
-
       end
-
-    end
-
-  end
-
-  context 'when I visit node#id#show page' do |variable|
-    context 'when the node is writable' do
-      before do
-        @program11 = create(:node, name: "program11", parent: program1)
-        @program11.permissions.create(permitted: user.email, permission_type: :write)
-        visit list_node_path(program1.id)
-      end
-
-      it "displays the children of the node with edit and delete links" do
-        expect(page).to have_content('program11')
-        expect(page).to have_content('Edit')
-        expect(page).to have_content('Delete')
-      end
-    end
-    context 'when the node is not writable' do
-      before do
-        @program11 = create(:node, name: "program11", parent: program1)
-        visit list_node_path(program1.id)
-      end
-
-      it "displays the children of the node without edit and delete links" do
-        expect(page).to have_content('program11')
-        expect(page).not_to have_content('Edit')
-        expect(page).not_to have_content('Delete')
-      end
-    end
-
-    context 'when node is a proposal' do
-      before do
-        @program11 = create(:node, name: "program11", parent: program1)
-        @proposal = create(:node, cost_code: "S1234", description: "My super proposal", parent: program1)
-        visit node_path(@proposal)
-      end
-
-      it "displays the cost code" do
-        expect(page).to have_content(@proposal.cost_code)
-      end
-
-      it "displays the description" do
-        expect(page).to have_content(@proposal.description)
-      end
-    end
-
-  end
-
-  describe '/nodes/list' do
-    before do
-      visit list_nodes_path
-    end
-
-    it 'shows me the list view' do
-      expect(page).to have_css("#list")
     end
   end
 
@@ -256,8 +177,7 @@ RSpec.describe 'Nodes', type: :feature do
     end
 
     it 'shows me the tree view' do
-      expect(page).to have_css("#tree")
+      expect(page).to have_css('#tree')
     end
   end
-
 end
