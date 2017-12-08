@@ -33,8 +33,7 @@
         </div>
         <div class="collapse navbar-collapse" id="navBar">
           <ul class="nav navbar-nav">
-            <li><%= link_to 'List', list_node_path(@node), id: ("current-page-#{Rails.env.downcase}" if params[:action] == 'list') %></li>
-            <li><%= link_to 'Tree', tree_node_path(@node), id: ("current-page-#{Rails.env.downcase}" if params[:action] == 'tree') %></li>
+            <li><%#= link_to 'Tree', tree_node_path(@node), id: ("current-page-#{Rails.env.downcase}" if params[:action] == 'tree') %></li>
           </ul>
           <ul class="nav navbar-nav navbar-right">
             <li class="navbar-text"><strong><%= Rails.env.upcase %></strong></li>
@@ -49,8 +48,15 @@
       </div>
     </nav>
 
-    <div class=<%= params[:action] == 'tree' ? "container-fluid" : "container" %> id="content">
-      <h1>WTSI Research Activity Model</h1>
+    <div class="container-fluid" id="content">
+      <div class="row">
+        <div class="col-md-8">
+          <h1>WTSI Research Activity Model</h1>
+        </div>
+        <div class="col-md-4">
+          <div type="button" class="btn btn-warning pull-right" id="reset-button" data-user-preferences-expand="true">Expand Tree</div>
+        </div>
+      </div>
       <%= yield %>
     </div>
     <footer style="text-align:center">
