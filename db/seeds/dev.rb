@@ -26,3 +26,4 @@ infection_genomics.permissions.create([{permitted: 'kaa@sanger.ac.uk', permissio
 [cancer, cellular_genetics, human_genetics, infection_genomics, malaria, pathogens].each do |programme|
   programme.permissions.where(permitted: "aker").destroy_all
 end
+

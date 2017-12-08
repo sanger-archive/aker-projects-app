@@ -37,131 +37,145 @@ RSpec.describe Node, type: :model do
     expect(root).not_to have_attribute('owner')
   end
 
-  it "is not valid without a name" do
-    expect(build(:node, name: nil, parent: program1)).to_not be_valid
+  describe '#validation' do
+
+    it "is not valid without a name" do
+      expect(build(:node, name: nil, parent: program1)).to_not be_valid
+    end
+
+    it "is not valid without a parent" do
+      root.reload
+      expect(build(:node, name: 'name')).to_not be_valid
+    end
+
+    it "is valid with a costcode in the correct format and without" do
+      expect(build(:node, name: 'name', cost_code: 'xx', parent: program1)).to_not be_valid
+      expect(build(:node, name: 'name', cost_code: 'S1234', parent: program1)).to be_valid
+      expect(build(:node, name: 'name', cost_code: nil, parent: program1)).to be_valid
+      expect(build(:node, name: 'name', cost_code: '', parent: program1)).to be_valid
+    end
+
+    it "is valid with all possible attributes" do
+      expect(build(:node, name: 'name', description: 'description', cost_code: 'S1234', parent: program1)).to be_valid
+    end
+
+    it "is valid when deactivated" do
+      expect(build(:node, deactivated_by: user.email, deactivated_datetime: DateTime.now, parent: program1)).to be_valid
+    end
+
+    it "is valid when active" do
+      expect(build(:node, deactivated_by: nil, deactivated_datetime: nil, parent: program1)).to be_valid
+    end
+
+    it "is not valid with a deactivated_datetime but no deactivated_by" do
+      expect(build(:node, deactivated_by: nil, deactivated_datetime: DateTime.now, parent: program1)).not_to be_valid
+    end
+
+    it "is not valid with a deactivated_by but no deactivated_datetime" do
+      expect(build(:node, deactivated_by: user.email, deactivated_datetime: nil, parent: program1)).not_to be_valid
+    end
+
+    it "is valid to be active and have active children" do
+      children = create_list(:node, 3, parent: program1)
+      expect(program1.nodes).to eq children
+    end
+
+    it "is valid to be active and have inactive children" do
+      children = create_list(:node, 3, deactivated_by: user.email, deactivated_datetime: DateTime.now, parent: program1)
+      expect(program1.nodes).to eq children
+    end
+
+    it "is valid to be active and have partially inactive children" do
+      children = create_list(:node, 2,  deactivated_by: nil, deactivated_datetime: nil, parent: program1)
+      children += create_list(:node, 2, deactivated_by: user.email, deactivated_datetime: DateTime.now, parent: program1)
+      expect(program1.nodes).to eq children
+    end
+
+    it "is valid to be active and have no children" do
+      expect(create(:node, parent: program1)).to be_valid
+    end
+
+    it "is valid to be inactive and have no children" do
+      expect(create(:node, deactivated_by: user.email, deactivated_datetime: DateTime.now, parent: program1)).to be_valid
+    end
+
+    it "is valid to be inactive and have inactive children" do
+      prog1 = create(:node, parent: program1)
+      children = create_list(:node, 3, deactivated_by: user.email, deactivated_datetime: DateTime.now, parent: prog1)
+      expect(prog1.nodes).to eq children
+      prog1.deactivated_by = user
+      prog1.deactivated_datetime = DateTime.now
+      expect(prog1).to be_valid
+    end
+
+    it "is invalid to be inactive and have active children" do
+      prog1 = create(:node, parent: program1)
+      children = create_list(:node, 3, parent: prog1)
+      expect(prog1.nodes).to eq children
+      prog1.deactivated_by = user.email
+      prog1.deactivated_datetime = DateTime.now
+      expect(prog1).not_to be_valid
+    end
+
+    it "is invalid to be inactive and have partially inactive children" do
+      prog1 = create(:node, parent: program1)
+      children = create_list(:node, 2, deactivated_by: nil, deactivated_datetime: nil, parent: prog1)
+      children += create_list(:node, 2, deactivated_by: user.email, deactivated_datetime: DateTime.now, parent: prog1)
+      prog1.deactivated_by = user.email
+      prog1.deactivated_datetime = DateTime.now
+      expect(prog1).not_to be_valid
+    end
+
+    it "is invalid to create a node with the same name as another active node" do
+    	active_node = create(:node, parent: program1)
+    	expect(build(:node, name: active_node.name, parent: program1)).not_to be_valid
+  	 end
+
+    it "is valid to create a node with the same name as a deactivated node" do
+    	deactivated_node = create(:node, deactivated_by: user.email, deactivated_datetime: DateTime.now, parent: program1)
+    	expect(build(:node, name: deactivated_node.name, parent: program1)).to be_valid
+    end
+
+    it "is invalid to create a root node" do
+      root.reload
+      expect(build(:node, name: 'root', parent: nil)).not_to be_valid
+    end
+
+    it "is invalid to create a node under root" do
+      expect(build(:node, name: 'prog1', parent: root)).not_to be_valid
+    end
+
+    it "is invalid to move a node to under root" do
+      node =  build(:node, name: 'prog1', parent: program1)
+      node.update_attributes(parent_id: root.id)
+      expect(node).not_to be_valid
+    end
+
+    it "is invalid to move a node from under root" do
+      program3 = create(:node, name: 'program3', parent: program1, owner_email: user.email)
+      program4 = build(:node, name: 'program4', parent: root, owner_email: user.email)
+      program4.save(validate: false)
+      expect(program4.update_attributes(parent_id: program3.id)).to eq false
+    end
+
+    it "is invalid to destroy the root node" do
+      root.destroy
+      expect(root.errors[:base]).to eq ["The root node cannot be deleted"]
+    end
+
+    it 'should not be valid without a sanitised name' do
+      expect(build(:node, parent: program1, name: "   \t  \n   ")).not_to be_valid
+    end
+    it 'should not be valid without a sanitised owner' do
+      expect(build(:node, parent: program1, owner_email: "   \t  \n   ")).not_to be_valid
+    end
+    it 'should be valid after sanitisation if fields are not empty' do
+      expect(build(:node, parent: program1, name: "   \tALPHA\n   ", owner_email: "   \tALPHA\n   ")).to be_valid
+    end
+
   end
 
-  it "is not valid without a parent" do
-    root.reload
-    expect(build(:node, name: 'name')).to_not be_valid
-  end
-
-  it "is valid with a costcode in the correct format and without" do
-    expect(build(:node, name: 'name', cost_code: 'xx', parent: program1)).to_not be_valid
-    expect(build(:node, name: 'name', cost_code: 'S1234', parent: program1)).to be_valid
-    expect(build(:node, name: 'name', cost_code: nil, parent: program1)).to be_valid
-    expect(build(:node, name: 'name', cost_code: '', parent: program1)).to be_valid
-  end
-
-  it "is valid with all possible attributes" do
-    expect(build(:node, name: 'name', description: 'description', cost_code: 'S1234', parent: program1)).to be_valid
-  end
-
-  it "is valid when deactivated" do
-    expect(build(:node, deactivated_by: user.email, deactivated_datetime: DateTime.now, parent: program1)).to be_valid
-  end
-
-  it "is valid when active" do
-    expect(build(:node, deactivated_by: nil, deactivated_datetime: nil, parent: program1)).to be_valid
-  end
-
-  it "is not valid with a deactivated_datetime but no deactivated_by" do
-    expect(build(:node, deactivated_by: nil, deactivated_datetime: DateTime.now, parent: program1)).not_to be_valid
-  end
-
-  it "is not valid with a deactivated_by but no deactivated_datetime" do
-    expect(build(:node, deactivated_by: user.email, deactivated_datetime: nil, parent: program1)).not_to be_valid
-  end
-
-  it "is valid to be active and have active children" do
-    children = create_list(:node, 3, parent: program1)
-    expect(program1.nodes).to eq children
-  end
-
-  it "is valid to be active and have inactive children" do
-    children = create_list(:node, 3, deactivated_by: user.email, deactivated_datetime: DateTime.now, parent: program1)
-    expect(program1.nodes).to eq children
-  end
-
-  it "is valid to be active and have partially inactive children" do
-    children = create_list(:node, 2,  deactivated_by: nil, deactivated_datetime: nil, parent: program1)
-    children += create_list(:node, 2, deactivated_by: user.email, deactivated_datetime: DateTime.now, parent: program1)
-    expect(program1.nodes).to eq children
-  end
-
-  it "is valid to be active and have no children" do
-    expect(create(:node, parent: program1)).to be_valid
-  end
-
-  it "is valid to be inactive and have no children" do
-    expect(create(:node, deactivated_by: user.email, deactivated_datetime: DateTime.now, parent: program1)).to be_valid
-  end
-
-  it "is valid to be inactive and have inactive children" do
-    prog1 = create(:node, parent: program1)
-    children = create_list(:node, 3, deactivated_by: user.email, deactivated_datetime: DateTime.now, parent: prog1)
-    expect(prog1.nodes).to eq children
-    prog1.deactivated_by = user
-    prog1.deactivated_datetime = DateTime.now
-    expect(prog1).to be_valid
-  end
-
-  it "is invalid to be inactive and have active children" do
-    prog1 = create(:node, parent: program1)
-    children = create_list(:node, 3, parent: prog1)
-    expect(prog1.nodes).to eq children
-    prog1.deactivated_by = user.email
-    prog1.deactivated_datetime = DateTime.now
-    expect(prog1).not_to be_valid
-  end
-
-  it "is invalid to be inactive and have partially inactive children" do
-    prog1 = create(:node, parent: program1)
-    children = create_list(:node, 2, deactivated_by: nil, deactivated_datetime: nil, parent: prog1)
-    children += create_list(:node, 2, deactivated_by: user.email, deactivated_datetime: DateTime.now, parent: prog1)
-    prog1.deactivated_by = user.email
-    prog1.deactivated_datetime = DateTime.now
-    expect(prog1).not_to be_valid
-  end
-
-  it "is invalid to creat a node with the same name as another active node" do
-  	active_node = create(:node, parent: program1)
-  	expect(build(:node, name: active_node.name, parent: program1)).not_to be_valid
-	 end
-
-  it "is valid to create a node with the same name as a deactivated node" do
-  	deactivated_node = create(:node, deactivated_by: user.email, deactivated_datetime: DateTime.now, parent: program1)
-  	expect(build(:node, name: deactivated_node.name, parent: program1)).to be_valid
-  end
-
-  it "is invalid to create a root node" do
-    root.reload
-    expect(build(:node, name: 'root', parent: nil)).not_to be_valid
-  end
-
-  it "is invalid to create a node under root" do
-    expect(build(:node, name: 'prog1', parent: root)).not_to be_valid
-  end
-
-  it "is invalid to move a node to under root" do
-    node =  build(:node, name: 'prog1', parent: program1)
-    node.update_attributes(parent_id: root.id)
-    expect(node).not_to be_valid
-  end
-
-  it "is invalid to move a node from under root" do
-    program3 = create(:node, name: 'program3', parent: program1, owner_email: user.email)
-    program4 = build(:node, name: 'program4', parent: root, owner_email: user.email)
-    program4.save(validate: false)
-    expect(program4.update_attributes(parent_id: program3.id)).to eq false
-  end
-
-  it "is invalid to destroy the root node" do
-    root.destroy
-    expect(root.errors[:base]).to eq ["The root node cannot be deleted"]
-  end
-
-  context '#create' do
+  describe '#create' do
     before do
       @node = create(:node, name: 'jeff', parent: program1)
     end
@@ -347,6 +361,24 @@ RSpec.describe Node, type: :model do
       it { should be_able_to(:read, node) }
       it { should be_able_to(:write, node) }
       it { should_not be_able_to(:spend, node) }
+    end
+  end
+
+  describe '#name' do
+    it 'should be sanitised' do
+      expect(create(:node, name: '   ALPHA   BETA  ', parent: program1).name).to eq('ALPHA BETA')
+    end
+  end
+
+  describe '#owner_email' do
+    it 'should be sanitised' do
+      expect(create(:node, owner_email: '   ALPHA@BETA  ', parent: program1).owner_email).to eq('alpha@beta')
+    end
+  end
+
+  describe '#deactivated_by' do
+    it 'should be sanitised' do
+      expect(create(:node, parent: program1, deactivated_datetime: DateTime.now, deactivated_by: '  ALPHA@BETA  ').deactivated_by).to eq('alpha@beta')
     end
   end
 end
