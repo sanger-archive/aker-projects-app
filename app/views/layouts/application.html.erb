@@ -33,8 +33,7 @@
         </div>
         <div class="collapse navbar-collapse" id="navBar">
           <ul class="nav navbar-nav">
-            <li><%= link_to 'List', list_node_path(@node), id: ("current-page-#{Rails.env.downcase}" if params[:action] == 'list') %></li>
-            <li><%= link_to 'Tree', tree_node_path(@node), id: ("current-page-#{Rails.env.downcase}" if params[:action] == 'tree') %></li>
+            <li><%#= link_to 'Tree', tree_node_path(@node), id: ("current-page-#{Rails.env.downcase}" if params[:action] == 'tree') %></li>
           </ul>
           <ul class="nav navbar-nav navbar-right">
             <li class="navbar-text"><strong><%= Rails.env.upcase %></strong></li>
