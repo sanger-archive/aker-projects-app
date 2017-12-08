@@ -49,7 +49,14 @@
     </nav>
 
     <div class="container-fluid" id="content">
-      <h1>WTSI Research Activity Model</h1>
+      <div class="row">
+        <div class="col-md-8">
+          <h1>WTSI Research Activity Model</h1>
+        </div>
+        <div class="col-md-4">
+          <div type="button" class="btn btn-warning pull-right" id="reset-button" data-user-preferences-expand="true">Expand Tree</div>
+        </div>
+      </div>
       <%= yield %>
     </div>
     <footer style="text-align:center">

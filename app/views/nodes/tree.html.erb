@@ -4,31 +4,24 @@
 </div>
 <%= render "show", locals: { tab: 'tree' } do %>
   <div id="tree" class="tab-pane active">
-
-
     <form id="edit-panel" style="padding-top:1em;" class="form-inline">
       <div class="form-group">
-        <label for="selected-node" class="selected-node-group">Selected Node:</label>
-        <input type="text" readonly autocomplete="off" class="form-control" id="selected-node" class="selected-node-group" disabled="disabled">
-      </div>
-      &nbsp;
-      <div class="form-group">
         <label for="new-node">New Node:</label>
-        <input type="text" autocomplete="off" class="form-control" id="new-node">
+        <input type="text" autocomplete="off" class="form-control" id="new-node"
+          placeholder="name">
+        <button type="button" class="btn btn-success tree-button"
+          id="btn-add-nodes" disabled="disabled">Add Node</button>
       </div>
-      &nbsp;
 
-      <button type="button" class="btn btn-success" id="btn-add-nodes" disabled="disabled">Add Node</button>
-      &nbsp;
-      <button type="button" class="btn btn-danger"  id="btn-delete-nodes" disabled="disabled">Delete</button>
-
-
-
+      <div class="form-group pull-right">
+        <label for="selected-node" class="selected-node-group">Selected Node:</label>
+        <input type="text" readonly autocomplete="off" class="form-control"
+          id="selected-node" class="selected-node-group" disabled="disabled"
+          placeholder="none">
+        <button type="button" class="btn btn-danger tree-button"
+          id="btn-delete-nodes" disabled="disabled">Delete</button>
+      </div>
     </form>
-     <br />
-      <div type="button" class="btn btn-warning" data-user-preferences-expand="true">Expand tree</div>
-    <br />
-    <br/>
 
     <div class="modal fade" id="editNodeModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
       <div class="modal-dialog" role="document">
