@@ -55,34 +55,6 @@ RSpec.describe 'API::V1::Nodes', type: :request do
     let!(:nodes) { create_list(:node, 2, parent: program1) }
     let!(:deactivated_proposals) { create_list(:node, 2, deactivated_by: user.email, deactivated_datetime: DateTime.now, cost_code: "S1234", parent: program1) }
 
-    context 'when using a value of _none for cost_code' do
-
-      before(:each) do
-
-        get api_v1_nodes_path, params: { "filter[cost_code]": "_none" }, headers: headers
-
-        @json = JSON.parse(response.body, symbolize_names: true)
-      end
-
-      it 'returns only the nodes without a cost code' do
-        expect(@json[:data].length).to eql(4)
-      end
-
-    end
-
-    context 'when using a value of !_none for cost_code' do
-
-      before(:each) do
-        get api_v1_nodes_path, params: { "filter[cost_code]": "!_none" }, headers: headers
-
-        @json = JSON.parse(response.body, symbolize_names: true)
-      end
-
-      it 'returns on the nodes with a cost code' do
-        expect(@json[:data].length).to eq(3)
-      end
-    end
-
     it 'will filter out deactivated nodes by default' do
       get api_v1_nodes_path, headers: headers
 
@@ -95,18 +67,6 @@ RSpec.describe 'API::V1::Nodes', type: :request do
       expect(response_ids).to match_array(expected_ids)
     end
 
-    it 'can filter out active nodes' do
-      get api_v1_nodes_path, params: { "filter[active]": "false" }, headers: headers
-
-      json = JSON.parse(response.body, symbolize_names: true)
-      response_data = json[:data]
-      response_ids = response_data.map { |node| node[:id].to_i }
-      expected_ids = deactivated_proposals.pluck(:id)
-
-      expect(response_data.length).to eql(2)
-      expect(response_ids).to match_array(expected_ids)
-    end
-
     it 'can find a deactivated node by id' do
       node = deactivated_proposals.first
       get api_v1_node_path(node), headers: headers
@@ -114,6 +74,82 @@ RSpec.describe 'API::V1::Nodes', type: :request do
       expect(response).to have_http_status(:ok)
       response_data = JSON.parse(response.body, symbolize_names: true)[:data]
       expect(response_data[:id].to_i).to eq(node.id)
+    end
+
+    describe '#filter[active]' do
+
+      it 'can filter out active nodes' do
+        get api_v1_nodes_path, params: { "filter[active]": "false" }, headers: headers
+
+        json = JSON.parse(response.body, symbolize_names: true)
+        response_data = json[:data]
+        response_ids = response_data.map { |node| node[:id].to_i }
+        expected_ids = deactivated_proposals.pluck(:id)
+
+        expect(response_data.length).to eql(2)
+        expect(response_ids).to match_array(expected_ids)
+      end
+
+    end
+
+    describe '#filter[cost_code]' do
+
+      context 'when using a value of _none for cost_code' do
+
+        before(:each) do
+
+          get api_v1_nodes_path, params: { "filter[cost_code]": "_none" }, headers: headers
+
+          @json = JSON.parse(response.body, symbolize_names: true)
+        end
+
+        it 'returns only the nodes without a cost code' do
+          expect(@json[:data].length).to eql(4)
+        end
+
+      end
+
+      context 'when using a value of !_none for cost_code' do
+
+        before(:each) do
+          get api_v1_nodes_path, params: { "filter[cost_code]": "!_none" }, headers: headers
+
+          @json = JSON.parse(response.body, symbolize_names: true)
+        end
+
+        it 'returns on the nodes with a cost code' do
+          expect(@json[:data].length).to eq(3)
+        end
+      end
+    end    
+
+    describe '#filter[node_type]' do
+
+      it 'can filter nodes that represent projects' do
+        get api_v1_nodes_path, params: { "filter[node_type]": "project" }, headers: headers
+
+        json = JSON.parse(response.body, symbolize_names: true)
+        response_data = json[:data]
+        response_ids = response_data.map { |node| node[:id].to_i }
+        expected_ids = proposals.pluck(:id)
+
+        expect(response_data.length).to eql(proposals.length)
+        expect(response_ids).to match_array(expected_ids)        
+      end
+
+      it 'can filter nodes that represent subprojects' do
+        subprojects = create_list(:node, 3, 
+          cost_code: "S1234/45", description: "This is a subproject", parent: proposals.first) 
+        get api_v1_nodes_path, params: { "filter[node_type]": "subproject" }, headers: headers
+
+        json = JSON.parse(response.body, symbolize_names: true)
+        response_data = json[:data]
+        response_ids = response_data.map { |node| node[:id].to_i }
+        expected_ids = subprojects.pluck(:id)
+
+        expect(response_data.length).to eql(subprojects.length)
+        expect(response_ids).to match_array(expected_ids)        
+      end
     end
 
     describe 'permissions' do
@@ -184,6 +220,32 @@ RSpec.describe 'API::V1::Nodes', type: :request do
           expect(response_ids).to match_array(expected_ids)
         end
 
+      end
+
+      describe '#with_parent_spendable_by' do
+        before(:each) do
+          @jason = create_list(:spendable_node, 5, parent: program1, permitted: 'jason')
+          @gary  = create_list(:spendable_node, 6, parent: program1, permitted: 'gary')
+          @ken   = create_list(:spendable_node, 9, parent: program1, permitted: 'ken')
+          @ken_node = @ken.first
+          @ken_node_2 = @ken.last
+          @some_nodes = create_list(:node, 5, parent: @ken_node)
+          @some_other_nodes = create_list(:node, 2, parent: @ken_node_2)
+          @nodes_that_dont_match_condition = create_list(:node, 4, parent: @gary.last)
+          @expected_result = [@some_nodes, @some_other_nodes].flatten
+        end 
+
+        it 'can filter the nodes that have a parent with a given spend permission' do
+          get api_v1_nodes_path, params: { "filter[with_parent_spendable_by]": "ken" }, headers: headers
+
+          json = JSON.parse(response.body, symbolize_names: true)
+          response_data = json[:data]
+          response_ids = response_data.map { |node| node[:id].to_i }
+          expected_ids = @expected_result.pluck(:id)
+
+          expect(response_data.length).to eql(7)
+          expect(response_ids).to match_array(expected_ids)          
+        end
       end
 
     end

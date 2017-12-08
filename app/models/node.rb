@@ -4,7 +4,7 @@ class Node < ApplicationRecord
   validates :name, presence: true
   validates :parent, presence: true, if: :parent_id
   validates_presence_of :description, :allow_blank => true
-  validates :cost_code, :presence => true, :allow_blank => true, format: { with: /\AS[0-9]{4}+\z/, message: 'must be of the format "S" followed by four digits' }, :on => [:create, :update]
+  validates :cost_code, :presence => true, :allow_blank => true, format: { with: /\AS[\d]{4}(\/[\d]{1,2}){0,1}\z/, message: 'must be a valid project or subproject cost code' }, :on => [:create, :update]
   validates :deactivated_datetime, presence: true, unless: :active?
   validates :deactivated_datetime, absence: true, if: :active?
   validates :owner_email, presence: true
@@ -25,6 +25,13 @@ class Node < ApplicationRecord
   after_create :set_permissions
 
   scope :active, -> { where(deactivated_by: nil) }
+
+  scope :with_cost_code, -> { where(Node.arel_table[:cost_code].matches('S%')) }
+  scope :with_project_cost_code, -> { with_cost_code.where.not(Node.arel_table[:cost_code].matches('%/%')) }
+  scope :with_subproject_cost_code, -> { with_cost_code.where(Node.arel_table[:cost_code].matches('%/%')) }
+
+  scope :is_project, -> { with_project_cost_code }
+  scope :is_subproject, -> { with_subproject_cost_code }
 
   def set_permissions
     if owner_email

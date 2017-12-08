@@ -28,6 +28,14 @@ module Api
         end
       }
 
+      filter :node_type, apply: ->(records, value, _options) {
+        if value[0] == 'project'
+          records.is_project
+        elsif value[0] == 'subproject'
+          records.is_subproject
+        end
+      }
+
       filter :active, default: "true", apply: -> (records, value, _options) {
         (value[0].downcase == "true") ? records.where(deactivated_by: nil) : records.where.not(deactivated_by: nil)
       }
@@ -43,6 +51,10 @@ module Api
       filter :spendable_by, apply: ->(records, value, _options) {
         records.joins(:permissions).where('permissions.permission_type': 'spend', 'permissions.permitted': value)
       }
+
+      filter :with_parent_spendable_by, apply: ->(records, value, _options) {
+        records.joins(parent: :permissions).where('permissions.permission_type': 'spend', 'permissions.permitted': value)
+      }      
 
       # check whether the node is owned by the current user.
       # returns a bool
