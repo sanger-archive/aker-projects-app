@@ -1,21 +1,16 @@
 class NodesController < ApplicationController
-
   include AkerPermissionControllerConfig
 
   before_action :current_node, except: :create
-  before_action :set_child, only: [:show, :list, :tree]
+  before_action :set_child, only: [:show, :tree]
 
   def show
     authorize! :read, Node
-    render "list"
+    render :tree
   end
 
   def index
-    render "list"
-  end
-
-  def list
-    authorize! :read, Node
+    render :tree
   end
 
   def tree
