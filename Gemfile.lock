@@ -1,8 +1,9 @@
 GIT
-  remote: git://github.com/sanger/aker-billing-facade-client.git
-  revision: dac6edeed2c0259da687a027a2a77f5234701250
+  remote: git://github.com/emrojo/aker-billing-facade-client.git
+  revision: 8d7b8e5017b7c6964793a5b42089eecbaaac6696
+  branch: a200_validate_sub_costcodes
   specs:
-    aker-billing-facade-client (0.1.0)
+    aker-billing-facade-client (0.1.2)
       faraday
 
 GIT
