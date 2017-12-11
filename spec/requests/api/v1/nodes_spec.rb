@@ -139,7 +139,7 @@ RSpec.describe 'API::V1::Nodes', type: :request do
 
       it 'can filter nodes that represent subprojects' do
         subprojects = create_list(:node, 3, 
-          cost_code: "S1234/45", description: "This is a subproject", parent: proposals.first) 
+          cost_code: "S1234_45", description: "This is a subproject", parent: proposals.first) 
         get api_v1_nodes_path, params: { "filter[node_type]": "subproject" }, headers: headers
 
         json = JSON.parse(response.body, symbolize_names: true)
