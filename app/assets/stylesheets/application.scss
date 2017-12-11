@@ -14,8 +14,18 @@
 
 #tree-hierarchy {
   overflow: scroll;
+  .orgchart {
+    border: 1px solid lightgray;
+  }
+  margin-top: 10px;
+}
 
-  .orgchart { border: 1px solid lightgray;}
+.tree-button {
+  margin-left: 10px;
+}
+
+#reset-button {
+  margin-top: 22px;
 }
 
 .alert-error {
@@ -93,6 +103,7 @@ $owned-colour: #009933;
   &#editable {
     background-color: $editable-colour;
   }
+  padding: 3px;
 }
 
 // Make textbox underlines clearer

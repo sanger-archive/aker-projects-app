@@ -1,4 +1,11 @@
 GIT
+  remote: git://github.com/sanger/aker-billing-facade-client.git
+  revision: dac6edeed2c0259da687a027a2a77f5234701250
+  specs:
+    aker-billing-facade-client (0.1.0)
+      faraday
+
+GIT
   remote: git://github.com/sanger/aker-credentials.git
   revision: 49a8a0a2811878744d2d6869784b3bdb885804a4
   specs:
@@ -86,6 +93,7 @@ GEM
       autoprefixer-rails (>= 5.2.1)
       sass (>= 3.3.4)
     bootstrap_form (2.7.0)
+    brakeman (4.0.1)
     builder (3.2.3)
     byebug (9.0.6)
     cancancan (2.1.1)
@@ -347,10 +355,12 @@ PLATFORMS
 
 DEPENDENCIES
   active_model_serializers
+  aker-billing-facade-client!
   aker_credentials_gem!
   aker_permission_gem!
   bootstrap-sass (~> 3.3.6)
   bootstrap_form
+  brakeman
   byebug
   capybara
   coffee-rails (~> 4.2)
