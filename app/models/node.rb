@@ -1,10 +1,14 @@
+require 'billing_facade_client'
+
 class Node < ApplicationRecord
   include AkerPermissionGem::Accessible
 
   validates :name, presence: true
   validates :parent, presence: true, if: :parent_id
   validates_presence_of :description, :allow_blank => true
-  validates :cost_code, :presence => true, :allow_blank => true, format: { with: /\AS[0-9]{4}+\z/, message: 'must be of the format "S" followed by four digits' }, :on => [:create, :update]
+  validates :cost_code, :presence => true, :allow_blank => true, :on => [:create, :update]
+  validates_with BillingFacadeClient::CostCodeValidator, :on => [:create, :update]
+
   validates :deactivated_datetime, presence: true, unless: :active?
   validates :deactivated_datetime, absence: true, if: :active?
   validates :owner_email, presence: true
