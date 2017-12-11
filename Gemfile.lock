@@ -86,6 +86,7 @@ GEM
       autoprefixer-rails (>= 5.2.1)
       sass (>= 3.3.4)
     bootstrap_form (2.7.0)
+    brakeman (4.0.1)
     builder (3.2.3)
     byebug (9.0.6)
     cancancan (2.1.1)
@@ -351,6 +352,7 @@ DEPENDENCIES
   aker_permission_gem!
   bootstrap-sass (~> 3.3.6)
   bootstrap_form
+  brakeman
   byebug
   capybara
   coffee-rails (~> 4.2)

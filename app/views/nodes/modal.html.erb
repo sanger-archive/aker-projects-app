@@ -1,6 +1,6 @@
 <div class="modal-header">
   <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-  <h4 class="modal-title" id="myModalLabel"><%= check_write_permission_for_node(@node) ? "Edit" : "View" %> Article</h4>
+  <h4 class="modal-title" id="myModalLabel"><%= check_write_permission_for_node(@node) ? "Edit" : "View" %> Node</h4>
   <% if @node.owner_email %>
     <b>Owned by <%= @node.owner_email %></b>
   <% end %>
@@ -9,7 +9,7 @@
 <div class="modal-body">
   <% if !check_write_permission_for_node(@node) %>
     <div class="alert alert-warning" role="alert">
-      You don't have permission to edit this article.
+      You don't have permission to edit this node.
     </div>
   <% end %>
   <%= bootstrap_form_for(@nodeform, remote: true, url: node_path(@node), method: :put, accept: :json,) do |f| %>

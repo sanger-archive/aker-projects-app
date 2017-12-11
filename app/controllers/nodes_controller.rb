@@ -1,21 +1,16 @@
 class NodesController < ApplicationController
-
   include AkerPermissionControllerConfig
 
   before_action :current_node, except: :create
-  before_action :set_child, only: [:show, :list, :tree]
+  before_action :set_child, only: [:show, :tree]
 
   def show
     authorize! :read, Node
-    render "list"
+    render :tree
   end
 
   def index
-    render "list"
-  end
-
-  def list
-    authorize! :read, Node
+    render :tree
   end
 
   def tree
@@ -31,9 +26,9 @@ class NodesController < ApplicationController
     @node_form = NodeForm.new(node_form_params.merge(owner_email: current_user.email))
 
     if @node_form.save
-      flash[:success] = "Node created"
+      flash[:success] = 'Node created'
     else
-      flash[:danger] = "Failed to create node"
+      flash[:danger] = 'Failed to create node'
     end
     redirect_to node_path(@node_form.parent_id)
   end
@@ -56,7 +51,7 @@ class NodesController < ApplicationController
       @node_form = NodeForm.new(node_form_params)
 
       if @node_form.save
-        format.html { redirect_to node_path(@node.parent_id), flash: { success: "Node updated" }}
+        format.html { redirect_to node_path(@node.parent_id), flash: { success: 'Node updated' } }
         format.json { render json: @node, status: :ok }
       else
         format.html {
@@ -74,12 +69,11 @@ class NodesController < ApplicationController
     @parent_id = @node.parent_id
 
     if @node.deactivate(current_user.email)
-      flash[:success] = "Node deleted"
-      redirect_to node_path(@parent_id)
+      flash[:success] = 'Node deleted'
     else
-      flash[:danger] = @node.errors.empty? ? "This node cannot be deleted." : @node.errors.full_messages.join(" ")
-      redirect_to node_path(@parent_id)
+      flash[:danger] = @node.errors.empty? ? 'This node cannot be deleted.' : @node.errors.full_messages.join(' ')
     end
+    redirect_to node_path(@parent_id)
   end
 
   helper_method :check_write_permission_for_node, :jwt_provided?
@@ -109,5 +103,4 @@ class NodesController < ApplicationController
   def check_write_permission_for_node(node)
     current_user && Ability.new(current_user).can?(:write, node)
   end
-
 end
