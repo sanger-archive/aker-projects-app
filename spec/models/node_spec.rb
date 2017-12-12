@@ -4,6 +4,8 @@ require 'ostruct'
 
 RSpec.describe Node, type: :model do
 
+  include MockBilling
+
   let(:user) { OpenStruct.new(email: 'user@sanger.ac.uk', groups: ['world']) }
 
   let(:root) {
@@ -50,13 +52,13 @@ RSpec.describe Node, type: :model do
 
     it "is valid with a costcode in the correct format and without" do
       expect(build(:node, name: 'name', cost_code: 'xx', parent: program1)).to_not be_valid
-      expect(build(:node, name: 'name', cost_code: 'S1234', parent: program1)).to be_valid
+      expect(build(:node, name: 'name', cost_code: valid_project_cost_code, parent: program1)).to be_valid
       expect(build(:node, name: 'name', cost_code: nil, parent: program1)).to be_valid
       expect(build(:node, name: 'name', cost_code: '', parent: program1)).to be_valid
     end
 
     it "is valid with all possible attributes" do
-      expect(build(:node, name: 'name', description: 'description', cost_code: 'S1234', parent: program1)).to be_valid
+      expect(build(:node, name: 'name', description: 'description', cost_code: valid_project_cost_code, parent: program1)).to be_valid
     end
 
     it "is valid when deactivated" do

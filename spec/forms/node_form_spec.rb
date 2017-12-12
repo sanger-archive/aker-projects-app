@@ -1,7 +1,11 @@
 require 'rails_helper'
 require 'ostruct'
+require 'support/mock_billing'
 
 RSpec.describe NodeForm do
+
+  include MockBilling
+
   let(:user) { OpenStruct.new(email: 'user@sanger.ac.uk', groups: ['world']) }
 
   describe '#new' do
@@ -36,7 +40,7 @@ RSpec.describe NodeForm do
         build(:permission, permitted: 'jeff@sanger.ac.uk', permission_type: :spend),
       ]
       build(:node, id: 17, parent_id: 16, name: 'mynode', description: 'desc',
-          cost_code: 'S1234', permissions: permissions, owner_email: user.email)
+          cost_code: valid_project_cost_code, permissions: permissions, owner_email: user.email)
     end
     let(:form) { NodeForm.from_node(node) }
 
@@ -45,7 +49,7 @@ RSpec.describe NodeForm do
       expect(form.parent_id).to eq(16)
       expect(form.name).to eq('mynode')
       expect(form.description).to eq('desc')
-      expect(form.cost_code).to eq('S1234')
+      expect(form.cost_code).to eq(valid_project_cost_code)
     end
     it 'has the owner specified' do
       expect(form.instance_variable_get('@owner_email')).to eq(user.email)
@@ -71,11 +75,11 @@ RSpec.describe NodeForm do
       pr
     end
     let(:project) do
-      pr = create(:node, name: 'project', description: 'desc', cost_code: 'S1234', parent: program, owner_email: user.email)
+      pr = create(:node, name: 'project', description: 'desc', cost_code: valid_project_cost_code, parent: program, owner_email: user.email)
     end
 
     context 'when the form represents a new node' do
-      let(:form) { NodeForm.new(name: 'jelly', description: 'foo', parent_id: program.id, owner_email: user.email, cost_code: 'S1234', user_writers: 'dirk,jeff', group_writers: 'zombies,   PIRATES', user_spenders: 'DIRK', group_spenders: 'ninjas') }
+      let(:form) { NodeForm.new(name: 'jelly', description: 'foo', parent_id: program.id, owner_email: user.email, cost_code: valid_project_cost_code, user_writers: 'dirk,jeff', group_writers: 'zombies,   PIRATES', user_spenders: 'DIRK', group_spenders: 'ninjas') }
 
       before { @result = form.save }
 
@@ -85,7 +89,7 @@ RSpec.describe NodeForm do
         node = Node.find_by(name: 'jelly')
         expect(node).not_to be_nil
         expect(node.name).to eq('jelly')
-        expect(node.cost_code).to eq('S1234')
+        expect(node.cost_code).to eq(valid_project_cost_code)
         expect(node.description).to eq('foo')
         expect(node.parent).to eq(program)
         expect(node.id).not_to be_nil
@@ -112,7 +116,7 @@ RSpec.describe NodeForm do
     end
 
     context 'when the form represents an existing node' do
-      let(:form) { NodeForm.new(id: project.id, name: 'jelly', description: 'foo', parent_id: project.parent_id, cost_code: 'S0000', user_writers: 'dirk,jeff', group_writers: 'zombies,   PIRATES', user_spenders: 'DIRK', group_spenders: 'ninjas') }
+      let(:form) { NodeForm.new(id: project.id, name: 'jelly', description: 'foo', parent_id: project.parent_id, cost_code: another_valid_project_cost_code, user_writers: 'dirk,jeff', group_writers: 'zombies,   PIRATES', user_spenders: 'DIRK', group_spenders: 'ninjas') }
 
       before { @result = form.save }
 
@@ -122,7 +126,7 @@ RSpec.describe NodeForm do
         node = Node.find(project.id)
         expect(node.name).to eq('jelly')
         expect(node.description).to eq('foo')
-        expect(node.cost_code).to eq('S0000')
+        expect(node.cost_code).to eq(another_valid_project_cost_code)
         expect(node.parent).to eq(program)
         expect(node.owner_email).to eq(user.email) # no change
       end
@@ -147,7 +151,7 @@ RSpec.describe NodeForm do
     end
 
     context 'when the node cannot be created' do
-      let(:form) { NodeForm.new(name: 'jelly', description: 'foo', parent_id: program.id, owner_email: user.email, cost_code: 'S1234', user_writers: 'dirk,jeff', group_writers: 'zombies,   PIRATES', user_spenders: 'DIRK', group_spenders: 'ninjas') }
+      let(:form) { NodeForm.new(name: 'jelly', description: 'foo', parent_id: program.id, owner_email: user.email, cost_code: valid_project_cost_code, user_writers: 'dirk,jeff', group_writers: 'zombies,   PIRATES', user_spenders: 'DIRK', group_spenders: 'ninjas') }
       it "returns false and doesn't create the node" do
         allow(form).to receive(:convert_permissions).and_raise('Kaboom')
         expect(form.save).to be_falsey
@@ -156,7 +160,7 @@ RSpec.describe NodeForm do
     end
 
     context 'when the node cannot be updated' do
-      let(:form) { NodeForm.new(id: project.id, name: 'jelly', description: 'foo', parent_id: project.parent_id, cost_code: 'S0000', user_writers: 'dirk,jeff', group_writers: 'zombies,   PIRATES', user_spenders: 'DIRK', group_spenders: 'ninjas') }
+      let(:form) { NodeForm.new(id: project.id, name: 'jelly', description: 'foo', parent_id: project.parent_id, cost_code: another_valid_project_cost_code, user_writers: 'dirk,jeff', group_writers: 'zombies,   PIRATES', user_spenders: 'DIRK', group_spenders: 'ninjas') }
       it "returns false and doesn't update the node" do
         allow(form).to receive(:convert_permissions).and_raise('Kaboom')
         expect(form.save).to be_falsey
