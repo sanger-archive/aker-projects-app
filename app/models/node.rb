@@ -116,6 +116,16 @@ class Node < ApplicationRecord
     end
   end
 
+  def project_node?
+    return false unless cost_code
+    !cost_code.match(/^S[0-9]{4}$/).nil?
+  end
+
+  def sub_project_node?
+    return false unless cost_code
+    !cost_code.match(/^S[0-9]{4}_[0-9]{1,2}$/).nil?
+  end
+
   private
 
   def validate_deactivate

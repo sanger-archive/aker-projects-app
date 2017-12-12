@@ -5,7 +5,9 @@ module Api
       has_many :nodes
       has_many :permissions, class_name: 'Permission', relation_name: :permissions
       has_one :parent
-      attributes :name, :cost_code, :description, :node_uuid, :writable, :owned_by_current_user, :editable_by_current_user
+      attributes :name, :cost_code, :description, :node_uuid, :writable,
+                 :owned_by_current_user, :editable_by_current_user,
+                 :project_node?, :sub_project_node?
 
       before_create :set_owner
 
@@ -78,6 +80,18 @@ module Api
           end
         end
         return false
+      end
+
+      # Returns true if the node is a project node, i.e has a regular cost code
+      # such as S1234
+      def project_node?
+        @model.project_node?
+      end
+
+      # Returns true if the node is a sub-project node, i.e has a sub-cost code
+      # such as S1234_12
+      def sub_project_node?
+        @model.sub_project_node?
       end
 
       def meta(options)

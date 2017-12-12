@@ -643,6 +643,15 @@
         $nodeDiv.append('<i class="edge horizontalEdge rightEdge fa"></i>' +
           '<i class="edge horizontalEdge leftEdge fa"></i>');
       }
+      if (nodeData.node_type == "project") {
+        $nodeDiv.children('.title').prepend('<i class="fa fa-folder-open symbol"></i>');
+      } else if (nodeData.node_type == "sub-project") {
+        $nodeDiv.children('.title').prepend('<i class="fa fa-file-text symbol"></i>');
+      }
+      // Disable the bottom arrow if the node has no children
+      if(Number(flags.substr(2,1))) {
+        $nodeDiv.append('<i class="edge verticalEdge bottomEdge fa"></i>');
+      }
     }
 
     $nodeDiv.on('mouseenter mouseleave', function(event) {
@@ -1049,6 +1058,9 @@
         if (!$node.children('.bottomEdge').length) {
           $node.append('<i class="edge verticalEdge bottomEdge fa"></i>');
         }
+        // if (!$node.find('.symbol').length) {
+        //   $node.children('.title').prepend('<i class="fa fa-folder-open symbol"></i>');
+        // }
         showChildren($node);
       }
     });

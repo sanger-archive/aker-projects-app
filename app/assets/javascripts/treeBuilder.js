@@ -27,9 +27,16 @@
     }
     return parentNodes.reduce(function(memo, parent) {
       var classes = ""
+      // All references to methods in node_resource.rb must use - instead of _
       if (parent.attributes['editable-by-current-user']) classes += 'editable-by-current-user '
       if (parent.attributes['owned-by-current-user']) classes = 'owned-by-current-user '
 
+      node_type = "organisational"
+      if (parent.attributes['project-node?']) {
+        node_type = "project"
+      } else if (parent.attributes['sub-project-node?']) {
+        node_type = "sub-project"
+      }
 
       var ret = {
         cost_code: parent.attributes['cost-code'],
@@ -38,7 +45,8 @@
         writable : parent.attributes['writable'],
         state: {
           expanded: expandedIds.indexOf(parent.id)>=0
-        }
+        },
+        node_type: node_type
       };
       // depending on the type of display, tree hierachy expects 'name' and finder expects 'text'
       ret[istree ? 'name' : 'text'] = parent.attributes.name;
