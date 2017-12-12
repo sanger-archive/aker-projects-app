@@ -30,7 +30,6 @@
       'exportButton': false,
       'exportFilename': 'OrgChart',
       'exportFileextension': 'png',
-      'parentNodeSymbol': 'fa-users',
       'draggable': false,
       'direction': 't2b',
       'pan': false,
@@ -644,10 +643,6 @@
         $nodeDiv.append('<i class="edge horizontalEdge rightEdge fa"></i>' +
           '<i class="edge horizontalEdge leftEdge fa"></i>');
       }
-      if(Number(flags.substr(2,1))) {
-        $nodeDiv.append('<i class="edge verticalEdge bottomEdge fa"></i>')
-          .children('.title').prepend('<i class="fa '+ opts.parentNodeSymbol + ' symbol"></i>');
-      }
     }
 
     $nodeDiv.on('mouseenter mouseleave', function(event) {
@@ -1053,9 +1048,6 @@
       if (++count === data.children.length) {
         if (!$node.children('.bottomEdge').length) {
           $node.append('<i class="edge verticalEdge bottomEdge fa"></i>');
-        }
-        if (!$node.find('.symbol').length) {
-          $node.children('.title').prepend('<i class="fa '+ opts.parentNodeSymbol + ' symbol"></i>');
         }
         showChildren($node);
       }
