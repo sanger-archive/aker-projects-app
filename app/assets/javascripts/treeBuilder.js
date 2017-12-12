@@ -32,9 +32,9 @@
       if (parent.attributes['owned-by-current-user']) classes = 'owned-by-current-user '
 
       node_type = "organisational"
-      if (parent.attributes['project-node?']) {
+      if (parent.attributes['is-project-node']) {
         node_type = "project"
-      } else if (parent.attributes['sub-project-node?']) {
+      } else if (parent.attributes['is-sub-project-node']) {
         node_type = "sub-project"
       }
 

@@ -7,13 +7,13 @@ module Api
       has_one :parent
       attributes :name, :cost_code, :description, :node_uuid, :writable,
                  :owned_by_current_user, :editable_by_current_user,
-                 :project_node?, :sub_project_node?
-
+                 :is_project_node, :is_sub_project_node
       before_create :set_owner
 
-      # We need to be able to find all records that have a cost_code (i.e. proposals)
-      # Unfortunately, JSONAPI's spec does not have a standard way to filter where an
-      # attribute is or is not NULL, so implementing our own.
+      # We need to be able to find all records that have a cost_code
+      # (i.e. proposals)
+      # Unfortunately, JSONAPI's spec does not have a standard way to filter
+      # where an attribute is or is not NULL, so implementing our own.
       #
       # Using _none to find all records with cost_code NULL
       # e.g. /api/v1/nodes?filter[cost_code]=_none
@@ -84,13 +84,13 @@ module Api
 
       # Returns true if the node is a project node, i.e has a regular cost code
       # such as S1234
-      def project_node?
+      def is_project_node
         @model.project_node?
       end
 
       # Returns true if the node is a sub-project node, i.e has a sub-cost code
       # such as S1234_12
-      def sub_project_node?
+      def is_sub_project_node
         @model.sub_project_node?
       end
 
