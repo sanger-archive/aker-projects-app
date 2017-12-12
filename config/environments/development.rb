@@ -73,4 +73,5 @@ Rails.application.configure do
                   sets: '',
                   projects: '',
                   work_orders: '' }
+  config.billing_facade_url = 'http://localhost:3601'
 end
