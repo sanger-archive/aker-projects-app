@@ -56,7 +56,7 @@ class Node < ApplicationRecord
   end
 
   def set_permissions
-    if owner_email
+    if owner_email && !is_subproject?
       set_default_permission(owner_email)
       self.permissions.create(permitted: owner_email, permission_type: :spend)
     end

@@ -7,6 +7,12 @@ RSpec.describe NodeForm do
   include MockBilling
 
   let(:user) { OpenStruct.new(email: 'user@sanger.ac.uk', groups: ['world']) }
+  let(:root) {
+    root = build(:node, name: 'root', owner_email: user.email)
+    root.save(validate: false)
+    root
+  }
+
 
   describe '#new' do
     let(:form) { NodeForm.new(name: 'dirk', description: 'foo', cake: 'banana', owner_email: user.email, group_writers: 'zombies,pirates') }
@@ -29,25 +35,31 @@ RSpec.describe NodeForm do
   end
 
   describe '#from_node' do
-    let(:node) do 
+    let(:node) {
+      node = build(:node, name: 'node', owner_email: user.email, parent: root)
+      node.save(validate: false)
+      node
+    }
+    let(:project) do
+      project = create(:node, parent_id: node.id, name: 'project', description: 'desc',
+          cost_code: valid_project_cost_code, owner_email: user.email)
+
       permissions = [
-        build(:permission, permitted: 'world', permission_type: :read),
-        build(:permission, permitted: user.email, permission_type: :write),
         build(:permission, permitted: 'dirk@sanger.ac.uk', permission_type: :write),
         build(:permission, permitted: 'pirates', permission_type: :write),
         build(:permission, permitted: 'ninjas', permission_type: :write),
         build(:permission, permitted: 'dirk@sanger.ac.uk', permission_type: :spend),
         build(:permission, permitted: 'jeff@sanger.ac.uk', permission_type: :spend),
       ]
-      build(:node, id: 17, parent_id: 16, name: 'mynode', description: 'desc',
-          cost_code: valid_project_cost_code, permissions: permissions, owner_email: user.email)
+      project.permissions << permissions
+      project
     end
-    let(:form) { NodeForm.from_node(node) }
+    let(:form) { NodeForm.from_node(project) }
 
     it 'has fields matching the node' do
-      expect(form.id).to eq(17)
-      expect(form.parent_id).to eq(16)
-      expect(form.name).to eq('mynode')
+      expect(form.id).to eq(project.id)
+      expect(form.parent_id).to eq(node.id)
+      expect(form.name).to eq('project')
       expect(form.description).to eq('desc')
       expect(form.cost_code).to eq(valid_project_cost_code)
     end
@@ -56,9 +68,37 @@ RSpec.describe NodeForm do
     end
     it 'has the correct permissions' do
       expect(form.user_writers).to eq('dirk@sanger.ac.uk')
-      expect(form.group_writers).to eq('pirates,ninjas')
-      expect(form.user_spenders).to eq('dirk@sanger.ac.uk,jeff@sanger.ac.uk')
+      expect(form.group_writers.split(',').sort).to eq(['pirates','ninjas'].sort)
+      expect(form.user_spenders.split(',').sort).to eq(['jeff@sanger.ac.uk','dirk@sanger.ac.uk'].sort)
       expect(form.group_spenders).to eq('')
+    end
+
+    context 'if node is a subproject' do
+      let(:subproject) { create(:node, name: 'subproject', cost_code: valid_subproject_cost_code, parent: project, owner_email: user.email)}
+      let(:form) { NodeForm.from_node(subproject) }
+
+      it 'should not have any permissions stored after creation' do
+        expect(subproject.permissions.count).to eq(0)
+      end
+
+      it 'has fields matching the node' do
+        expect(form.id).to eq(subproject.id)
+        expect(form.parent_id).to eq(project.id)
+        expect(form.name).to eq('subproject')
+        expect(form.description).to eq(nil)
+        expect(form.cost_code).to eq(valid_subproject_cost_code)
+      end
+      it 'has the owner specified' do
+        expect(form.instance_variable_get('@owner_email')).to eq(user.email)
+      end
+      it 'has the correct permissions matching the parent node' do
+        #expect(form.group_readers).to eq('world')
+        expect(form.user_writers).to eq('dirk@sanger.ac.uk')
+        expect(form.group_writers.split(',').sort).to eq(['pirates','ninjas'].sort)
+        expect(form.user_spenders.split(',').sort).to eq(['jeff@sanger.ac.uk','dirk@sanger.ac.uk'].sort)
+        expect(form.group_spenders).to eq('')
+      end
+
     end
   end
 

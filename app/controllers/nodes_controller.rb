@@ -101,6 +101,6 @@ class NodesController < ApplicationController
   end
 
   def check_write_permission_for_node(node)
-    current_user && Ability.new(current_user).can?(:write, node)
+    current_user && Ability.new(current_user).can?(:write, node) && (!node.is_subproject?)
   end
 end

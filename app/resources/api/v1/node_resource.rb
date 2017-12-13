@@ -89,7 +89,7 @@ module Api
       end
 
       # Returns true if the node is a sub-project node, i.e has a sub-cost code
-      # such as S1234_12
+      # such as S1234-12
       def is_sub_project_node
         @model.is_subproject?
       end

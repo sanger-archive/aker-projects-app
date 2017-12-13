@@ -27,12 +27,13 @@ class NodeForm
   end
 
   def self.from_node(node)
+    permission_node = node.is_subproject? ? node.parent : node
     new(id: node.id, parent_id: node.parent_id, name: node.name, description: node.description,
         cost_code: node.cost_code, owner_email: node.owner_email,
-        user_writers: node_permitted(node, :write, false),
-        group_writers: node_permitted(node, :write, true),
-        user_spenders: node_permitted(node, :spend, false),
-        group_spenders: node_permitted(node, :spend, true))
+        user_writers: node_permitted(permission_node, :write, false),
+        group_writers: node_permitted(permission_node, :write, true),
+        user_spenders: node_permitted(permission_node, :spend, false),
+        group_spenders: node_permitted(permission_node, :spend, true))
   end
 
   def error_messages
@@ -54,7 +55,7 @@ private
   def create_objects
     ActiveRecord::Base.transaction do
       @node = Node.create!(name: name, cost_code: cost_code, description: description, parent_id: parent_id, owner_email: @owner_email)
-      @node.permissions.create!(convert_permissions(@owner_email))
+      @node.permissions.create!(convert_permissions(@owner_email)) unless @node.is_subproject?
     end
   rescue
     false
@@ -64,9 +65,11 @@ private
     ActiveRecord::Base.transaction do
       @node = Node.find(id)
       @node.update_attributes!(name: name, cost_code: cost_code, description: description, parent_id: parent_id)
-      @node.permissions.destroy_all
-      @node.set_permissions
-      @node.permissions.create!(convert_permissions(@node.owner_email))
+      unless @node.is_subproject?
+        @node.permissions.destroy_all
+        @node.set_permissions
+        @node.permissions.create!(convert_permissions(@node.owner_email))
+      end
     end
   rescue
     false
