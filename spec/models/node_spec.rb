@@ -257,6 +257,23 @@ RSpec.describe Node, type: :model do
       root.update_attributes(name: 'Still root')
       expect(root.errors[:base]).to eq ["The root node cannot be created/updated"]
     end
+
+    context 'when a project has subprojects' do
+      before do
+        @project = create(:node, name: 'project', cost_code: valid_project_cost_code, parent: program1)
+        @subproject = create(:node, name: 'subproject', cost_code: valid_subproject_cost_code, parent: @project)
+      end
+
+      it 'should be invalid when trying to update the cost code' do
+        @project.update_attributes(cost_code: another_valid_project_cost_code)
+        expect(@project).not_to be_valid
+      end
+      it 'should be valid when trying to update, not changing the cost code' do
+        @project.update_attributes(cost_code: valid_project_cost_code)
+        expect(@project).to be_valid
+      end
+    end
+
   end
 
   describe '#destroy' do
@@ -433,4 +450,44 @@ RSpec.describe Node, type: :model do
     end
   end
 
+  describe '#is_project?' do
+    context 'when node is the root node' do
+      it 'is returns false' do
+        expect(root.is_project?).to eq false
+      end
+    end
+    context 'when node is a subproject node' do
+      let(:project) { create(:node, name: 'project', cost_code: valid_project_cost_code, parent: program1) }
+      it 'is returns false' do
+        subproject = create(:node, name: 'subproject', parent: project)
+        expect(subproject.is_project?).to eq false
+      end
+    end
+    context 'when node has a cost code and parent has a cost code' do
+      let(:project) { create(:node, name: 'project', cost_code: valid_project_cost_code, parent: program1) }
+      it 'is returns false' do
+        subproject = build(:node, name: 'subproject', cost_code: 'xxx', parent: project)
+        expect(subproject.is_project?).to eq false
+      end
+    end
+    context 'when node doesnt have a cost code and parent has a cost code' do
+      let(:project) { create(:node, name: 'project', cost_code: valid_project_cost_code, parent: program1) }
+      let(:program2) { create(:node, name: 'program2', parent: project) }
+      it 'is returns false' do
+        expect(program2.is_project?).to eq false
+      end
+    end
+    context 'when node doesnt have a cost code and no parent cost code' do
+      let(:program2) { create(:node, name: 'program2', parent: program1) }
+      it 'is returns false' do
+        expect(program2.is_project?).to eq false
+      end
+    end
+    context 'when node has a cost code but no parent cost code' do
+      let(:project) { create(:node, name: 'project', cost_code: valid_project_cost_code, parent: program1) }
+      it 'is returns true' do
+        expect(project.is_project?).to eq true
+      end
+    end
+  end
 end

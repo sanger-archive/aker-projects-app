@@ -43,11 +43,12 @@ class Node < ApplicationRecord
   scope :is_subproject, -> { with_subproject_cost_code }
 
   def is_project?
-    cost_code && parent && !parent.cost_code
+    # https://stackoverflow.com/questions/524658/what-does-mean-in-ruby
+    !!(cost_code && parent && !parent.cost_code)
   end
 
   def is_subproject?
-    cost_code && parent&.cost_code && !parent.cost_code.include?(BillingFacadeClient::CostCodeValidator::SPLIT_CHARACTER)
+    !!(cost_code && parent&.cost_code && !parent.cost_code.include?(BillingFacadeClient::CostCodeValidator::SPLIT_CHARACTER))
   end
 
   def valid_node_for_cost_code?
@@ -185,13 +186,25 @@ class Node < ApplicationRecord
   end
 
   def validate_cant_update_project_cost_code_if_subcostcodes_exist
-    if children_have_subcostcodes?
+    if children_have_subcostcodes? && cost_code_changed
        errors.add(:cost_code, "Cost code cannot be update when there are subprojects")
     end
   end
 
   def children_have_subcostcodes?
     Node.active.where(parent: self.id).any?{ |child| child.cost_code }
+  end
+
+  def cost_code_changed
+    if self.id
+      old_node = Node.find(self.id)
+      old_node.attributes.keys.each do |k|
+        if k == "cost_code"
+          return false if self[k] == old_node[k]
+        end
+      end
+    end
+    true
   end
 
 end
