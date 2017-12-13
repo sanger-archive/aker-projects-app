@@ -10,7 +10,6 @@ class Node < ApplicationRecord
   validates :cost_code, :presence => true, :allow_blank => true, :on => [:create, :update]
   validates_with BillingFacadeClient::ProjectCostCodeValidator, :on => [:create, :update], if: :is_project?
   validates_with BillingFacadeClient::SubprojectCostCodeValidator, :on => [:create, :update], if: :is_subproject?
-  #validates :cost_code, absence: true, on: [:create, :update], unless: :valid_node_for_cost_code?
 
   validates :deactivated_datetime, presence: true, unless: :active?
   validates :deactivated_datetime, absence: true, if: :active?
@@ -21,6 +20,8 @@ class Node < ApplicationRecord
   validate :validate_node_is_not_root
   validate :validate_node_cant_move_to_under_root
   validate :validate_node_cant_move_from_under_root
+  validate :validate_cant_create_node_under_subproject
+  validate :validate_cant_update_cost_code_if_subcostcodes_exist
 
 	has_many :nodes, class_name: 'Node', foreign_key: 'parent_id', dependent: :restrict_with_error
 	belongs_to :parent, class_name: 'Node', required: false
@@ -51,7 +52,7 @@ class Node < ApplicationRecord
 
   def valid_node_for_cost_code?
     (is_project? || is_subproject?)
-  end  
+  end
 
   def set_permissions
     if owner_email
@@ -175,6 +176,28 @@ class Node < ApplicationRecord
     if self.cost_code.blank?
       self.cost_code = nil
     end
+  end
+
+  def validate_cant_create_node_under_subproject
+    if self.parent.cost_code && self.parent.cost_code.include?("-") || self.parent.parent && self.parent.parent.cost_code
+      errors.add(:base, "A node cannot be created under a subproject")
+    end
+  end
+
+  def validate_cant_update_cost_code_if_subcostcodes_exist
+    if cost_code_changed
+      errors.add(:base, "A nodes cost code cannot be update when there are subcostcodes")
+    end
+  end
+
+  def cost_code_changed
+    old_node = Node.find(self.id)
+    old_node.attributes.keys.each do |k|
+      if k == "cost_code"
+        return true unless self[k] == old_node[k]
+      end
+    end
+    false
   end
 
 end
