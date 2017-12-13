@@ -39,7 +39,61 @@ RSpec.describe Node, type: :model do
     expect(root).not_to have_attribute('owner')
   end
 
+  describe '#scopes' do
+    
+  end
+
   describe '#validation' do
+    context 'depending on the cost code' do
+      it 'is not valid if the cost code does not have the right format' do
+        expect(build(:node, name: 'name', cost_code: 'xx', parent: program1)).to_not be_valid
+      end
+      context 'when my node is a project' do
+        it 'is valid if it has a project cost code' do
+          expect(build(:node, name: 'name', cost_code: valid_project_cost_code, parent: program1)).to be_valid
+        end
+        it 'is not valid if it has a subproject cost code' do
+          expect(build(:node, name: 'name', cost_code: valid_subproject_cost_code, parent: program1)).to be_invalid
+        end
+        it 'is not valid if it has an invalid cost code' do
+          expect(build(:node, name: 'name', cost_code: 'xxx', parent: program1)).to be_invalid
+        end        
+        it 'is valid if it has no cost code' do
+          expect(build(:node, name: 'name', parent: program1)).to be_valid
+        end              
+      end
+      context 'when  my node is a subproject' do
+        let(:parent_node) { build(:node, name: 'name', cost_code: valid_project_cost_code, parent: program1) }
+        it 'is valid if it has a subproject cost code' do
+          expect(build(:node, name: 'name', cost_code: valid_subproject_cost_code, parent: parent_node)).to be_valid
+        end
+        it 'is not valid if it has a project cost code' do
+          expect(build(:node, name: 'name', cost_code: valid_project_cost_code, parent: parent_node)).to be_invalid
+        end
+        it 'is not valid if it has an invalid cost code' do
+          expect(build(:node, name: 'name', cost_code: 'xxx', parent: parent_node)).to be_invalid
+        end                
+        it 'is valid if it has no cost code' do
+          expect(build(:node, name: 'name', parent: parent_node)).to be_valid
+        end        
+      end
+      context 'when the node is neither a project or a subproject' do
+        let(:parent2) { build(:node, name: 'name', cost_code: valid_project_cost_code, parent: program1) }
+        let(:parent_node) { build(:node, name: 'name', cost_code: valid_subproject_cost_code, parent: parent2) }
+        it 'is invalid if it has a subproject cost code' do
+          expect(build(:node, name: 'name', cost_code: valid_subproject_cost_code, parent: parent_node)).to be_invalid
+        end
+        it 'is invalid if it has a project cost code' do
+          expect(build(:node, name: 'name', cost_code: valid_project_cost_code, parent: parent_node)).to be_invalid
+        end
+        it 'is invalid if it has an invalid cost code' do
+          expect(build(:node, name: 'name', cost_code: 'xxx', parent: parent_node)).to be_invalid
+        end        
+        it 'is valid if it has no cost code' do
+          expect(build(:node, name: 'name', parent: parent_node)).to be_valid
+        end
+      end
+    end
 
     it "is not valid without a name" do
       expect(build(:node, name: nil, parent: program1)).to_not be_valid

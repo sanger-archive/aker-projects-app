@@ -6,8 +6,11 @@ class Node < ApplicationRecord
   validates :name, presence: true
   validates :parent, presence: true, if: :parent_id
   validates_presence_of :description, :allow_blank => true
+
   validates :cost_code, :presence => true, :allow_blank => true, :on => [:create, :update]
-  validates_with BillingFacadeClient::CostCodeValidator, :on => [:create, :update]
+  validates_with BillingFacadeClient::ProjectCostCodeValidator, :on => [:create, :update], if: :is_project?
+  validates_with BillingFacadeClient::SubprojectCostCodeValidator, :on => [:create, :update], if: :is_subproject?
+  #validates :cost_code, absence: true, on: [:create, :update], unless: :valid_node_for_cost_code?
 
   validates :deactivated_datetime, presence: true, unless: :active?
   validates :deactivated_datetime, absence: true, if: :active?
@@ -37,6 +40,18 @@ class Node < ApplicationRecord
 
   scope :is_project, -> { with_project_cost_code }
   scope :is_subproject, -> { with_subproject_cost_code }
+
+  def is_project?
+    !is_subproject?
+  end
+
+  def is_subproject?
+    (Node.is_project.where(id: parent).count > 0)
+  end
+
+  def valid_node_for_cost_code?
+    (is_project? || is_subproject?)
+  end  
 
   def set_permissions
     if owner_email
