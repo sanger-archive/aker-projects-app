@@ -1,4 +1,12 @@
 GIT
+  remote: git://github.com/sanger/aker-billing-facade-client.git
+  revision: d62cb9ce09c4e7c74db4f698e540b7bd9f67cff1
+  specs:
+    aker-billing-facade-client (0.1.2)
+      activemodel
+      faraday
+
+GIT
   remote: git://github.com/sanger/aker-credentials.git
   revision: 49a8a0a2811878744d2d6869784b3bdb885804a4
   specs:
@@ -25,13 +33,6 @@ GIT
       addressable (~> 2.2)
       faraday (~> 0.9)
       faraday_middleware (~> 0.9)
-
-PATH
-  remote: /Users/emr/projects/aker-billing-facade-client
-  specs:
-    aker-billing-facade-client (0.1.2)
-      activemodel
-      faraday
 
 GEM
   remote: https://rubygems.org/

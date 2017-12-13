@@ -16,7 +16,7 @@ module NodesHelper
 
   def subcostcodes_select_options(node)
     parent_cost_code = node.parent.cost_code
-    BillingFacadeClient.get_subcostcodes(parent_cost_code)
+    BillingFacadeClient.get_sub_cost_codes(parent_cost_code)
   end
 
 end

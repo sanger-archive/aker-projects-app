@@ -21,7 +21,7 @@ class Node < ApplicationRecord
   validate :validate_node_cant_move_to_under_root
   validate :validate_node_cant_move_from_under_root
   validate :validate_cant_create_node_under_subproject
-  validate :validate_cant_update_cost_code_if_subcostcodes_exist
+  validate :validate_cant_update_project_cost_code_if_subcostcodes_exist
 
 	has_many :nodes, class_name: 'Node', foreign_key: 'parent_id', dependent: :restrict_with_error
 	belongs_to :parent, class_name: 'Node', required: false
@@ -43,11 +43,11 @@ class Node < ApplicationRecord
   scope :is_subproject, -> { with_subproject_cost_code }
 
   def is_project?
-    !is_subproject?
+    cost_code && parent && !parent.cost_code
   end
 
   def is_subproject?
-    (Node.is_project.where(id: parent).count > 0)
+    cost_code && parent&.cost_code && !parent.cost_code.include?(BillingFacadeClient::CostCodeValidator::SPLIT_CHARACTER)
   end
 
   def valid_node_for_cost_code?
@@ -131,16 +131,6 @@ class Node < ApplicationRecord
     end
   end
 
-  def project_node?
-    return false unless cost_code
-    !cost_code.match(/^S[0-9]{4}$/).nil?
-  end
-
-  def sub_project_node?
-    return false unless cost_code
-    !cost_code.match(/^S[0-9]{4}_[0-9]{1,2}$/).nil?
-  end
-
   private
 
   def validate_deactivate
@@ -189,25 +179,19 @@ class Node < ApplicationRecord
   end
 
   def validate_cant_create_node_under_subproject
-    if self.parent.cost_code && self.parent.cost_code.include?("-") || self.parent.parent && self.parent.parent.cost_code
+    if self.parent&.is_subproject?
       errors.add(:base, "A node cannot be created under a subproject")
     end
   end
 
-  def validate_cant_update_cost_code_if_subcostcodes_exist
-    if cost_code_changed
-      errors.add(:base, "A nodes cost code cannot be update when there are subcostcodes")
+  def validate_cant_update_project_cost_code_if_subcostcodes_exist
+    if children_have_subcostcodes?
+       errors.add(:cost_code, "Cost code cannot be update when there are subprojects")
     end
   end
 
-  def cost_code_changed
-    old_node = Node.find(self.id)
-    old_node.attributes.keys.each do |k|
-      if k == "cost_code"
-        return true unless self[k] == old_node[k]
-      end
-    end
-    false
+  def children_have_subcostcodes?
+    Node.active.where(parent: self.id).any?{ |child| child.cost_code }
   end
 
 end
