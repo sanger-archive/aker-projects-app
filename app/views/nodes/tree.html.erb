@@ -1,7 +1,21 @@
-<div>
-  <span class="node-legend" id="owned">Green nodes</span> are owned by you<br>
-  <span class="node-legend" id="editable">Teal nodes</span> are those which you have been given permission to edit
+<div class="row">
+  <div class="col-md-6">
+    <div class="panel panel-default">
+      <div class="panel-heading" data-toggle="collapse" href="#collapse1">
+        <h3 class="panel-title">Legend</h3>
+      </div>
+      <div id="collapse1" class="panel-collapse collapse in">
+        <div class="panel-body">
+          <span class="node-legend" id="owned">Green nodes</span> are owned by you<br>
+          <span class="node-legend" id="editable">Teal nodes</span> are those which you have been given permission to edit<br>
+          <i class="fa fa-folder"></i> denotes a project (node with a cost code)<br>
+          <i class="fa fa-file-text"></i> denotes a sub-project (child of a project with a sub-cost code of the parent project cost code)
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
+
 <%= render "show", locals: { tab: 'tree' } do %>
   <div id="tree" class="tab-pane active">
     <form id="edit-panel" style="padding-top:1em;" class="form-inline">
