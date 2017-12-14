@@ -55,7 +55,7 @@ private
   def create_objects
     ActiveRecord::Base.transaction do
       @node = Node.create!(name: name, cost_code: cost_code, description: description, parent_id: parent_id, owner_email: @owner_email)
-      @node.permissions.create!(convert_permissions(@owner_email)) unless @node.is_subproject?
+      @node.permissions.create!(convert_permissions(@owner_email))
     end
   rescue
     false
@@ -70,6 +70,7 @@ private
         @node.set_permissions
         @node.permissions.create!(convert_permissions(@node.owner_email))
       end
+      true
     end
   rescue
     false
