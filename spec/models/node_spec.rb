@@ -39,10 +39,6 @@ RSpec.describe Node, type: :model do
     expect(root).not_to have_attribute('owner')
   end
 
-  describe '#scopes' do
-
-  end
-
   describe '#validation' do
     context 'depending on the cost code' do
       it 'is not valid if the cost code does not have the right format' do
