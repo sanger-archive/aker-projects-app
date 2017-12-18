@@ -14,7 +14,7 @@
   <% end %>
   <%= bootstrap_form_for(@nodeform, remote: true, url: node_path(@node), method: :put, accept: :json,) do |f| %>
     <div class="field">
-      <%= render "node_form", f: f, write_permission: check_write_permission_for_node(@node) %>
+      <%= render "node_form", f: f, write_permission: check_write_permission_for_node(@node), edit_permissions: can_edit_permission_for(@node) %>
       <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
       <%= hidden_field_tag(:source, 'tree') %>
       <%= f.submit("Update", class: 'btn btn-primary', disabled: !check_write_permission_for_node(@node)) %>
