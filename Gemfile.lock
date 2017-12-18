@@ -1,4 +1,12 @@
 GIT
+  remote: git://github.com/emrojo/aker-billing-facade-client.git
+  revision: 8d7b8e5017b7c6964793a5b42089eecbaaac6696
+  branch: a200_validate_sub_costcodes
+  specs:
+    aker-billing-facade-client (0.1.2)
+      faraday
+
+GIT
   remote: git://github.com/sanger/aker-credentials.git
   revision: 49a8a0a2811878744d2d6869784b3bdb885804a4
   specs:
@@ -348,6 +356,7 @@ PLATFORMS
 
 DEPENDENCIES
   active_model_serializers
+  aker-billing-facade-client!
   aker_credentials_gem!
   aker_permission_gem!
   bootstrap-sass (~> 3.3.6)

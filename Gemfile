@@ -15,6 +15,7 @@ gem 'coffee-rails', '~> 4.2'
 
 gem 'aker_credentials_gem', github: 'sanger/aker-credentials'
 gem 'aker_permission_gem', github: 'sanger/aker-permission'
+gem 'aker-billing-facade-client', github: 'emrojo/aker-billing-facade-client', branch: 'a200_validate_sub_costcodes'
 
 # Use jquery as the JavaScript library
 gem 'jquery-rails'
