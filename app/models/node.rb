@@ -22,6 +22,7 @@ class Node < ApplicationRecord
   validate :validate_node_cant_move_from_under_root
   validate :validate_cant_create_node_under_subproject
   validate :validate_cant_update_project_cost_code_if_subcostcodes_exist
+  validate :validate_subproject_cost_code_is_valid_for_parent_project, if: :is_subproject?
 
 	has_many :nodes, class_name: 'Node', foreign_key: 'parent_id', dependent: :restrict_with_error
 	belongs_to :parent, class_name: 'Node', required: false
@@ -182,6 +183,12 @@ class Node < ApplicationRecord
   def validate_cant_create_node_under_subproject
     if self.parent&.is_subproject?
       errors.add(:base, "A node cannot be created under a subproject")
+    end
+  end
+
+  def validate_subproject_cost_code_is_valid_for_parent_project
+    if !BillingFacadeClient.get_sub_cost_codes(self.parent.cost_code).include?(self.cost_code)
+      errors.add(:base, "This nodes cost code is not valid for the parent project")
     end
   end
 

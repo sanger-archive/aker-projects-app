@@ -124,18 +124,18 @@ RSpec.describe Node, type: :model do
 
     it "is valid to be active and have active children" do
       children = create_list(:node, 3, parent: program1)
-      expect(program1.nodes).to eq children
+      expect(program1.nodes).to match_array children
     end
 
     it "is valid to be active and have inactive children" do
       children = create_list(:node, 3, deactivated_by: user.email, deactivated_datetime: DateTime.now, parent: program1)
-      expect(program1.nodes).to eq children
+      expect(program1.nodes).to match_array children
     end
 
     it "is valid to be active and have partially inactive children" do
       children = create_list(:node, 2,  deactivated_by: nil, deactivated_datetime: nil, parent: program1)
       children += create_list(:node, 2, deactivated_by: user.email, deactivated_datetime: DateTime.now, parent: program1)
-      expect(program1.nodes).to eq children
+      expect(program1.nodes).to match_array children
     end
 
     it "is valid to be active and have no children" do
@@ -149,7 +149,7 @@ RSpec.describe Node, type: :model do
     it "is valid to be inactive and have inactive children" do
       prog1 = create(:node, parent: program1)
       children = create_list(:node, 3, deactivated_by: user.email, deactivated_datetime: DateTime.now, parent: prog1)
-      expect(prog1.nodes).to eq children
+      expect(prog1.nodes).to match_array children
       prog1.deactivated_by = user
       prog1.deactivated_datetime = DateTime.now
       expect(prog1).to be_valid
@@ -158,7 +158,7 @@ RSpec.describe Node, type: :model do
     it "is invalid to be inactive and have active children" do
       prog1 = create(:node, parent: program1)
       children = create_list(:node, 3, parent: prog1)
-      expect(prog1.nodes).to eq children
+      expect(prog1.nodes).to match_array children
       prog1.deactivated_by = user.email
       prog1.deactivated_datetime = DateTime.now
       expect(prog1).not_to be_valid
