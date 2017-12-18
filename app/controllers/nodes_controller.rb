@@ -76,7 +76,7 @@ class NodesController < ApplicationController
     redirect_to node_path(@parent_id)
   end
 
-  helper_method :check_write_permission_for_node, :jwt_provided?
+  helper_method :check_write_permission_for_node, :jwt_provided?, :can_edit_permission_for
 
   private
 
@@ -102,5 +102,9 @@ class NodesController < ApplicationController
 
   def check_write_permission_for_node(node)
     current_user && Ability.new(current_user).can?(:write, node)
+  end
+
+  def can_edit_permission_for(node)
+    check_write_permission_for_node(node) && !node.is_subproject?
   end
 end

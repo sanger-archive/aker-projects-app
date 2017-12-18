@@ -6,9 +6,10 @@ class Node < ApplicationRecord
   validates :name, presence: true
   validates :parent, presence: true, if: :parent_id
   validates_presence_of :description, :allow_blank => true
-  #validates :cost_code, :presence => true, :allow_blank => true, :on => [:create, :update]
-  validates :cost_code, :presence => true, :allow_blank => true, format: { with: /\AS[\d]{4}(_[\d]{1,2}){0,1}\z/, message: 'must be of the format "S" followed by four digits' }, :on => [:create, :update]
-  #validates_with BillingFacadeClient::CostCodeValidator, :on => [:create, :update]
+
+  validates :cost_code, :presence => true, :allow_blank => true, :on => [:create, :update]
+  validates_with BillingFacadeClient::ProjectCostCodeValidator, :on => [:create, :update], if: :is_project?
+  validates_with BillingFacadeClient::SubprojectCostCodeValidator, :on => [:create, :update], if: :is_subproject?
 
   validates :deactivated_datetime, presence: true, unless: :active?
   validates :deactivated_datetime, absence: true, if: :active?
@@ -19,6 +20,9 @@ class Node < ApplicationRecord
   validate :validate_node_is_not_root
   validate :validate_node_cant_move_to_under_root
   validate :validate_node_cant_move_from_under_root
+  validate :validate_cant_create_node_under_subproject
+  validate :validate_cant_update_project_cost_code_if_subcostcodes_exist
+  validate :validate_subproject_cost_code_is_valid_for_parent_project, if: :is_subproject?
 
 	has_many :nodes, class_name: 'Node', foreign_key: 'parent_id', dependent: :restrict_with_error
 	belongs_to :parent, class_name: 'Node', required: false
@@ -33,14 +37,27 @@ class Node < ApplicationRecord
   scope :active, -> { where(deactivated_by: nil) }
 
   scope :with_cost_code, -> { where(Node.arel_table[:cost_code].matches('S%')) }
-  scope :with_project_cost_code, -> { with_cost_code.where.not(Node.arel_table[:cost_code].matches('%\_%')) }
-  scope :with_subproject_cost_code, -> { with_cost_code.where(Node.arel_table[:cost_code].matches('%\_%')) }
+  scope :with_project_cost_code, -> { with_cost_code.where.not(Node.arel_table[:cost_code].matches("%#{BillingFacadeClient::CostCodeValidator::SPLIT_CHARACTER}%")) }
+  scope :with_subproject_cost_code, -> { with_cost_code.where(Node.arel_table[:cost_code].matches("%#{BillingFacadeClient::CostCodeValidator::SPLIT_CHARACTER}%")) }
 
   scope :is_project, -> { with_project_cost_code }
   scope :is_subproject, -> { with_subproject_cost_code }
 
+  def is_project?
+    # https://stackoverflow.com/questions/524658/what-does-mean-in-ruby
+    !!(cost_code && parent && !parent.cost_code)
+  end
+
+  def is_subproject?
+    !!(cost_code && parent&.cost_code && !parent.cost_code.include?(BillingFacadeClient::CostCodeValidator::SPLIT_CHARACTER))
+  end
+
+  def valid_node_for_cost_code?
+    (is_project? || is_subproject?)
+  end
+
   def set_permissions
-    if owner_email
+    if owner_email && !is_subproject?
       set_default_permission(owner_email)
       self.permissions.create(permitted: owner_email, permission_type: :spend)
     end
@@ -116,16 +133,6 @@ class Node < ApplicationRecord
     end
   end
 
-  def project_node?
-    return false unless cost_code
-    !cost_code.match(/^S[0-9]{4}$/).nil?
-  end
-
-  def sub_project_node?
-    return false unless cost_code
-    !cost_code.match(/^S[0-9]{4}_[0-9]{1,2}$/).nil?
-  end
-
   private
 
   def validate_deactivate
@@ -171,6 +178,40 @@ class Node < ApplicationRecord
     if self.cost_code.blank?
       self.cost_code = nil
     end
+  end
+
+  def validate_cant_create_node_under_subproject
+    if self.parent&.is_subproject?
+      errors.add(:base, "A node cannot be created under a subproject")
+    end
+  end
+
+  def validate_subproject_cost_code_is_valid_for_parent_project
+    if !BillingFacadeClient.get_sub_cost_codes(self.parent.cost_code).include?(self.cost_code)
+      errors.add(:base, "This nodes cost code is not valid for the parent project")
+    end
+  end
+
+  def validate_cant_update_project_cost_code_if_subcostcodes_exist
+    if children_have_subcostcodes? && cost_code_changed
+       errors.add(:cost_code, "Cost code cannot be update when there are subprojects")
+    end
+  end
+
+  def children_have_subcostcodes?
+    Node.active.where(parent: self.id).any?{ |child| child.cost_code }
+  end
+
+  def cost_code_changed
+    if self.id
+      old_node = Node.find(self.id)
+      old_node.attributes.keys.each do |k|
+        if k == "cost_code"
+          return false if self[k] == old_node[k]
+        end
+      end
+    end
+    true
   end
 
 end

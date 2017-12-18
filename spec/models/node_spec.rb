@@ -4,6 +4,8 @@ require 'ostruct'
 
 RSpec.describe Node, type: :model do
 
+  include MockBilling
+
   let(:user) { OpenStruct.new(email: 'user@sanger.ac.uk', groups: ['world']) }
 
   let(:root) {
@@ -38,6 +40,51 @@ RSpec.describe Node, type: :model do
   end
 
   describe '#validation' do
+    context 'depending on the cost code' do
+      it 'is not valid if the cost code does not have the right format' do
+        expect(build(:node, name: 'parent', cost_code: 'xx', parent: program1)).to_not be_valid
+      end
+      context 'when my node is a project' do
+        it 'is valid if it has a project cost code' do
+          expect(build(:node, name: 'name', cost_code: valid_project_cost_code, parent: program1)).to be_valid
+        end
+        it 'is not valid if it has a subproject cost code' do
+          expect(build(:node, name: 'name', cost_code: valid_subproject_cost_code, parent: program1)).to be_invalid
+        end
+        it 'is not valid if it has an invalid cost code' do
+          expect(build(:node, name: 'name', cost_code: 'xxx', parent: program1)).to be_invalid
+        end
+        it 'is valid if it has no cost code' do
+          expect(build(:node, name: 'name', parent: program1)).to be_valid
+        end
+      end
+      context 'when my node is a subproject' do
+        let(:parent_node) { create(:node, name: 'parent', cost_code: valid_project_cost_code, parent: program1) }
+        it 'is valid if it has a subproject cost code' do
+          expect(build(:node, name: 'name', cost_code: valid_subproject_cost_code, parent: parent_node)).to be_valid
+        end
+        it 'is not valid if it has a project cost code' do
+          expect(build(:node, name: 'name', cost_code: valid_project_cost_code, parent: parent_node)).to be_invalid
+        end
+        it 'is not valid if it has an invalid cost code' do
+          expect(build(:node, name: 'name', cost_code: 'xxx', parent: parent_node)).to be_invalid
+        end
+        it 'is valid if it has no cost code' do
+          expect(build(:node, name: 'name', parent: parent_node)).to be_valid
+        end
+      end
+      context 'when the node is neither a project or a subproject' do
+        it 'is invalid if it has a subproject cost code' do
+          expect(build(:node, name: 'name', cost_code: valid_subproject_cost_code, parent: program1)).to be_invalid
+        end
+        it 'is invalid if it has an invalid cost code' do
+          expect(build(:node, name: 'name', cost_code: 'xxx', parent: program1)).to be_invalid
+        end
+        it 'is valid if it has no cost code' do
+          expect(build(:node, name: 'name', parent: program1)).to be_valid
+        end
+      end
+    end
 
     it "is not valid without a name" do
       expect(build(:node, name: nil, parent: program1)).to_not be_valid
@@ -50,13 +97,13 @@ RSpec.describe Node, type: :model do
 
     it "is valid with a costcode in the correct format and without" do
       expect(build(:node, name: 'name', cost_code: 'xx', parent: program1)).to_not be_valid
-      expect(build(:node, name: 'name', cost_code: 'S1234', parent: program1)).to be_valid
+      expect(build(:node, name: 'name', cost_code: valid_project_cost_code, parent: program1)).to be_valid
       expect(build(:node, name: 'name', cost_code: nil, parent: program1)).to be_valid
       expect(build(:node, name: 'name', cost_code: '', parent: program1)).to be_valid
     end
 
     it "is valid with all possible attributes" do
-      expect(build(:node, name: 'name', description: 'description', cost_code: 'S1234', parent: program1)).to be_valid
+      expect(build(:node, name: 'name', description: 'description', cost_code: valid_project_cost_code, parent: program1)).to be_valid
     end
 
     it "is valid when deactivated" do
@@ -77,18 +124,18 @@ RSpec.describe Node, type: :model do
 
     it "is valid to be active and have active children" do
       children = create_list(:node, 3, parent: program1)
-      expect(program1.nodes).to eq children
+      expect(program1.nodes).to match_array children
     end
 
     it "is valid to be active and have inactive children" do
       children = create_list(:node, 3, deactivated_by: user.email, deactivated_datetime: DateTime.now, parent: program1)
-      expect(program1.nodes).to eq children
+      expect(program1.nodes).to match_array children
     end
 
     it "is valid to be active and have partially inactive children" do
       children = create_list(:node, 2,  deactivated_by: nil, deactivated_datetime: nil, parent: program1)
       children += create_list(:node, 2, deactivated_by: user.email, deactivated_datetime: DateTime.now, parent: program1)
-      expect(program1.nodes).to eq children
+      expect(program1.nodes).to match_array children
     end
 
     it "is valid to be active and have no children" do
@@ -102,7 +149,7 @@ RSpec.describe Node, type: :model do
     it "is valid to be inactive and have inactive children" do
       prog1 = create(:node, parent: program1)
       children = create_list(:node, 3, deactivated_by: user.email, deactivated_datetime: DateTime.now, parent: prog1)
-      expect(prog1.nodes).to eq children
+      expect(prog1.nodes).to match_array children
       prog1.deactivated_by = user
       prog1.deactivated_datetime = DateTime.now
       expect(prog1).to be_valid
@@ -111,7 +158,7 @@ RSpec.describe Node, type: :model do
     it "is invalid to be inactive and have active children" do
       prog1 = create(:node, parent: program1)
       children = create_list(:node, 3, parent: prog1)
-      expect(prog1.nodes).to eq children
+      expect(prog1.nodes).to match_array children
       prog1.deactivated_by = user.email
       prog1.deactivated_datetime = DateTime.now
       expect(prog1).not_to be_valid
@@ -206,6 +253,23 @@ RSpec.describe Node, type: :model do
       root.update_attributes(name: 'Still root')
       expect(root.errors[:base]).to eq ["The root node cannot be created/updated"]
     end
+
+    context 'when a project has subprojects' do
+      before do
+        @project = create(:node, name: 'project', cost_code: valid_project_cost_code, parent: program1)
+        @subproject = create(:node, name: 'subproject', cost_code: valid_subproject_cost_code, parent: @project)
+      end
+
+      it 'should be invalid when trying to update the cost code' do
+        @project.update_attributes(cost_code: another_valid_project_cost_code)
+        expect(@project).not_to be_valid
+      end
+      it 'should be valid when trying to update, not changing the cost code' do
+        @project.update_attributes(cost_code: valid_project_cost_code)
+        expect(@project).to be_valid
+      end
+    end
+
   end
 
   describe '#destroy' do
@@ -379,6 +443,47 @@ RSpec.describe Node, type: :model do
   describe '#deactivated_by' do
     it 'should be sanitised' do
       expect(create(:node, parent: program1, deactivated_datetime: DateTime.now, deactivated_by: '  ALPHA@BETA  ').deactivated_by).to eq('alpha@beta')
+    end
+  end
+
+  describe '#is_project?' do
+    context 'when node is the root node' do
+      it 'is returns false' do
+        expect(root.is_project?).to eq false
+      end
+    end
+    context 'when node is a subproject node' do
+      let(:project) { create(:node, name: 'project', cost_code: valid_project_cost_code, parent: program1) }
+      it 'is returns false' do
+        subproject = create(:node, name: 'subproject', parent: project)
+        expect(subproject.is_project?).to eq false
+      end
+    end
+    context 'when node has a cost code and parent has a cost code' do
+      let(:project) { create(:node, name: 'project', cost_code: valid_project_cost_code, parent: program1) }
+      it 'is returns false' do
+        subproject = build(:node, name: 'subproject', cost_code: 'xxx', parent: project)
+        expect(subproject.is_project?).to eq false
+      end
+    end
+    context 'when node doesnt have a cost code and parent has a cost code' do
+      let(:project) { create(:node, name: 'project', cost_code: valid_project_cost_code, parent: program1) }
+      let(:program2) { create(:node, name: 'program2', parent: project) }
+      it 'is returns false' do
+        expect(program2.is_project?).to eq false
+      end
+    end
+    context 'when node doesnt have a cost code and no parent cost code' do
+      let(:program2) { create(:node, name: 'program2', parent: program1) }
+      it 'is returns false' do
+        expect(program2.is_project?).to eq false
+      end
+    end
+    context 'when node has a cost code but no parent cost code' do
+      let(:project) { create(:node, name: 'project', cost_code: valid_project_cost_code, parent: program1) }
+      it 'is returns true' do
+        expect(project.is_project?).to eq true
+      end
     end
   end
 end

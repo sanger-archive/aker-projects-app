@@ -56,7 +56,7 @@ module Api
 
       filter :with_parent_spendable_by, apply: ->(records, value, _options) {
         records.joins(parent: :permissions).where('permissions.permission_type': 'spend', 'permissions.permitted': value)
-      }      
+      }
 
       # check whether the node is owned by the current user.
       # returns a bool
@@ -85,13 +85,13 @@ module Api
       # Returns true if the node is a project node, i.e has a regular cost code
       # such as S1234
       def is_project_node
-        @model.project_node?
+        @model.is_project?
       end
 
       # Returns true if the node is a sub-project node, i.e has a sub-cost code
-      # such as S1234_12
+      # such as S1234-12
       def is_sub_project_node
-        @model.sub_project_node?
+        @model.is_subproject?
       end
 
       def meta(options)
