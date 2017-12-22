@@ -7,7 +7,7 @@ module Api
       has_one :parent
       attributes :name, :cost_code, :description, :node_uuid, :writable,
                  :owned_by_current_user, :editable_by_current_user,
-                 :is_project_node, :is_sub_project_node
+                 :is_project_node, :is_sub_project_node, :parent_id
       before_create :set_owner
 
       # We need to be able to find all records that have a cost_code
