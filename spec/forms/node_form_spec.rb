@@ -77,8 +77,12 @@ RSpec.describe NodeForm do
       let(:subproject) { create(:node, name: 'subproject', cost_code: valid_subproject_cost_code, parent: project, owner_email: user.email)}
       let(:form) { NodeForm.from_node(subproject) }
 
-      it 'should not have any permissions stored after creation' do
-        expect(subproject.permissions.count).to eq(0)
+      it 'should have the permissions of its parent' do
+        expect(subproject.permissions).to eq(project.permissions)
+      end
+
+      it 'should not have permissions individually stored' do
+        expect(AkerPermissionGem::Permission.where(accessible_id: subproject.id)).to be_empty
       end
 
       it 'has fields matching the node' do
