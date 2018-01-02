@@ -133,6 +133,12 @@ class Node < ApplicationRecord
     end
   end
 
+  # Override permissions for subprojects
+  def permissions
+    return self.parent.permissions if is_subproject?
+    super
+  end
+
   private
 
   def validate_deactivate
