@@ -66,6 +66,9 @@ module Api
       end
 
       def spendable_by_current_user
+        if context[:current_user].nil?
+          return false
+        end
         if @model.permissions.where(permitted: context[:current_user].email, permission_type: "spend").count > 0
           return true
         end
