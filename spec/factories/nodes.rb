@@ -8,7 +8,7 @@ FactoryGirl.define do
     deactivated_datetime nil
     owner_email 'owner@sanger.ac.uk'
 
-    # Usage: create(:readable_node, permitted: 'cs24')
+    # Usage: create(:readable_node, permitted: 'cs24', parent: parent)
     #
     # This will create a node as usual, but also create an extra permission object with cs24 as the permitted
     # and r being true
@@ -24,7 +24,7 @@ FactoryGirl.define do
 
     end
 
-    # Usage: create(:writable_node, permitted: 'cs24')
+    # Usage: create(:writable_node, permitted: 'cs24', parent: parent)
     #
     # This will create a node as usual, but also create an extra permission object with cs24 as the permitted
     # and w being true
@@ -40,7 +40,7 @@ FactoryGirl.define do
 
     end
 
-    # Usage: create(:spendable_node, permitted: 'cs24')
+    # Usage: create(:spendable_node, permitted: 'cs24', parent: parent)
     #
     # This will create a node as usual, but also create an extra permission object with cs24 as the permitted
     # and x being true
@@ -54,6 +54,13 @@ FactoryGirl.define do
         node.permissions << create(:permission, accessible_id: node.id, permission_type: :spend, permitted: evaluator.permitted)
       end
 
+    end
+
+    # Usage: create(:project, parent: parent)
+    #
+    # A project is a node with a costcode (Sxxxx)
+    factory :project do
+      cost_code { "S%04d" % rand(9999) }
     end
   end
 end

@@ -448,13 +448,13 @@ RSpec.describe Node, type: :model do
 
   describe '#is_project?' do
     context 'when node is the root node' do
-      it 'is returns false' do
+      it 'returns false' do
         expect(root.is_project?).to eq false
       end
     end
     context 'when node is a subproject node' do
       let(:project) { create(:node, name: 'project', cost_code: valid_project_cost_code, parent: program1) }
-      it 'is returns false' do
+      it 'returns false' do
         subproject = create(:node, name: 'subproject', parent: project)
         expect(subproject.is_project?).to eq false
       end
@@ -485,5 +485,34 @@ RSpec.describe Node, type: :model do
         expect(project.is_project?).to eq true
       end
     end
+  end
+
+  describe '#is_subproject?' do
+
+    context 'when parent is a project' do
+
+      before do
+        @parent = build(:project, parent: program1)
+      end
+
+      it 'is a subproject' do
+        node = build(:node, parent: @parent)
+        expect(node.is_subproject?).to be true
+      end
+
+    end
+
+    context 'when parent is not a project' do
+
+      before do
+        @parent = build(:node)
+      end
+
+      it 'is not a subproject' do
+        node = build(:node, parent: @parent)
+        expect(node.is_subproject?).to be false
+      end
+    end
+
   end
 end
