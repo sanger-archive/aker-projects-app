@@ -42,16 +42,14 @@ Rails.application.configure do
 
   config.fake_ldap = true
   config.jwt_secret_key = 'test'
-  config.jwt_exp_time = 2*60
-  config.jwt_nbf_time = 1*60
 
   config.login_url = 'login_url'
   config.logout_url = 'logout_url'
 
   config.billing_facade_url = 'http://some-server'
-  config.urls = { submission: "",
-                  permissions: "",
-                  sets: "",
-                  projects: "",
-                  work_orders: "" }
+  config.urls = { submission: '',
+                  permissions: '',
+                  sets: '',
+                  projects: '',
+                  work_orders: '' }
 end

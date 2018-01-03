@@ -56,8 +56,6 @@ Rails.application.configure do
   config.fake_ldap = true
 
   config.jwt_secret_key = 'development'
-  config.jwt_exp_time = 2 * 60
-  config.jwt_nbf_time = 1 * 60
 
   config.default_jwt_user = {
     email: ENV.fetch('USER', 'user') + '@sanger.ac.uk',
@@ -75,5 +73,4 @@ Rails.application.configure do
                   work_orders: '' }
 
   config.billing_facade_url = 'http://localhost:3601'
-
 end
