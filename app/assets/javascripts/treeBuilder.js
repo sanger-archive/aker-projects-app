@@ -28,8 +28,11 @@
     return parentNodes.reduce(function(memo, parent) {
       var classes = ""
       // All references to methods in node_resource.rb must use - instead of _
-      if (parent.attributes['editable-by-current-user']) classes = 'editable-by-current-user '
-      if (parent.attributes['owned-by-current-user']) classes = 'owned-by-current-user '
+      if (parent.attributes['owned-by-current-user']) {
+        classes = 'owned-by-current-user '
+      } else if (parent.attributes['editable-by-current-user']) {
+        classes = 'editable-by-current-user '
+      }
 
       if (parent.attributes['spendable-by-current-user'] && parent.attributes['is-sub-project-node']) classes += 'spendable-by-current-user '
 
