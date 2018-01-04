@@ -219,9 +219,14 @@
         this.selectNode($node);
 
         // Enables the use of the menu to Add/Remove/Update info in the currently selected node
-        //$('#edit-panel').css('visibility', 'visible');
-        $('#edit-panel input').prop('disabled', !data.writable);
-        $('#btn-add-nodes').prop('disabled', !data.writable);
+        //
+        // The New Node panel and the Add Node button should be disabled if user does not
+        // have writable permission on this Node or this Node is a SubProject
+        // Capybara likes this to be a String so its #disabled? predicate works correctly
+        var disabled = (!data.writable || data.node_type == "sub-project") ? "disabled" : null;
+
+        $('#edit-panel input').prop('disabled', disabled);
+        $('#btn-add-nodes').prop('disabled', disabled);
         $('#btn-delete-nodes').prop('disabled', this.hasChildren($node) || !data.writable);
       }
     }, this));

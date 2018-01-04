@@ -2,6 +2,9 @@ require 'rails_helper'
 require 'ostruct'
 
 RSpec.describe 'Nodes', type: :feature do
+
+  include MockBilling
+
   let(:user) { OpenStruct.new(email: 'user@sanger.ac.uk', groups: ['world']) }
 
   let(:user2) { OpenStruct.new(email: 'user2@sanger.ac.uk', groups: ['world']) }
@@ -39,6 +42,14 @@ RSpec.describe 'Nodes', type: :feature do
     create(:node, name: 'proj2', parent: program3, owner_email: user2.email)
   end
 
+  let!(:proj_with_costcode) do
+    create(:node, name: 'Proj with costcode', parent: proj2, owner_email: user.email, cost_code: valid_project_cost_code)
+  end
+
+  let!(:subproj) do
+    create(:node, name: 'subproj', parent: proj_with_costcode, owner_email: user.email)
+  end
+
   before do
     allow_any_instance_of(JWTCredentials).to receive(:check_credentials)
     allow_any_instance_of(JWTCredentials).to receive(:current_user)
@@ -58,19 +69,33 @@ RSpec.describe 'Nodes', type: :feature do
       expect(page.find(:css, '#edit-panel', visible: true)).to be_visible
     end
 
-    context 'when I click a node in the tree' do
-      before do
-        page.find('div', class: 'node', text: root.name).click
+    describe 'clicking nodes' do
+      context 'when I click a node' do
+
+        before do
+          page.find('div', class: 'node', text: root.name).click
+        end
+
+        it 'shows the edit panel' do
+          expect(page.find_by_id('edit-panel').visible?).to be(true)
+        end
+
+        it 'shows selected node' do
+          page.find('div', class: 'node', text: program1.name).click
+          expect(page.find_by_id('selected-node').value).to eq program1.name
+        end
+
       end
 
-      it 'shows the edit panel' do
-        expect(page.find_by_id('edit-panel').visible?).to be(true)
+      context 'when I click a subproject' do
+
+        it 'disables the "Add Node" button' do
+          page.find('div', class: 'node', text: subproj.name).click
+          expect(page.find_by_id('btn-add-nodes').disabled?).to be true
+        end
+
       end
 
-      it 'shows selected node' do
-        page.find('div', class: 'node', text: program1.name).click
-        expect(page.find_by_id('selected-node').value).to eq program1.name
-      end
     end
 
     describe 'adding nodes' do
@@ -82,6 +107,7 @@ RSpec.describe 'Nodes', type: :feature do
           wait_for_ajax
         end.to change { program1.nodes.count }.by(1)
       end
+
     end
 
     describe 'deleting nodes' do
@@ -100,7 +126,7 @@ RSpec.describe 'Nodes', type: :feature do
           page.find('div', class: 'node', text: program1.name).click
         end
 
-        it 'disables the delete button' do
+        it 'enables the delete button' do
           expect(page.find_by_id('btn-delete-nodes').disabled?).to be false
         end
       end
