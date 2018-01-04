@@ -194,7 +194,7 @@ class Node < ApplicationRecord
 
   def validate_subproject_cost_code_is_valid_for_parent_project
     if !BillingFacadeClient.get_sub_cost_codes(self.parent.cost_code).include?(self.cost_code)
-      errors.add(:base, "This nodes cost code is not valid for the parent project")
+      errors.add(:base, "This node's cost code is not valid for the parent project")
     end
   end
 
