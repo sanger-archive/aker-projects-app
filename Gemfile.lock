@@ -81,6 +81,7 @@ GEM
       tzinfo (~> 1.1)
     addressable (2.5.2)
       public_suffix (>= 2.0.2, < 4.0)
+    amq-protocol (2.2.0)
     arel (7.1.4)
     ast (2.3.0)
     autoprefixer-rails (7.2.4)
@@ -96,6 +97,8 @@ GEM
     bootstrap_form (2.7.0)
     brakeman (4.1.1)
     builder (3.2.3)
+    bunny (0.9.0.pre10)
+      amq-protocol (>= 1.4.0)
     byebug (9.1.0)
     cancancan (2.1.2)
     capybara (2.17.0)
@@ -365,6 +368,7 @@ DEPENDENCIES
   bootstrap-sass (~> 3.3.6)
   bootstrap_form
   brakeman
+  bunny (= 0.9.0.pre10)
   byebug
   capybara
   coffee-rails (~> 4.2)
