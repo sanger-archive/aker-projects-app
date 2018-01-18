@@ -1,13 +1,15 @@
+# A message for the event queue.
+# The information in the event describes the current state of a node.
+# Use generate_json to get the data to put on the queue.
 class EventMessage
 
   def initialize(params)
     @node = params[:node]
     @user = params[:user]
     @event = params[:event]
-  end
-
-  def trace_id
-    ZipkinTracer::TraceContainer.current&.next_id&.trace_id&.to_s
+    @event_uuid = SecureRandom.uuid
+    @trace_id = ZipkinTracer::TraceContainer.current&.next_id&.trace_id&.to_s
+    @timestamp = Time.now
   end
 
   def roles
@@ -36,12 +38,13 @@ class EventMessage
   def metadata
     {
       node_id: @node.id,
-      zipkin_trace_id: trace_id,
-      owner: @node.owner_email,
+      zipkin_trace_id: @trace_id,
+      owner_email: @node.owner_email,
       description: @node.description,
       cost_code: @node.cost_code,
-      deactivated_datetime: @node.deactivated_datetime,
+      deactivated_datetime: @node.deactivated_datetime&.utc&.iso8601,
       deactivated_by: @node.deactivated_by,
+      # TODO - add data release uuid when it exists
     }
   end
 
@@ -49,8 +52,8 @@ class EventMessage
     {
       event_type: "aker.events.project.#{@event}",
       lims_id: "aker",
-      uuid: SecureRandom.uuid,
-      timestamp: Time.now.utc.iso8601,
+      uuid: @event_uuid,
+      timestamp: @timestamp.utc.iso8601,
       user_identifier: @user,
       roles: roles,
       metadata: metadata,

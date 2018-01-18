@@ -76,6 +76,7 @@ group :development, :test do
   gem 'database_cleaner'
   gem 'json-schema'
   gem 'brakeman', require: false
+  gem 'timecop'
 end
 
 gem 'simplecov', :require => false, :group => :test
