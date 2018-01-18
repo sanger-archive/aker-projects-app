@@ -1,4 +1,5 @@
 require 'billing_facade_client'
+require 'data_release_strategy_client'
 
 module NodesHelper
 
@@ -17,6 +18,12 @@ module NodesHelper
   def subcostcodes_select_options(node)
     parent_cost_code = node.parent.cost_code
     BillingFacadeClient.get_sub_cost_codes(parent_cost_code)
+  end
+
+  def data_release_strategies_select_options
+    DataReleaseStrategyClient.get_strategies_for_user(current_user.email).map do |strategy|
+      [strategy.name, strategy.uuid ]
+    end
   end
 
 end

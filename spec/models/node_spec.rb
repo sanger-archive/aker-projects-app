@@ -246,6 +246,7 @@ RSpec.describe Node, type: :model do
       @child = create(:node, name: 'bill', parent: @node)
       expect(@child.parents).to include(@node, program1)
     end
+
   end
 
   describe '#update' do

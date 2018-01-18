@@ -13,6 +13,8 @@ RSpec.describe NodeForm do
     root
   }
 
+  let(:data_release_strategy) { build(:data_release_strategy) }
+
 
   describe '#new' do
     let(:form) { NodeForm.new(name: 'dirk', description: 'foo', cake: 'banana', owner_email: user.email, group_writers: 'zombies,pirates') }
@@ -32,6 +34,9 @@ RSpec.describe NodeForm do
     it 'has the owner specified' do
       expect(form.instance_variable_get('@owner_email')).to eq(user.email)
     end
+    it 'has nil for the data release strategy' do
+      expect(form.data_release_strategy_id).to be_nil
+    end
   end
 
   describe '#from_node' do
@@ -42,6 +47,7 @@ RSpec.describe NodeForm do
     }
     let(:project) do
       project = create(:node, parent_id: node.id, name: 'project', description: 'desc',
+        data_release_strategy_id: data_release_strategy.uuid,
           cost_code: valid_project_cost_code, owner_email: user.email)
 
       permissions = [
@@ -65,6 +71,9 @@ RSpec.describe NodeForm do
     end
     it 'has the owner specified' do
       expect(form.instance_variable_get('@owner_email')).to eq(user.email)
+    end
+    it 'has the data release strategy uuid specified' do
+      expect(form.instance_variable_get('@data_release_strategy_id')).to eq(data_release_strategy.uuid)
     end
     it 'has the correct permissions' do
       expect(form.user_writers).to eq('dirk@sanger.ac.uk')
@@ -119,13 +128,20 @@ RSpec.describe NodeForm do
       pr
     end
     let(:project) do
-      pr = create(:node, name: 'project', description: 'desc', cost_code: valid_project_cost_code, parent: program, owner_email: user.email)
+      pr = create(:node, name: 'project', description: 'desc', cost_code: valid_project_cost_code, 
+        parent: program, owner_email: user.email)
     end
 
     context 'when the form represents a new node' do
-      let(:form) { NodeForm.new(name: 'jelly', description: 'foo', parent_id: program.id, owner_email: user.email, cost_code: valid_project_cost_code, user_writers: 'dirk,jeff', group_writers: 'zombies,   PIRATES', user_spenders: 'DIRK', group_spenders: 'ninjas') }
+      let(:form) { NodeForm.new(name: 'jelly', description: 'foo', 
+        parent_id: program.id, owner_email: user.email, cost_code: valid_project_cost_code, 
+        data_release_strategy_id: data_release_strategy.uuid,
+        user_writers: 'dirk,jeff', group_writers: 'zombies,   PIRATES', user_spenders: 'DIRK', 
+        group_spenders: 'ninjas') }
 
-      before { @result = form.save }
+      before { 
+        @result = form.save 
+      }
 
       it { expect(@result).to be_truthy }
 
@@ -157,10 +173,19 @@ RSpec.describe NodeForm do
         ]
         expect(permissions).to match_array(expected)
       end
+
+      it 'sets up the correct data release policy' do
+        node = Node.find_by(name: 'jelly')
+        expect(node.data_release_strategy_id).to eq(data_release_strategy.uuid)
+      end
     end
 
     context 'when the form represents an existing node' do
-      let(:form) { NodeForm.new(id: project.id, name: 'jelly', description: 'foo', parent_id: project.parent_id, cost_code: another_valid_project_cost_code, user_writers: 'dirk,jeff', group_writers: 'zombies,   PIRATES', user_spenders: 'DIRK', group_spenders: 'ninjas') }
+      let(:form) { NodeForm.new(id: project.id, name: 'jelly', description: 'foo', 
+        parent_id: project.parent_id, cost_code: another_valid_project_cost_code, 
+        data_release_strategy_id: data_release_strategy.uuid,
+        user_writers: 'dirk,jeff', group_writers: 'zombies,   PIRATES', user_spenders: 'DIRK', 
+        group_spenders: 'ninjas') }
 
       before { @result = form.save }
 
@@ -192,6 +217,10 @@ RSpec.describe NodeForm do
         ]
         expect(permissions).to match_array(expected)
       end
+      it 'sets up the correct data release policy' do
+        node = Node.find(project.id)
+        expect(node.data_release_strategy_id).to eq(data_release_strategy.uuid)
+      end      
     end
 
     context 'when the node cannot be created' do

@@ -49,8 +49,21 @@ RSpec.describe 'Nodes', type: :feature do
   let!(:subproj) do
     create(:node, name: 'subproj', parent: proj_with_costcode, owner_email: user.email)
   end
+  let!(:data_releases_strategies) do
+    strategies = 5.times.map { |i| build(:data_release_strategy, name: "Study-#{i}") }
+    strategies.reduce({}) do |memo, strategy|
+      memo[strategy.uuid] = strategy
+      memo
+    end
+  end
 
   before do
+    allow(DataReleaseStrategyClient).to(
+      receive(:get_strategies_for_user)
+        .with(user.email)
+        .and_return(data_releases_strategies.values)
+    )
+
     allow_any_instance_of(JWTCredentials).to receive(:check_credentials)
     allow_any_instance_of(JWTCredentials).to receive(:current_user)
       .and_return(user)
@@ -188,10 +201,32 @@ RSpec.describe 'Nodes', type: :feature do
           wait_for_ajax
         end
 
+        let(:modal) { page.find_by_id('editNodeModal') }
+
         it 'displays a modal with an edit form' do
-          modal = page.find_by_id('editNodeModal')
           expect(modal.visible?).to be(true)
           expect(modal.has_css?('form')).to be(true)
+        end
+
+        context 'when showing the modal' do
+          context 'the data release strategy control' do
+
+            it 'is showing the data release control' do
+              expect(modal.has_select?('Data release strategy')).to eq(true)
+            end
+
+            context 'the data release control' do
+
+              it 'is showing initially a loading message' do
+                expect(modal.has_content?('Loading strategies from Sequencescape')).to eq(true)
+              end          
+              context 'when obtaining the data release strategy for the user' do
+                it 'displays the different choices in the control' do
+                  modal.has_select?('Data release strategy', with_options: data_releases_strategies.values.map(&:name))
+                end
+              end
+            end
+          end
         end
       end
     end

@@ -14,6 +14,8 @@ Rails.application.routes.draw do
     end
   end
 
+  resources :data_release_strategies, only: [:index, :show]
+
   resources :tree_layouts, only: [:create, :index] do
     collection do
       delete '', to: 'tree_layouts#destroy'

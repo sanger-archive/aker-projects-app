@@ -1,4 +1,5 @@
 require 'billing_facade_client'
+require 'data_release_strategy_client'
 
 class Node < ApplicationRecord
   include AkerPermissionGem::Accessible
@@ -140,6 +141,14 @@ class Node < ApplicationRecord
     return self.parent.permissions if is_subproject?
     super
   end
+
+  def data_release_strategy
+    DataReleaseStrategyClient::DataReleaseStrategy.find_by_uuid(data_release_strategy_id)
+  end
+
+  def data_release_strategy=(data_release_strategy)
+    self.data_release_strategy_id=data_release_strategy.uuid
+  end  
 
   private
 

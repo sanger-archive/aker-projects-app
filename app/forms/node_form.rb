@@ -9,7 +9,8 @@ class NodeForm
     false
   end
 
-  ATTRIBUTES = [:id, :parent_id, :name, :description, :cost_code, :user_writers, :group_writers, :user_spenders, :group_spenders]
+  ATTRIBUTES = [:id, :parent_id, :name, :description, :cost_code, :data_release_strategy_id, :user_writers, 
+    :group_writers, :user_spenders, :group_spenders]
 
   attr_accessor *ATTRIBUTES
 
@@ -30,6 +31,7 @@ class NodeForm
     permission_node = node.is_subproject? ? node.parent : node
     new(id: node.id, parent_id: node.parent_id, name: node.name, description: node.description,
         cost_code: node.cost_code, owner_email: node.owner_email,
+        data_release_strategy_id: node.data_release_strategy_id,
         user_writers: node_permitted(permission_node, :write, false),
         group_writers: node_permitted(permission_node, :write, true),
         user_spenders: node_permitted(permission_node, :spend, false),
@@ -40,7 +42,7 @@ class NodeForm
     @node.errors
   end
 
-private
+#private
 
   def self.node_permitted(node, permission_type, groups)
     permission_type = permission_type.to_sym
@@ -54,7 +56,9 @@ private
 
   def create_objects
     ActiveRecord::Base.transaction do
-      @node = Node.create!(name: name, cost_code: cost_code, description: description, parent_id: parent_id, owner_email: @owner_email)
+      @node = Node.create!(name: name, cost_code: cost_code, description: description, 
+        data_release_strategy_id: data_release_strategy_id,
+        parent_id: parent_id, owner_email: @owner_email)
       @node.permissions.create!(convert_permissions(@owner_email))
     end
   rescue
@@ -64,7 +68,9 @@ private
   def update_objects
     ActiveRecord::Base.transaction do
       @node = Node.find(id)
-      @node.update_attributes!(name: name, cost_code: cost_code, description: description, parent_id: parent_id)
+      @node.update_attributes!(name: name, cost_code: cost_code, description: description, 
+        data_release_strategy_id: data_release_strategy_id,
+        parent_id: parent_id)
       unless @node.is_subproject?
         @node.permissions.destroy_all
         @node.set_permissions
