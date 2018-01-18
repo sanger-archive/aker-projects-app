@@ -1,9 +1,7 @@
-# frozen_string_literal: true
-
 require 'event_message'
 
-# The EventPublisher configures the connection to the broker and creates the exchange and
-#   queues.
+# The EventPublisher configures the connection to the broker
+# and creates the exchange and queues.
 class EventPublisher
   attr_accessor :connection
   attr_reader :channel, :exchange, :dlx, :dlx_queue

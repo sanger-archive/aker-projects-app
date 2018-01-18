@@ -2,6 +2,7 @@
 # The information in the event describes the current state of a node.
 # Use generate_json to get the data to put on the queue.
 class EventMessage
+  attr_reader :node, :user, :event
 
   def initialize(params)
     @node = params[:node]
