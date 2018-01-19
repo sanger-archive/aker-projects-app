@@ -29,6 +29,8 @@ class Node < ApplicationRecord
 	has_many :nodes, class_name: 'Node', foreign_key: 'parent_id', dependent: :restrict_with_error
 	belongs_to :parent, class_name: 'Node', required: false
 
+  belongs_to :data_release_strategy, required: false
+
   before_validation :sanitise_blank_cost_code, :sanitise_name, :sanitise_owner, :sanitise_deactivated_by
   before_save :sanitise_blank_cost_code, :sanitise_name, :sanitise_owner, :sanitise_deactivated_by
   before_create :create_uuid
@@ -142,13 +144,17 @@ class Node < ApplicationRecord
     super
   end
 
-  def data_release_strategy
-    DataReleaseStrategyClient::DataReleaseStrategy.find_by_uuid(data_release_strategy_id)
-  end
+  #def data_release_strategy
+  #  DataReleaseStrategyClient.find_strategy_by_uuid(data_release_strategy_id)
+  #end
 
-  def data_release_strategy=(data_release_strategy)
-    self.data_release_strategy_id=data_release_strategy.uuid
-  end  
+  #def data_release_strategy_name
+  #  data_release_strategy&.name || 'Unknown'
+  #end
+
+  #def data_release_strategy=(data_release_strategy)
+  #  self.data_release_strategy_id=data_release_strategy.uuid
+  #end
 
   private
 

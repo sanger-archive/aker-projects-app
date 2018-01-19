@@ -17,11 +17,11 @@ class DataReleaseStrategiesController < ApplicationController
   private
 
   def set_data_release_strategies
-    @data_release_strategies = DataReleaseStrategyClient.get_strategies_for_user(current_user.email)
+    @data_release_strategies = DataReleaseStrategyClient.find_strategies_by_user(current_user.email)
   end
 
   def set_data_release_strategy
-    @data_release_strategy = DataReleaseStrategyClient::DataReleaseStrategy.find_by_uuid(params[:id]) 
+    @data_release_strategy = DataReleaseStrategyClient.find_strategy_by_uuid(params[:id]) 
     head :status => 404 unless @data_release_strategy
     true
   end

@@ -9,8 +9,8 @@ class NodeForm
     false
   end
 
-  ATTRIBUTES = [:id, :parent_id, :name, :description, :cost_code, :data_release_strategy_id, :user_writers, 
-    :group_writers, :user_spenders, :group_spenders]
+  ATTRIBUTES = [:id, :parent_id, :name, :description, :cost_code, :data_release_strategy_id,
+    :user_writers, :group_writers, :user_spenders, :group_spenders]
 
   attr_accessor *ATTRIBUTES
 
@@ -54,23 +54,30 @@ class NodeForm
     perms.join(',')
   end
 
+  def strategy_id
+    data_release_strategy_id.empty? ? nil: data_release_strategy_id
+  end
+
+  def attrs_for_node_update(attrs={})
+    attrs[:data_release_strategy_id] = strategy_id if data_release_strategy_id
+    attrs.merge(name: name, cost_code: cost_code, description: description, 
+        parent_id: parent_id)
+  end
+
   def create_objects
     ActiveRecord::Base.transaction do
-      @node = Node.create!(name: name, cost_code: cost_code, description: description, 
-        data_release_strategy_id: data_release_strategy_id,
-        parent_id: parent_id, owner_email: @owner_email)
+      @node = Node.create!(attrs_for_node_update(owner_email: @owner_email))
       @node.permissions.create!(convert_permissions(@owner_email))
     end
-  rescue
+  rescue StandardError => e
     false
   end
 
   def update_objects
     ActiveRecord::Base.transaction do
       @node = Node.find(id)
-      @node.update_attributes!(name: name, cost_code: cost_code, description: description, 
-        data_release_strategy_id: data_release_strategy_id,
-        parent_id: parent_id)
+      @node.update_attributes!(attrs_for_node_update)
+
       unless @node.is_subproject?
         @node.permissions.destroy_all
         @node.set_permissions
@@ -78,7 +85,7 @@ class NodeForm
       end
       true
     end
-  rescue
+  rescue StandardError => e
     false
   end
 

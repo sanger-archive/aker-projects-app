@@ -47,7 +47,7 @@ RSpec.describe NodeForm do
     }
     let(:project) do
       project = create(:node, parent_id: node.id, name: 'project', description: 'desc',
-        data_release_strategy_id: data_release_strategy.uuid,
+        data_release_strategy_id: data_release_strategy.id,
           cost_code: valid_project_cost_code, owner_email: user.email)
 
       permissions = [
@@ -73,7 +73,7 @@ RSpec.describe NodeForm do
       expect(form.instance_variable_get('@owner_email')).to eq(user.email)
     end
     it 'has the data release strategy uuid specified' do
-      expect(form.instance_variable_get('@data_release_strategy_id')).to eq(data_release_strategy.uuid)
+      expect(form.instance_variable_get('@data_release_strategy_id')).to eq(data_release_strategy.id)
     end
     it 'has the correct permissions' do
       expect(form.user_writers).to eq('dirk@sanger.ac.uk')
@@ -135,7 +135,7 @@ RSpec.describe NodeForm do
     context 'when the form represents a new node' do
       let(:form) { NodeForm.new(name: 'jelly', description: 'foo', 
         parent_id: program.id, owner_email: user.email, cost_code: valid_project_cost_code, 
-        data_release_strategy_id: data_release_strategy.uuid,
+        data_release_strategy_id: data_release_strategy.id,
         user_writers: 'dirk,jeff', group_writers: 'zombies,   PIRATES', user_spenders: 'DIRK', 
         group_spenders: 'ninjas') }
 
@@ -176,14 +176,14 @@ RSpec.describe NodeForm do
 
       it 'sets up the correct data release policy' do
         node = Node.find_by(name: 'jelly')
-        expect(node.data_release_strategy_id).to eq(data_release_strategy.uuid)
+        expect(node.data_release_strategy_id).to eq(data_release_strategy.id)
       end
     end
 
     context 'when the form represents an existing node' do
       let(:form) { NodeForm.new(id: project.id, name: 'jelly', description: 'foo', 
         parent_id: project.parent_id, cost_code: another_valid_project_cost_code, 
-        data_release_strategy_id: data_release_strategy.uuid,
+        data_release_strategy_id: data_release_strategy.id,
         user_writers: 'dirk,jeff', group_writers: 'zombies,   PIRATES', user_spenders: 'DIRK', 
         group_spenders: 'ninjas') }
 
@@ -219,7 +219,7 @@ RSpec.describe NodeForm do
       end
       it 'sets up the correct data release policy' do
         node = Node.find(project.id)
-        expect(node.data_release_strategy_id).to eq(data_release_strategy.uuid)
+        expect(node.data_release_strategy_id).to eq(data_release_strategy.id)
       end      
     end
 

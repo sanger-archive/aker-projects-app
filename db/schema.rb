@@ -10,23 +10,31 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20171113125526) do
+ActiveRecord::Schema.define(version: 20180119101526) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
   enable_extension "citext"
+  enable_extension "uuid-ossp"
+
+  create_table "data_release_strategies", id: :uuid, default: -> { "uuid_generate_v4()" }, force: :cascade do |t|
+    t.string   "name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
 
   create_table "nodes", force: :cascade do |t|
-    t.citext   "name",                 null: false
+    t.citext   "name",                     null: false
     t.integer  "parent_id"
-    t.datetime "created_at",           null: false
-    t.datetime "updated_at",           null: false
+    t.datetime "created_at",               null: false
+    t.datetime "updated_at",               null: false
     t.text     "description"
     t.string   "cost_code"
     t.datetime "deactivated_datetime"
     t.string   "node_uuid"
-    t.citext   "owner_email",          null: false
+    t.citext   "owner_email",              null: false
     t.citext   "deactivated_by"
+    t.uuid     "data_release_strategy_id"
     t.index ["cost_code"], name: "index_nodes_on_cost_code", using: :btree
     t.index ["name"], name: "index_nodes_on_name", using: :btree
     t.index ["owner_email"], name: "index_nodes_on_owner_email", using: :btree

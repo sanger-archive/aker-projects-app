@@ -24,10 +24,10 @@ RSpec.describe DataReleaseStrategiesController, type: :controller do
 
     end
     context '#show' do
-      let(:strategy) { build(:data_release_strategy) }
+      let(:strategy) { create(:data_release_strategy) }
       context 'when the user is not logged in' do
         it 'does return a forbidden error code' do
-          get :show, id: strategy.uuid
+          get :show, id: strategy.id
           expect(response).to have_http_status(:found)
         end
       end
@@ -39,15 +39,15 @@ RSpec.describe DataReleaseStrategiesController, type: :controller do
 
         context 'when the id provided belongs to an existing strategy' do
             before do
-              allow(DataReleaseStrategyClient::DataReleaseStrategy).to(
-                receive(:find_by_uuid)
-                  .with(strategy.uuid)
+              allow(DataReleaseStrategyClient).to(
+                receive(:find_strategy_by_uuid)
+                  .with(strategy.id)
                   .and_return(strategy)
               )
             end
 
           it 'returns the info for that strategy' do
-            get :show, id: strategy.uuid
+            get :show, id: strategy.id
             expect(response).to have_http_status(:ok)
             expect(response.body).to eq(strategy.to_json)
           end
