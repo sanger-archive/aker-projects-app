@@ -397,6 +397,9 @@ RSpec.describe 'API::V1::Nodes', type: :request do
       it 'should not have deleted the node' do
         expect(node.reload).to be_active
       end
+      it 'should not have published a message' do
+        expect(EventService).not_to have_received(:publish)
+      end
     end
 
     context 'when user does not have write permissions on the node' do
@@ -406,6 +409,9 @@ RSpec.describe 'API::V1::Nodes', type: :request do
       it 'should not have deleted the node' do
         expect(node.reload).to be_active
       end
+      it 'should not have published a message' do
+        expect(EventService).not_to have_received(:publish)
+      end
     end
 
     context 'when user does have write permissions on the node' do
@@ -413,6 +419,13 @@ RSpec.describe 'API::V1::Nodes', type: :request do
       it { expect(response).to have_http_status(:accepted) }
       it 'should have deleted the node' do
         expect(node.reload).not_to be_active
+      end
+      it 'should have published an update message' do
+        expect(EventService).to have_received(:publish) do |message|
+          expect(message.node).to eq(node)
+          expect(message.user).to eq(user.email)
+          expect(message.event).to eq('updated')
+        end
       end
     end
 
