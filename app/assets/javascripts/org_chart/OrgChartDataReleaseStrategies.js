@@ -12,7 +12,7 @@
 
     // We will add more actions after the execution of onUpdateNodes
     this.onUpdateNodes = $.proxy(function() {
-      
+
       var value = method.apply(this, arguments);
 
       // Whenever onUpdateNodes is called we will send a request to get the data release strategies (that is why we execute 
@@ -28,7 +28,10 @@
   // Attaches the rendering of the data release options to the resolution of the promise passed as argument 
   // (in the current code this promise is the ajax call to the data release endpoint)
   proto.onShownDataReleaseInModal = function(promiseDataRelease) {
-    return promiseDataRelease.then($.proxy(this.onLoadDataReleaseStrategies, this));
+    return promiseDataRelease.then(
+      $.proxy(this.onLoadDataReleaseStrategies, this),
+      $.proxy(this.onErrorLoadDataReleaseStrategies, this)
+    );
   };
 
   // Builds one HTML option for the data release Select
@@ -41,10 +44,25 @@
     return option;
   };
 
+  proto.onErrorLoadDataReleaseStrategies = function() {
+    var select = $('#node_form_data_release_strategy_id');
+    var selectedValue = select.val();
+    var selectedText = $("option:selected", select).text();
+
+    select.html('');
+
+    var noStrategy = this.addDataReleaseOptionToSelect(select, "", 'No strategy', selectedValue=='');
+    if (selectedValue !=='') {
+      this.addDataReleaseOptionToSelect(select, selectedValue, selectedText, true);
+    }
+    select.attr('disabled', false);
+  };
+
   // Renders the HTML for the select with the different data release strategies that we got from the AJAX response
   proto.onLoadDataReleaseStrategies = function(json) {
     var select = $('#node_form_data_release_strategy_id');
     var selectedValue = select.val();
+    var selectedText = $("option:selected", select).text();
     var selectionMade = false;
 
     select.html('');
@@ -59,7 +77,8 @@
     }
 
     if ((!selectionMade) && (selectedValue)) {
-      this.addDataReleaseOptionToSelect(select, selectedValue, 'ERROR - Selected ID not found in sequencescape', true);
+      this.addDataReleaseOptionToSelect(select, selectedValue, selectedText, true);
+      //this.addDataReleaseOptionToSelect(select, selectedValue, 'ERROR - Selected ID not found in sequencescape', true);
     }
     select.attr('disabled', false);
   };
@@ -68,6 +87,7 @@
   proto.loadDataReleaseStrategies = function() {
     return $.ajax({
       url: Routes.data_release_strategies_path(), 
+      cache: false,
       method: 'GET'
     });
   };

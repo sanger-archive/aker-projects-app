@@ -21,6 +21,7 @@ ActiveRecord::Schema.define(version: 20180119101526) do
     t.string   "name"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["id"], name: "index_data_release_strategies_on_id", unique: true, using: :btree
   end
 
   create_table "nodes", force: :cascade do |t|

@@ -9,6 +9,6 @@ class CreateDataReleaseStrategiesTable < ActiveRecord::Migration[5.0]
       t.timestamps
     end
 
-
+    add_index :data_release_strategies, :id, unique: true
   end
 end

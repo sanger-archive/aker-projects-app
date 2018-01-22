@@ -1,4 +1,4 @@
-class NodesController < ApplicationController
+  class NodesController < ApplicationController
   include AkerPermissionControllerConfig
 
   before_action :current_node, except: :create
@@ -23,7 +23,7 @@ class NodesController < ApplicationController
     # Everyone is allowed to create a node under root
     authorize! :write, parent_node
 
-    @node_form = NodeForm.new(node_form_params.merge(owner_email: current_user.email))
+    @node_form = NodeForm.new(node_form_params.merge(owner_email: current_user.email, current_user: current_user))
 
     if @node_form.save
       flash[:success] = 'Node created'
@@ -48,7 +48,7 @@ class NodesController < ApplicationController
     authorize! :write, current_node
 
     respond_to do |format|
-      @node_form = NodeForm.new(node_form_params)
+      @node_form = NodeForm.new(node_form_params.merge(current_user: current_user))
 
       if @node_form.save
         format.html { redirect_to node_path(@node.parent_id), flash: { success: 'Node updated' } }
@@ -107,4 +107,5 @@ class NodesController < ApplicationController
   def can_edit_permission_for(node)
     check_write_permission_for_node(node) && !node.is_subproject?
   end
+
 end

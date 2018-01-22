@@ -17,7 +17,11 @@ class DataReleaseStrategiesController < ApplicationController
   private
 
   def set_data_release_strategies
-    @data_release_strategies = DataReleaseStrategyClient.find_strategies_by_user(current_user.email)
+    begin
+      @data_release_strategies = DataReleaseStrategyClient.find_strategies_by_user(current_user.email)
+    rescue Faraday::ConnectionFailed => e
+      head :status => 404
+    end
   end
 
   def set_data_release_strategy

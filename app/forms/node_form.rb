@@ -9,10 +9,14 @@ class NodeForm
     false
   end
 
+  validates_with DataReleaseStrategyClient::DataReleaseStrategyValidator
+
   ATTRIBUTES = [:id, :parent_id, :name, :description, :cost_code, :data_release_strategy_id,
     :user_writers, :group_writers, :user_spenders, :group_spenders]
 
   attr_accessor *ATTRIBUTES
+
+  attr_reader :current_user
 
   def initialize(attributes = {})
     ATTRIBUTES.each do |attribute|
@@ -20,6 +24,7 @@ class NodeForm
       send("#{attribute}=", value)
     end
     @owner_email = attributes[:owner_email]
+    @current_user = attributes[:current_user]
   end
 
   def save
@@ -39,7 +44,7 @@ class NodeForm
   end
 
   def error_messages
-    @node.errors
+    @node ? @node.errors : errors
   end
 
 #private
