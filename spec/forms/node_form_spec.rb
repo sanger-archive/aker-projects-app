@@ -141,6 +141,76 @@ RSpec.describe NodeForm do
     end
   end
 
+  describe '#valid?' do
+    context 'when using different values for data release strategy id' do
+      before do
+        allow(DataReleaseStrategyClient).to receive(:find_strategies_by_user)
+      end
+      let(:form) { NodeForm.new(name: 'jelly', description: 'foo', 
+        data_release_strategy_id: strategy_id,
+        current_user: user,
+        parent_id: root.id, owner_email: user.email, cost_code: valid_project_cost_code, 
+        user_writers: 'dirk,jeff', group_writers: 'zombies,   PIRATES', user_spenders: 'DIRK', 
+        group_spenders: 'ninjas') }
+
+      context 'when it is nil' do
+        let(:strategy_id) { nil } 
+        it 'is valid' do
+          expect(form.valid?).to eq(true)
+        end
+        it 'does not check the external service' do
+          form.valid?
+          expect(DataReleaseStrategyClient).not_to have_received(:find_strategies_by_user)
+        end
+      end
+      context 'when is empty string' do
+        let(:strategy_id) { '' } 
+        it 'is valid' do
+          expect(form.valid?).to eq(true)
+        end        
+        it 'does not check the external service' do
+          form.valid?
+          expect(DataReleaseStrategyClient).not_to have_received(:find_strategies_by_user)
+        end        
+      end
+      context 'when is a uuid' do
+        let(:strategy) { create :data_release_strategy }
+        let(:strategy_id) { strategy.id } 
+        before do
+          allow(DataReleaseStrategyClient).to receive(:find_strategies_by_user).with(user.email).and_return([strategy])
+        end
+
+        it 'checks the external service' do
+          form.valid?
+          expect(DataReleaseStrategyClient).to have_received(:find_strategies_by_user)
+        end
+        context 'when the strategy is in the list returned by the service' do
+          before do
+            allow(DataReleaseStrategyClient).to receive(:find_strategies_by_user).with(user.email).and_return([strategy])
+          end        
+          it 'is valid' do
+            expect(form.valid?).to eq(true)
+          end
+        end
+        context 'when the strategy selected is not in the list' do
+          before do
+            allow(DataReleaseStrategyClient).to receive(:find_strategies_by_user).with(user.email).and_return([])
+          end
+
+          it 'is not valid' do
+            expect(form.valid?).to eq(false)
+          end
+        end
+      end
+      context 'when is some random hacky text' do
+        let(:strategy_id) { '; DELETE * FROM users;' }
+        it 'is not valid' do
+          expect(form.valid?).to eq(false)
+        end
+      end
+    end    
+  end
+
   describe '#save' do
     let(:root) do
       r = build(:node, name: 'root', parent_id: nil)

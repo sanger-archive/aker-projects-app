@@ -27,6 +27,11 @@ class NodeForm
     @current_user = attributes[:current_user]
   end
 
+  def validate_uuid(value)
+    UUID.validate(value)
+  end
+
+  # It sanitizes the input
   def data_release_strategy_id=(value)
     if value == ''
       @data_release_strategy_id = nil

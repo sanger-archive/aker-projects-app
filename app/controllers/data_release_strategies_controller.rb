@@ -16,6 +16,7 @@ class DataReleaseStrategiesController < ApplicationController
 
   private
 
+  # Gets the list of strategies for the current user. It returns a 404 if there is no connection
   def set_data_release_strategies
     begin
       @data_release_strategies = DataReleaseStrategyClient.find_strategies_by_user(current_user.email)
@@ -24,6 +25,7 @@ class DataReleaseStrategiesController < ApplicationController
     end
   end
 
+  # Gets the info from the strategy shown. It returns a 404 if it does not exist
   def set_data_release_strategy
     @data_release_strategy = DataReleaseStrategyClient.find_strategy_by_uuid(params[:id]) 
     head :status => 404 unless @data_release_strategy

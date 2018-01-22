@@ -1,15 +1,21 @@
 require "faraday"
 require "zipkin-tracer"
+require 'uuid'
 
+
+# Client to access the Data release strategies, currently accessed from Sequencescape
 module DataReleaseStrategyClient
 
+  # Whenever a new Nodeform is saved, it checks with the data relese server if the
+  # current user has rights to use the selected strategy. If not, it will set an error
+  # message that the UI will display in the modal for the form
   class DataReleaseStrategyValidator < ActiveModel::Validator
     def validate(record)
       return true if record.data_release_strategy_id.nil?
+      return false unless UUID.validate(record.data_release_strategy_id)
 
-      username = record.current_user.email.gsub(/@.*/,'')
       begin
-        value = DataReleaseStrategyClient.find_strategies_by_user(username).any? do |strategy| 
+        value = DataReleaseStrategyClient.find_strategies_by_user(record.current_user.email).any? do |strategy| 
           strategy.id == record.data_release_strategy_id
         end
       rescue Faraday::ConnectionFailed => e
@@ -24,12 +30,15 @@ module DataReleaseStrategyClient
   end
 
 
+  # Returns the data release strategy by uuid.
   def self.find_strategy_by_uuid(uuid)
     if uuid
       DataReleaseStrategy.find_by(id: uuid)
     end
   end
 
+  # Gets the list of strategies available for the user. It also updates the current database with 
+  # the response, as this keeps the local copy for the name of data releases up to date
   def self.find_strategies_by_user(user)
     conn = get_connection
     conn.headers = {'Accept' => 'application/vnd.api+json'}
@@ -45,6 +54,7 @@ module DataReleaseStrategyClient
     end.uniq
   end
 
+  # Connection to access the data release server
   def self.get_connection
     conn = Faraday.new(:url => Rails.application.config.urls[:data_release]) do |faraday|
       faraday.use ZipkinTracer::FaradayHandler, 'Sequencescape'

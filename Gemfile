@@ -13,6 +13,7 @@ gem 'coffee-rails', '~> 4.2'
 # See https://github.com/rails/execjs#readme for more supported runtimes
 # gem 'therubyracer', platforms: :ruby
 
+gem 'uuid'
 gem 'aker_credentials_gem', github: 'sanger/aker-credentials'
 gem 'aker_permission_gem', github: 'sanger/aker-permission'
 gem 'aker-billing-facade-client', github: 'sanger/aker-billing-facade-client'
