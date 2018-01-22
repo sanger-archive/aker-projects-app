@@ -222,25 +222,6 @@ RSpec.describe 'Nodes', type: :feature do
             context 'the data release control' do
               
               context 'when obtaining the data release strategy for the user' do
-                context 'when the selected data release strategy is not available for the user' do
-                  context 'when the selected data release is not in the available list' do
-                    let(:selected_data_release_strategy) { create(:data_release_strategy, name: 'a new one') }
-                    before do
-                      program1.update_attributes(data_release_strategy_id: selected_data_release_strategy.id)
-                    end
-                    it 'displays the value cached in the database' do
-                      double_clicking
-
-                      
-                      expect(modal.has_content?(selected_data_release_strategy.name)).to eq(true)
-                      save_and_open_page
-                      expect(modal.has_select?('Data release strategy', with_options: [
-                        data_releases_strategies.values.map(&:name), 
-                        selected_data_release_strategy.name
-                      ].flatten)).to eq(true)
-                    end
-                  end        
-                end
 
                 context 'when the selected data release is in the available list for the user' do
                   it 'displays the different choices in the control' do
