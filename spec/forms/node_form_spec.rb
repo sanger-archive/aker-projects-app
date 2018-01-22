@@ -17,7 +17,7 @@ RSpec.describe NodeForm do
 
 
   describe '#new' do
-    let(:form) { NodeForm.new(name: 'dirk', description: 'foo', cake: 'banana', owner_email: user.email, group_writers: 'zombies,pirates') }
+    let(:form) { NodeForm.new(name: 'dirk', description: 'foo', cake: 'banana', owner_email: user.email, current_user: user.email, group_writers: 'zombies,pirates') }
 
     it 'has the attributes specified that are in the ATTRIBUTES list' do
       expect(form.name).to eq 'dirk'
@@ -34,8 +34,34 @@ RSpec.describe NodeForm do
     it 'has the owner specified' do
       expect(form.instance_variable_get('@owner_email')).to eq(user.email)
     end
+    it 'has the current_user specified' do
+      expect(form.instance_variable_get('@current_user')).to eq(user.email)
+    end
     it 'has nil for the data release strategy' do
       expect(form.data_release_strategy_id).to be_nil
+    end
+
+    context 'when defining the data release strategy' do
+      let(:node) {NodeForm.new(name: 'dirk', data_release_strategy_id: strategy_id, description: 'foo', cake: 'banana', owner_email: user.email, current_user: user.email, group_writers: 'zombies,pirates') }
+      context 'when the data release is an empty string' do
+        let(:strategy_id) {''}
+        it 'has nil ' do
+          expect(node.data_release_strategy_id).to eq(nil)
+        end
+      end
+      context 'when the data release is nil' do
+        let(:strategy_id) {nil}
+        it 'has nil ' do
+          expect(node.data_release_strategy_id).to eq(nil)
+        end
+      end
+      context 'when the data release is defined' do
+        let(:strategy) { create :data_release_strategy }
+        let(:strategy_id) {strategy.id}
+        it 'has the id for the strategy ' do
+          expect(node.data_release_strategy_id).to eq(strategy_id)
+        end
+      end
     end
   end
 
@@ -241,5 +267,52 @@ RSpec.describe NodeForm do
         expect(node.name).to eq('project') # change has been rolled back
       end
     end
+
+    context 'when selecting a data release strategy' do
+      let(:current_strategy) { create(:data_release_strategy) }
+      let(:strategy) { create(:data_release_strategy)}
+      let(:form) { NodeForm.new(id: project.id, data_release_strategy_id: strategy.id, current_user: user, name: 'jelly', description: 'foo', parent_id: project.parent_id, cost_code: another_valid_project_cost_code, user_writers: 'dirk,jeff', group_writers: 'zombies,   PIRATES', user_spenders: 'DIRK', group_spenders: 'ninjas') }
+      context 'when the strategy selected is not valid for the current user' do
+        before do
+          allow(DataReleaseStrategyClient).to receive(:find_strategies_by_user).and_return([current_strategy])
+          project.update_attributes!(data_release_strategy_id: current_strategy.id)
+        end
+
+        it 'does not update the node' do
+          expect(form.save).to be_falsey
+          project.reload
+          expect(project.data_release_strategy_id).to eq(current_strategy.id)          
+        end
+      end
+      context 'when the strategy selected is valid for the current user' do
+        before do
+          allow(DataReleaseStrategyClient).to receive(:find_strategies_by_user).and_return([strategy])
+        end
+        
+        it 'does update the node' do
+          expect(form.save).to be_truthy
+          project.reload
+          expect(project.data_release_strategy_id).to eq(strategy.id)
+        end
+      end
+      context 'when no strategy has been selected' do
+        let(:form) { NodeForm.new(id: project.id, data_release_strategy_id: nil, current_user: user, name: 'jelly', description: 'foo', parent_id: project.parent_id, cost_code: another_valid_project_cost_code, user_writers: 'dirk,jeff', group_writers: 'zombies,   PIRATES', user_spenders: 'DIRK', group_spenders: 'ninjas') }
+
+        before do
+          allow(DataReleaseStrategyClient).to receive(:find_strategies_by_user).and_return([strategy])
+        end
+        
+        it 'does update the node' do
+          project.reload
+          project.update_attributes!(data_release_strategy_id: current_strategy.id)
+          expect(project.data_release_strategy_id).to eq(current_strategy.id)
+          expect(form.save).to be_truthy
+          project.reload
+          expect(project.data_release_strategy_id).to eq(nil)
+        end
+      end
+
+    end
+
   end
 end

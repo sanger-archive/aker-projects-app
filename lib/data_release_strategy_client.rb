@@ -5,7 +5,7 @@ module DataReleaseStrategyClient
 
   class DataReleaseStrategyValidator < ActiveModel::Validator
     def validate(record)
-      return true if record.data_release_strategy_id.blank?
+      return true if record.data_release_strategy_id.nil?
 
       username = record.current_user.email.gsub(/@.*/,'')
       begin
@@ -26,7 +26,7 @@ module DataReleaseStrategyClient
 
   def self.find_strategy_by_uuid(uuid)
     if uuid
-      DataReleaseStrategyClient.find_by(id: uuid)
+      DataReleaseStrategy.find_by(id: uuid)
     end
   end
 

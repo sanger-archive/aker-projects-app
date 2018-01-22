@@ -27,6 +27,14 @@ class NodeForm
     @current_user = attributes[:current_user]
   end
 
+  def data_release_strategy_id=(value)
+    if value == ''
+      @data_release_strategy_id = nil
+    else
+      @data_release_strategy_id = value
+    end
+  end
+
   def save
     # valid? currently does nothing
     valid? && (id.present? ? update_objects : create_objects)
@@ -59,12 +67,8 @@ class NodeForm
     perms.join(',')
   end
 
-  def strategy_id
-    data_release_strategy_id.empty? ? nil: data_release_strategy_id
-  end
-
   def attrs_for_node_update(attrs={})
-    attrs[:data_release_strategy_id] = strategy_id if data_release_strategy_id
+    attrs[:data_release_strategy_id] = @data_release_strategy_id
     attrs.merge(name: name, cost_code: cost_code, description: description, 
         parent_id: parent_id)
   end
