@@ -15,13 +15,8 @@
     // We call jQuery's load method to fetch the html content of /nodes/:id/edit.js
     // and load it into the modal body
     $('#editNodeModal').modal('show');
-    $('#editNodeModal').on('shown.bs.modal', $.proxy(this.onShownModal, this, this.loadDataReleaseStrategies()));
 
     $('div.modal-content', '#editNodeModal').load(url+ '/edit.js', $.proxy(this.onLoadUpdateNodeForm, this))
-  };
-
-  proto.onShownModal = function(promiseDataRelease) {
-    return promiseDataRelease.then($.proxy(this.onLoadDataReleaseStrategies, this));
   };
 
   proto.onLoadUpdateNodeForm = function(response, status, xhr) {
@@ -37,45 +32,6 @@
         $('form', 'div.modal-body').render_form_errors('node_form', data.responseJSON);
       });
     $("[data-behavior~=selectize]", 'div.modal-body').each(window.aker.selectize_element);
-  };
-
-  proto.addDataReleaseOptionToSelect = function(select, id, name, selected) {
-    var option = $('<option></option>');
-    option.html(name)
-    option.attr('value', id);
-    option.attr('selected', selected);
-    select.append(option);
-    return option;
-  };
-
-  proto.onLoadDataReleaseStrategies = function(json) {
-    //return;
-    var select = $('#node_form_data_release_strategy_id');
-    var selectedValue = select.val();
-    var selectionMade = false;
-
-    select.html('');
-
-    var noStrategy = this.addDataReleaseOptionToSelect(select, "", 'No strategy', !selectedValue);
-
-    for (var i=0; i<json.length; i++) {
-      var option = this.addDataReleaseOptionToSelect(select, json[i].id, json[i].name, (json[i].id === selectedValue))
-      if (option.attr('selected')) {
-        selectionMade = true; 
-      }
-    }
-
-    if ((!selectionMade) && (selectedValue)) {
-      this.addDataReleaseOptionToSelect(select, selectedValue, 'ERROR - Selected ID not found in sequencescape', true);
-    }
-    select.attr('disabled', false);
-  };
-
-  proto.loadDataReleaseStrategies = function() {
-    return $.ajax({
-      url: Routes.data_release_strategies_path(), 
-      method: 'GET'
-    });
   };
 
   proto.onSuccessfulFormUpdateNode = function(e, data, status, xhr) {
