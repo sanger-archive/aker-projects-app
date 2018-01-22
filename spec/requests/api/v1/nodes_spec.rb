@@ -30,6 +30,10 @@ RSpec.describe 'API::V1::Nodes', type: :request do
     n
   }
 
+  before do
+    allow(EventService).to receive(:publish)
+  end
+
   describe 'GET' do
 
     before(:each) do
@@ -254,172 +258,174 @@ RSpec.describe 'API::V1::Nodes', type: :request do
   end
 
   describe 'CREATE #create' do
-    before(:each) do
-
-      @prog1 = create(:node, parent_id: program1.id, name: 'Program 1', owner_email: different_user.email)
-      @prog2 = create(:node, parent_id: program1.id, name: 'prog2', owner_email: user.email)
+    let(:not_my_proj) { create(:node, parent_id: program1.id, name: 'Not my proj', owner_email: different_user.email) }
+    let(:my_proj) { create(:node, parent_id: program1.id, name: 'My proj', owner_email: user.email) }
+    let(:data) do
+      {
+        type: 'nodes',
+        attributes: { name: 'Bananas' },
+        relationships: { parent: { data: { type: 'nodes', id: parent.id } } },
+      }
     end
+    before { post api_v1_nodes_path, params: { data: data }.to_json, headers: headers }
 
     context 'when user does not have write permissions on the parent node (root)' do
-      it 'returns 403' do
-        params = { data: {
-            type: 'nodes',
-            attributes: { name: 'Bananas' },
-            relationships: { parent: { data: { type: 'nodes', id: root.id } } },
-          }
-        }
-        post api_v1_nodes_path, params: params.to_json, headers: headers
-        expect(response).to have_http_status(:forbidden)
+      let(:parent) { root }
+      it { expect(response).to have_http_status(:forbidden) }
+      it 'should not have published a message' do
+        expect(EventService).not_to have_received(:publish)
       end
     end
 
     context 'when user does not have write permissions on the parent node' do
-      it 'returns 403' do
-        params = { data: {
-            type: 'nodes',
-            attributes: { name: 'Cherries' },
-            relationships: { parent: { data: { type: 'nodes', id: @prog1.id } } },
-          }
-        }
-        post api_v1_nodes_path, params: params.to_json, headers: headers
-        expect(response).to have_http_status(:forbidden)
+      let(:parent) { not_my_proj }
+      it { expect(response).to have_http_status(:forbidden) }
+      it 'should not have published a message' do
+        expect(EventService).not_to have_received(:publish)
       end
     end
 
     context 'when user does have write permissions on the parent node' do
-      it 'returns 201' do
-        params = { data: {
-            type: 'nodes',
-            attributes: { name: 'Bananas' },
-            relationships: { parent: { data: { type: 'nodes', id: @prog2.id } } },
-          }
-        }
-        post api_v1_nodes_path, params: params.to_json, headers: headers
-        expect(response).to have_http_status(:created)
+      let(:parent) { my_proj }
+      it { expect(response).to have_http_status(:created) }
+      it 'should have published a create message' do
+        expect(EventService).to have_received(:publish) do |message|
+          expect(message.node).to eq(Node.find_by(name: 'Bananas'))
+          expect(message.user).to eq(user.email)
+          expect(message.event).to eq('created')
+        end
       end
     end
   end
 
   describe 'UPDATE #update' do
 
-    before(:each) do
-      @node1 = create(:node, parent_id: program1.id, name: 'node1', owner_email: user.email)
-      @node2 = create(:node, parent_id: program1.id, name: 'node2', owner_email: different_user.email)
+    let(:data) do
+      {
+        id: node.id,
+        type: 'nodes',
+        attributes: { name: 'Strawberries' }
+      }
     end
 
-    context 'when user does not have write permissions on the node' do
-      it 'returns a 403' do
-        params = { data: {
-            id: @node2.id,
-            type: 'nodes',
-            attributes: { name: 'Bananas' }
-          }
-        }
+    before { patch api_v1_node_path(node), params: { data: data }.to_json, headers: headers }
 
-        patch api_v1_node_path(@node2), params: params.to_json, headers: headers
-        expect(response).to have_http_status(:forbidden)
+    context 'when user does not have write permissions on the node' do
+      let(:node) { create(:node, parent_id: program1.id, name: 'not my node', owner_email: different_user.email) }
+      it { expect(response).to have_http_status(:forbidden) }
+      it 'should not have published a message' do
+        expect(EventService).not_to have_received(:publish)
       end
     end
 
     context 'when user does have write permissions on the node' do
-      it 'returns a 200' do
-        params = { data: {
-            id: @node1.id,
-            type: 'nodes',
-            attributes: { name: 'Strawberries' }
-          }
-        }
-        patch api_v1_node_path(@node1), params: params.to_json, headers: headers
-        expect(response).to have_http_status(:ok)
+      let(:node) { create(:node, parent_id: program1.id, name: 'my node', owner_email: user.email) }
+      it { expect(response).to have_http_status(:ok) }
+      it 'should have published an update message' do
+        expect(EventService).to have_received(:publish) do |message|
+          expect(message.node).to eq(node)
+          expect(message.user).to eq(user.email)
+          expect(message.event).to eq('updated')
+        end
       end
     end
   end
 
   describe 'UPDATE #update_relationship' do
 
-    before(:each) do
-      @prog1 = create(:node, parent_id: program1.id, name: 'prog1', owner_email: user.email)
-      @prog2 = create(:node, parent_id: program1.id, name: 'prog2', owner_email: different_user.email)
-      @prog3 = create(:node, parent_id: program1.id, name: 'prog3', owner_email: user.email)
-      @node1 = create(:node, parent_id: @prog1.id, name: 'node1', owner_email: user.email)
+    let(:node) {
+      create(:node, parent_id: program1.id, name: 'node1', owner_email: user.email)
+    }
+
+    let(:params) do
+      {
+        data: {
+          type: 'nodes',
+          id: destination.id,
+        },
+        relationship: 'parent',
+        node_id: node.id,
+      }
     end
 
+    before { patch api_v1_node_relationships_parent_path(node), params: params.to_json, headers: headers }
+
     context 'when moving a node to under the root node' do
-      it 'returns a 403' do
-        params = {
-          data: {
-            type: 'nodes',
-            id: root.id,
-          },
-          relationship: 'parent',
-          node_id: @node1.id,
-        }
-        patch api_v1_node_relationships_parent_path(@node1), params: params.to_json, headers: headers
-        expect(response).to have_http_status(:forbidden)
+      let(:destination) { root }
+      it { expect(response).to have_http_status(:forbidden) }
+      it 'should not have published a message' do
+        expect(EventService).not_to have_received(:publish)
       end
     end
 
     context 'when user does not have write permissions on the destination parent node' do
-      it 'does not update the relationship' do
-        params = {
-          data: {
-            type: 'nodes',
-            id: @prog2.id,
-          },
-          relationship: 'parent',
-          node_id: @node1.id,
-        }
-        patch api_v1_node_relationships_parent_path(@node1), params: params.to_json, headers: headers
-        expect(response).to have_http_status(:forbidden)
+      let(:destination) { create(:node, parent_id: program1.id, name: 'not my program', owner_email: different_user.email) }
+      it { expect(response).to have_http_status(:forbidden) }
+      it 'should not have published a message' do
+        expect(EventService).not_to have_received(:publish)
       end
     end
 
     context 'when user does have write permissions on the destination parent node' do
-      it 'successfully updates relationship' do
-        params = {
-          data: {
-            type: 'nodes',
-            id: @prog1.id,
-          },
-          relationship: 'parent',
-          node_id: @node1.id,
-        }
-        patch api_v1_node_relationships_parent_path(@node1), params: params.to_json, headers: headers
-        expect(response).to have_http_status(:no_content)
+      let(:destination) { create(:node, parent_id: program1.id, name: 'my program', owner_email: user.email) }
+      it { expect(response).to have_http_status(:no_content) }
+      it 'should have published an update message' do
+        expect(EventService).to have_received(:publish) do |message|
+          expect(message.node).to eq(node)
+          expect(message.user).to eq(user.email)
+          expect(message.event).to eq('updated')
+        end
+      end
+      it 'should have relocated the node' do
+        expect(node.reload.parent).to eq(destination)
       end
     end
   end
 
   describe 'DELETE #remove' do
 
-    before do
-      @prog1 = build(:node, parent_id: root.id, name: 'prog1', owner_email: user.email)
-      @prog1.save(validate: false)
-      @node1 = create(:node, parent_id: @prog1.id, name: 'node1', owner_email: user.email)
-      @node2 = create(:node, parent_id: @prog1.id, name: 'node2', owner_email: different_user.email)
-    end
+    before { delete api_v1_node_path(node), headers: headers }
 
     context 'when the node has children' do
-      it 'returns a 400 and does not delete the node' do
-        delete api_v1_node_path(@prog1), headers: headers
-        expect(response).to have_http_status(:bad_request)
-        expect(@prog1.reload).to be_active
+      let(:node) do
+        n = create(:node, parent_id: program1.id, name: 'parent node', owner_email: user.email)
+        create(:node, parent_id: n.id, name: 'child node', owner_email: user.email)
+        n
+      end
+
+      it { expect(response).to have_http_status(:bad_request) }
+      it 'should not have deleted the node' do
+        expect(node.reload).to be_active
+      end
+      it 'should not have published a message' do
+        expect(EventService).not_to have_received(:publish)
       end
     end
 
     context 'when user does not have write permissions on the node' do
-      it 'returns a 403 and does not delete the node' do
-        delete api_v1_node_path(@node2), headers: headers
-        expect(response).to have_http_status(:forbidden)
-        expect(@node2.reload).to be_active
+      let(:node) { create(:node, parent_id: program1.id, name: 'not my node', owner_email: different_user.email) }
+
+      it { expect(response).to have_http_status(:forbidden) }
+      it 'should not have deleted the node' do
+        expect(node.reload).to be_active
+      end
+      it 'should not have published a message' do
+        expect(EventService).not_to have_received(:publish)
       end
     end
 
     context 'when user does have write permissions on the node' do
-      it 'returns a 202 and deletes the node' do
-        delete api_v1_node_path(@node1), headers: headers
-        expect(response).to have_http_status(:accepted)
-        expect(@node1.reload).not_to be_active
+      let(:node) { create(:node, parent_id: program1.id, name: 'my node', owner_email: user.email) }
+      it { expect(response).to have_http_status(:accepted) }
+      it 'should have deleted the node' do
+        expect(node.reload).not_to be_active
+      end
+      it 'should have published an update message' do
+        expect(EventService).to have_received(:publish) do |message|
+          expect(message.node).to eq(node)
+          expect(message.user).to eq(user.email)
+          expect(message.event).to eq('updated')
+        end
       end
     end
 

@@ -13,6 +13,8 @@ gem 'coffee-rails', '~> 4.2'
 # See https://github.com/rails/execjs#readme for more supported runtimes
 # gem 'therubyracer', platforms: :ruby
 
+gem 'bunny', '= 0.9.0.pre10'
+
 gem 'aker_credentials_gem', github: 'sanger/aker-credentials'
 gem 'aker_permission_gem', github: 'sanger/aker-permission'
 gem 'aker-billing-facade-client', github: 'sanger/aker-billing-facade-client'
@@ -74,6 +76,7 @@ group :development, :test do
   gem 'database_cleaner'
   gem 'json-schema'
   gem 'brakeman', require: false
+  gem 'timecop'
 end
 
 gem 'simplecov', :require => false, :group => :test
