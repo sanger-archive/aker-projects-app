@@ -11,21 +11,25 @@ module DataReleaseStrategyClient
   # message that the UI will display in the modal for the form
   class DataReleaseStrategyValidator < ActiveModel::Validator
     def validate(record)
-      return true if record.data_release_strategy_id.nil?
-      return false unless UUID.validate(record.data_release_strategy_id)
-
+      return if record.data_release_strategy_id.nil?
+      unless UUID.validate(record.data_release_strategy_id)
+        record.errors[:data_release_strategy_id] << 'The value for data release strategy selected is not a UUID'
+        return
+      end
+      value = nil
       begin
         value = DataReleaseStrategyClient.find_strategies_by_user(record.current_user.email).any? do |strategy| 
           strategy.id == record.data_release_strategy_id
         end
       rescue Faraday::ConnectionFailed => e
         value = nil
+        record.errors[:data_release_strategy_id] << 'There is no connection with the Data release service. Please contact with the administrator'
+        return
       end
       unless value
         record.errors[:data_release_strategy_id] << 'The current user cannot select the Data release strategy provided.'
-        return false
+        return
       end
-      true
     end
   end
 
@@ -41,7 +45,7 @@ module DataReleaseStrategyClient
   # the response, as this keeps the local copy for the name of data releases up to date
   def self.find_strategies_by_user(user)
     conn = get_connection
-    conn.headers = {'Accept' => 'application/vnd.api+json'}
+    
     username = user.gsub(/@.*/, '')
     studies = JSON.parse(conn.get('/api/v2/studies?filter[state]=active&filter[user]='+username).body)['data']
 
@@ -62,7 +66,7 @@ module DataReleaseStrategyClient
       faraday.response :logger
       faraday.adapter  Faraday.default_adapter
     end
-    conn.headers = {'Content-Type' => 'application/vnd.api+json'}
+    conn.headers = {'Accept' => 'application/vnd.api+json', 'Content-Type' => 'application/vnd.api+json'}
     conn
   end
 

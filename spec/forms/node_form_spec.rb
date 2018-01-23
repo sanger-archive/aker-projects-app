@@ -171,7 +171,7 @@ RSpec.describe NodeForm do
         it 'does not check the external service' do
           form.valid?
           expect(DataReleaseStrategyClient).not_to have_received(:find_strategies_by_user)
-        end        
+        end 
       end
       context 'when is a uuid' do
         let(:strategy) { create :data_release_strategy }
@@ -203,9 +203,17 @@ RSpec.describe NodeForm do
         end
       end
       context 'when is some random hacky text' do
+        before do
+          allow(DataReleaseStrategyClient).to receive(:find_strategies_by_user).with(user.email).and_return([])
+        end
+
         let(:strategy_id) { '; DELETE * FROM users;' }
         it 'is not valid' do
           expect(form.valid?).to eq(false)
+        end
+        it 'generates an error because it is not a uuid' do
+          form.valid?
+          expect(form.errors.messages[:data_release_strategy_id].first).to include('UUID')
         end
       end
     end    
