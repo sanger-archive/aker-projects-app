@@ -9,13 +9,6 @@ RSpec.describe 'Application', type: :feature do
   end
 
   describe 'login link' do
-    context 'when not sending a jwt' do
-      xit 'shows a login link' do
-        visit root_path
-        expect(page).to have_content('Log in')
-        expect(page).not_to have_content('Log out')
-      end
-    end
 
     context 'when sending a jwt' do
       let(:jwt) { JWT.encode({ data: { 'email' => 'user@here.com', 'groups' => ['world'] } }, Rails.configuration.jwt_secret_key, 'HS256') }

@@ -21,14 +21,14 @@ class DataReleaseStrategiesController < ApplicationController
     begin
       @data_release_strategies = DataReleaseStrategyClient.find_strategies_by_user(current_user.email)
     rescue Faraday::ConnectionFailed => e
-      head :status => 404
+      head :not_found
     end
   end
 
   # Gets the info from the strategy shown. It returns a 404 if it does not exist
   def set_data_release_strategy
     @data_release_strategy = DataReleaseStrategyClient.find_strategy_by_uuid(params[:id]) 
-    head :status => 404 unless @data_release_strategy
+    head :not_found unless @data_release_strategy
     true
   end
 

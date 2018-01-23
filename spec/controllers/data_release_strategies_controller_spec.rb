@@ -27,7 +27,7 @@ RSpec.describe DataReleaseStrategiesController, type: :controller do
       let(:strategy) { create(:data_release_strategy) }
       context 'when the user is not logged in' do
         it 'does return a forbidden error code' do
-          get :show, id: strategy.id
+          get :show, params: { id: strategy.id }
           expect(response).to have_http_status(:found)
         end
       end
@@ -47,14 +47,14 @@ RSpec.describe DataReleaseStrategiesController, type: :controller do
             end
 
           it 'returns the info for that strategy' do
-            get :show, id: strategy.id
+            get :show, params: { id: strategy.id }
             expect(response).to have_http_status(:ok)
             expect(response.body).to eq(strategy.to_json)
           end
         end
         context 'when the id provided does not belong to any strategy' do
           it 'returns 404' do
-            get :show, id: SecureRandom.uuid
+            get :show, params: { id: SecureRandom.uuid }
             expect(response).to have_http_status(:not_found)
           end
         end

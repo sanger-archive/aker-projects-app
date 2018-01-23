@@ -144,18 +144,6 @@ class Node < ApplicationRecord
     super
   end
 
-  #def data_release_strategy
-  #  DataReleaseStrategyClient.find_strategy_by_uuid(data_release_strategy_id)
-  #end
-
-  #def data_release_strategy_name
-  #  data_release_strategy&.name || 'Unknown'
-  #end
-
-  #def data_release_strategy=(data_release_strategy)
-  #  self.data_release_strategy_id=data_release_strategy.uuid
-  #end
-
   private
 
   def validate_deactivate
