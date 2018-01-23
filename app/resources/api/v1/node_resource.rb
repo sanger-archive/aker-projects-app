@@ -9,6 +9,7 @@ module Api
                  :owned_by_current_user, :editable_by_current_user,
                  :is_project_node, :is_sub_project_node, :parent_id,
                  :data_release_strategy_id
+                 :spendable_by_current_user
       before_create :set_owner
 
       after_create :publish_created
@@ -68,6 +69,21 @@ module Api
       # returns a bool
       def owned_by_current_user
         context[:current_user] && @model.owner_email == context[:current_user].email
+      end
+
+      def spendable_by_current_user
+        if context[:current_user].nil?
+          return false
+        end
+        if @model.permissions.where(permitted: context[:current_user].email, permission_type: "spend").count > 0
+          return true
+        end
+        context[:current_user].groups.each do |group|
+          if @model.permissions.where(permitted: group, permission_type: "spend").count > 0
+            return true
+          end
+        end
+        return false
       end
 
       def editable_by_current_user
