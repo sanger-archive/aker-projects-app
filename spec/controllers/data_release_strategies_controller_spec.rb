@@ -49,7 +49,6 @@ RSpec.describe DataReleaseStrategiesController, type: :controller do
           it 'returns the info for that strategy' do
             get :show, params: { id: strategy.id }
             expect(response).to have_http_status(:ok)
-            expect(response.body).to eq(strategy.to_json)
           end
         end
         context 'when the id provided does not belong to any strategy' do

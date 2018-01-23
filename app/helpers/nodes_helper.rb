@@ -20,6 +20,8 @@ module NodesHelper
     BillingFacadeClient.get_sub_cost_codes(parent_cost_code)
   end
 
+  # Gets the list of available data release strategies for a user and creates a hash from it where the 
+  # key is the name of the strategy, and the value is the uuid.
   def data_release_strategy_options(selected_option)
     DataReleaseStrategyClient.find_strategies_by_user(current_user.email).reduce(opts) do |memo, strategy|
       # We remove any previous occur for the same uuid (this will happen when someone changes the name of the)
@@ -30,7 +32,7 @@ module NodesHelper
         memo.delete(k)
       end
 
-      memo[strategy.name] = strategy.id
+      memo[strategy.label_to_display] = strategy.id
       memo
     end
   end
@@ -40,7 +42,7 @@ module NodesHelper
   end
 
   def data_release_strategy_selected_strategy_option
-    { @node.data_release_strategy.name => @node.data_release_strategy_id }
+    { @node.data_release_strategy.label_to_display => @node.data_release_strategy_id }
   end
 
   def data_release_strategies_select_for(f, opts)
@@ -55,8 +57,12 @@ module NodesHelper
     else
       options = options_for_select(data_release_strategy_options(selected_option), selected_option)
     end
+    html_options = {disabled: opts[:async] || !write_permission}
+    if @node.data_release_strategy
+      html_options[:title] = @node.data_release_strategy.name
+    end
     f.select :data_release_strategy_id, options,
-        {include_blank: true}, {disabled: opts[:async] || !write_permission }
+        {include_blank: true}, html_options
 
   end
 

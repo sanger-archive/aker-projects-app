@@ -7,11 +7,11 @@ class DataReleaseStrategiesController < ApplicationController
   skip_authorization_check only: [:index, :show]
 
   def index
-    render json: @data_release_strategies.to_json
+    render json: @data_release_strategies
   end
 
   def show
-    render json: @data_release_strategy.to_json
+    render json: @data_release_strategy
   end
 
   private

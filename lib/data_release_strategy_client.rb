@@ -51,9 +51,7 @@ module DataReleaseStrategyClient
 
     studies.map do |study|
       strategy = DataReleaseStrategy.find_or_create_by(id: study['attributes']['uuid'])
-      if strategy.name != study['attributes']['name']
-        strategy.update_attributes(name: study['attributes']['name'])
-      end
+      strategy.update_with_study_info(study)
       strategy
     end.uniq
   end

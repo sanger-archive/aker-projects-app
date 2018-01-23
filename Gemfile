@@ -14,6 +14,7 @@ gem 'coffee-rails', '~> 4.2'
 # gem 'therubyracer', platforms: :ruby
 
 gem 'uuid'
+gem 'active_model_serializers'
 gem 'bunny', '= 0.9.0.pre10'
 
 gem 'aker_credentials_gem', github: 'sanger/aker-credentials'

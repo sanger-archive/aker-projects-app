@@ -5,6 +5,7 @@ class CreateDataReleaseStrategiesTable < ActiveRecord::Migration[5.0]
 
     create_table :data_release_strategies, id: :uuid, default: 'uuid_generate_v4()' do |t|
       t.string :name
+      t.string :study_code
 
       t.timestamps
     end
