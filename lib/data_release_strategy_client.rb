@@ -18,7 +18,7 @@ module DataReleaseStrategyClient
       end
       value = nil
       begin
-        value = DataReleaseStrategyClient.find_strategies_by_user(record.current_user.email).any? do |strategy| 
+        value = DataReleaseStrategyClient.find_strategies_by_user(record.user_email).any? do |strategy| 
           strategy.id == record.data_release_strategy_id
         end
       rescue Faraday::ConnectionFailed => e

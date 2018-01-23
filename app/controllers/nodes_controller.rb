@@ -23,7 +23,7 @@
     # Everyone is allowed to create a node under root
     authorize! :write, parent_node
 
-    @node_form = NodeForm.new(node_form_params.merge(owner_email: current_user.email, current_user: current_user))
+    @node_form = NodeForm.new(node_form_params.merge(owner_email: current_user.email, user_email: current_user.email))
 
     if @node_form.save
       flash[:success] = 'Node created'
@@ -48,8 +48,7 @@
     authorize! :write, current_node
 
     respond_to do |format|
-      @node_form = NodeForm.new(node_form_params.merge(current_user: current_user))
-
+      @node_form = NodeForm.new(node_form_params.merge(user_email: current_user.email))
       if @node_form.save
         format.html { redirect_to node_path(@node.parent_id), flash: { success: 'Node updated' } }
         format.json { render json: @node, status: :ok }
@@ -81,11 +80,11 @@
   private
 
   def set_form
-    @nodeform = NodeForm.from_node(@node)
+    @nodeform = NodeForm.from_node(@node, current_user.email)
   end
 
   def set_child
-    @child = NodeForm.new(parent_id: @node.id)
+    @child = NodeForm.new(parent_id: @node.id, user_email: current_user.email)
   end
 
   def current_node

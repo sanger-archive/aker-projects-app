@@ -68,7 +68,7 @@ RSpec.describe DataReleaseStrategyClient do
     context 'when I have a model that uses this validator to validate data_release_strategy_id' do
       let(:model_class) {
         class SomeClass
-          attr_accessor :data_release_strategy_id, :current_user
+          attr_accessor :data_release_strategy_id, :user_email
           include ActiveModel::Validations
           validates_with DataReleaseStrategyClient::DataReleaseStrategyValidator
         end
@@ -79,7 +79,7 @@ RSpec.describe DataReleaseStrategyClient do
         let(:model) {
           obj = model_class.new
           obj.data_release_strategy_id = strategy_id
-          obj.current_user = user
+          obj.user_email = user.email
           obj
         }
         let(:strategy) { create :data_release_strategy }
