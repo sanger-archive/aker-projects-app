@@ -78,7 +78,9 @@ Rails.application.configure do
   config.logout_url = 'http://localhost:9010/logout'
   config.auth_service_url = 'http://localhost:9010'
 
-  config.urls = { submission: '',
+  config.urls = { 
+                  data_release: '',
+                  submission: '',
                   permissions: '',
                   sets: '',
                   projects: '',
