@@ -407,6 +407,7 @@ RSpec.describe NodeForm do
       let(:current_strategy) { create(:data_release_strategy) }
       let(:strategy) { create(:data_release_strategy)}
       let(:form) { NodeForm.new(id: project.id, data_release_strategy_id: strategy.id, user_email: user.email, name: 'jelly', description: 'foo', parent_id: project.parent_id, cost_code: another_valid_project_cost_code, user_writers: 'dirk,jeff', group_writers: 'zombies,   PIRATES', user_spenders: 'DIRK', group_spenders: 'ninjas') }
+
       context 'when the strategy selected is not valid for the current user' do
         before do
           allow(DataReleaseStrategyClient).to receive(:find_strategies_by_user).and_return([current_strategy])
@@ -417,6 +418,17 @@ RSpec.describe NodeForm do
           expect(form.save).to be_falsey
           project.reload
           expect(project.data_release_strategy_id).to eq(current_strategy.id)          
+        end
+
+        context 'but if the node already has the data release strategy the user is trying to set' do
+          before do
+            project.update_attributes!(data_release_strategy_id: strategy.id)
+          end
+          it 'updates the node' do
+            expect(form.save).to be_truthy
+            project.reload
+            expect(project.data_release_strategy_id).to eq(strategy.id)
+          end
         end
       end
       context 'when the strategy selected is valid for the current user' do

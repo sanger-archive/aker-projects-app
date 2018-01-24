@@ -44,6 +44,11 @@
     $('.fa-spinner', select.parent()).remove();;
   };
 
+  // Removes all content from the select
+  proto.resetSelect = function(select) {
+    select.html('');
+  };
+
   // Attaches the rendering of the data release options to the resolution of the promise passed as argument 
   // (in the current code this promise is the ajax call to the data release endpoint)
   // Adds the spinner to the modal.  
@@ -69,19 +74,25 @@
     return option;
   };
 
-  proto.onErrorLoadDataReleaseStrategies = function() {
+  proto.onErrorLoadDataReleaseStrategies = function(event) {
     var select = $(this._selectSelectorCss);
     var selectedValue = select.val();
     var selectedText = $("option:selected", select).text();
 
-    select.html('');
+    this.resetSelect(select);
 
     var noStrategy = this.addDataReleaseOptionToSelect(select, "", 'No strategy', selectedValue=='');
     if (selectedValue !=='') {
       this.addDataReleaseOptionToSelect(select, selectedValue, selectedText, true);
     }
     select.attr('disabled', false);
+    this.removeSpinner();
+    this.showError('HTTP '+event.status+' - '+event.statusText);
   };
+
+  proto.showError = function(text) {
+    $('form', 'div.modal-body').render_form_errors('node_form', {data_release_strategy_id: [text]});
+  }
 
   // Renders the HTML for the select with the different data release strategies that we got from the AJAX response
   proto.onLoadDataReleaseStrategies = function(json) {

@@ -9,7 +9,7 @@ class NodeForm
     false
   end
 
-  validates_with DataReleaseStrategyClient::DataReleaseStrategyValidator
+  validates_with DataReleaseStrategyClient::DataReleaseStrategyValidator, if: :changing_data_release_strategy?
 
   ATTRIBUTES = [:id, :parent_id, :name, :description, :cost_code, :data_release_strategy_id,
     :user_writers, :group_writers, :user_spenders, :group_spenders]
@@ -29,6 +29,13 @@ class NodeForm
 
   def validate_uuid(value)
     UUID.validate(value)
+  end
+
+  def changing_data_release_strategy?
+    node = nil
+    node = Node.find(id) if id
+    return true if node.nil?
+    (data_release_strategy_id != node.data_release_strategy_id)
   end
 
   # It sanitizes the input
