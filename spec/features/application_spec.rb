@@ -8,7 +8,7 @@ RSpec.describe 'Application', type: :feature do
     node.save(validate: false)
   end
 
-  describe 'login link' do
+  describe 'logout link' do
 
     context 'when sending a jwt' do
       let(:jwt) { JWT.encode({ data: { 'email' => 'user@here.com', 'groups' => ['world'] } }, Rails.configuration.jwt_secret_key, 'HS256') }

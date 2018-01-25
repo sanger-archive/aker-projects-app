@@ -58,7 +58,7 @@ module DataReleaseStrategyClient
 
   # Connection to access the data release server
   def self.get_connection
-    conn = Faraday.new(:url => Rails.application.config.urls[:data_release]) do |faraday|
+    conn = Faraday.new(:url => Rails.application.config.data_release_url) do |faraday|
       faraday.use ZipkinTracer::FaradayHandler, 'Sequencescape'
       faraday.request  :url_encoded
       faraday.response :logger
