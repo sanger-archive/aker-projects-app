@@ -408,7 +408,7 @@ DEPENDENCIES
   turbolinks (~> 5)
   tzinfo-data
   uglifier (~> 3.2)
-  uuid
+  uuid (~> 2.3)
   web-console
   zipkin-tracer
 
