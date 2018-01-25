@@ -22,6 +22,7 @@
   var MODULES = [
     OrgChartMenu,         // UI to create, modify and remove some nodes
     OrgChartStatus,       // Behavioral methods to keep the local copy of the tree up to date with server
+    OrgChartDataReleaseStrategies,  // Loads the Data release strategy select inside the modal while updating a node
     // OrgChartIconChildren, // Bugfix/Workaround: Small modification of default behaviour to display children icon
     OrgChartPreferences   // Save & Restore current view of the tree for the logged in user
   ];

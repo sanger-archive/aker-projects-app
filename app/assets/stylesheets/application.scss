@@ -7,6 +7,14 @@
 @import 'loading_mask_sass';
 @import "selectize";
 
+// macOS font fix
+html {
+  -moz-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-font-smoothing: antialiased;
+  font-smoothing: antialiased;
+}
+
 .orgchart .node .title {
   height: initial;
   white-space: initial;
@@ -71,6 +79,12 @@ h2 {
 // Set variables for owned and editable nodes
 $editable-colour: #009e9e;
 $owned-colour: #009933;
+$default-colour: rgb(63, 114, 155);
+
+// remove transparency from default node backgrounds
+.orgchart .node .title {
+  background-color: $default-colour;
+}
 
 // show the nodes owned by the currently logged-in user in a different colour
 .orgchart .owned-by-current-user {
@@ -92,6 +106,31 @@ $owned-colour: #009933;
   }
 }
 
+// Solid background colours for spendable nodes
+.orgchart .spendable-by-current-user {
+  .content {
+    color: white;
+    font-weight: bold;
+  }
+  &.node {
+    .content {
+      background-color: $default-colour;
+      border-color: $default-colour;
+    }
+  }
+  &.owned-by-current-user {
+    .content {
+      background-color: $owned-colour;
+      border-color: $owned-colour;
+    }
+  }
+  &.editable-by-current-user {
+    .content {
+      background-color: $editable-colour;
+      border-color: $editable-colour;
+    }
+  }
+}
 // Show the appropriate colours on the node legend
 .node-legend {
   font-weight: bold;

@@ -7,8 +7,15 @@ module Api
       has_one :parent
       attributes :name, :cost_code, :description, :node_uuid, :writable,
                  :owned_by_current_user, :editable_by_current_user,
-                 :is_project_node, :is_sub_project_node, :parent_id
+                 :is_project_node, :is_sub_project_node, :parent_id,
+                 :data_release_strategy_id,
+                 :spendable_by_current_user
       before_create :set_owner
+
+      after_create :publish_created
+      after_update :publish_updated
+      # after_replace_to_one_link would also make sense,
+      #  but moving a node ALSO triggers 'update', so it is covered.
 
       # We need to be able to find all records that have a cost_code
       # (i.e. proposals)
@@ -64,6 +71,21 @@ module Api
         context[:current_user] && @model.owner_email == context[:current_user].email
       end
 
+      def spendable_by_current_user
+        if context[:current_user].nil?
+          return false
+        end
+        if @model.permissions.where(permitted: context[:current_user].email, permission_type: "spend").count > 0
+          return true
+        end
+        context[:current_user].groups.each do |group|
+          if @model.permissions.where(permitted: group, permission_type: "spend").count > 0
+            return true
+          end
+        end
+        return false
+      end
+
       def editable_by_current_user
         if context[:current_user].nil?
           return false
@@ -82,14 +104,12 @@ module Api
         return false
       end
 
-      # Returns true if the node is a project node, i.e has a regular cost code
-      # such as S1234
+      # Returns true if the node is a project node, i.e has a regular cost code such as S1234
       def is_project_node
         @model.is_project?
       end
 
-      # Returns true if the node is a sub-project node, i.e has a sub-cost code
-      # such as S1234-12
+      # Returns true if the node is a sub-project node, i.e if it is inside a project node
       def is_sub_project_node
         @model.is_subproject?
       end
@@ -104,6 +124,7 @@ module Api
         unless @model.deactivate(context[:current_user]&.email)
           raise JSONAPI::Exceptions::BadRequest, "This node cannot be deactivated"
         end
+        publish_updated
       end
 
       def set_owner
@@ -112,6 +133,16 @@ module Api
 
       def writable
         context[:current_user] && Ability.new(context[:current_user]).can?(:write, @model)
+      end
+
+      def publish_created
+        message = EventMessage.new(node: @model, event: 'created', user: context[:current_user].email)
+        EventService.publish(message)
+      end
+
+      def publish_updated
+        message = EventMessage.new(node: @model, event: 'updated', user: context[:current_user].email)
+        EventService.publish(message)
       end
 
     end

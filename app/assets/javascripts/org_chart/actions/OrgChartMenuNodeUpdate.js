@@ -15,7 +15,8 @@
     // We call jQuery's load method to fetch the html content of /nodes/:id/edit.js
     // and load it into the modal body
     $('#editNodeModal').modal('show');
-    $('div.modal-content', '#editNodeModal').load(url+ '/edit.js', $.proxy(this.onLoadUpdateNodeForm, this));
+
+    $('div.modal-content', '#editNodeModal').load(url+ '/edit.js', $.proxy(this.onLoadUpdateNodeForm, this))
   };
 
   proto.onLoadUpdateNodeForm = function(response, status, xhr) {
