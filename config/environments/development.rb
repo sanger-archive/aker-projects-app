@@ -78,11 +78,13 @@ Rails.application.configure do
   config.logout_url = 'http://localhost:9010/logout'
   config.auth_service_url = 'http://localhost:9010'
 
-  config.urls = { submission: '',
+  config.urls = { 
+                  submission: '',
                   permissions: '',
                   sets: '',
                   projects: '',
                   work_orders: '' }
 
   config.billing_facade_url = 'http://localhost:3601'
+  config.data_release_url = 'http://localhost:6600'
 end

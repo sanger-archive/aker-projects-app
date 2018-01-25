@@ -9,9 +9,14 @@ class NodeForm
     false
   end
 
-  ATTRIBUTES = [:id, :parent_id, :name, :description, :cost_code, :user_writers, :group_writers, :user_spenders, :group_spenders]
+  validates_with DataReleaseStrategyClient::DataReleaseStrategyValidator, if: :changing_data_release_strategy?
+
+  ATTRIBUTES = [:id, :parent_id, :name, :description, :cost_code, :data_release_strategy_id,
+    :user_writers, :group_writers, :user_spenders, :group_spenders]
 
   attr_accessor *ATTRIBUTES
+
+  attr_reader :user_email
 
   def initialize(attributes = {})
     ATTRIBUTES.each do |attribute|
@@ -19,7 +24,27 @@ class NodeForm
       send("#{attribute}=", value)
     end
     @owner_email = attributes[:owner_email]
-    @user_email = attributes[:user_email]
+    @user_email = attributes[:user_email]    
+  end
+
+  def validate_uuid(value)
+    UUID.validate(value)
+  end
+
+  def changing_data_release_strategy?
+    node = nil
+    node = Node.find(id) if id
+    return true if node.nil?
+    (data_release_strategy_id != node.data_release_strategy_id)
+  end
+
+  # It sanitizes the input
+  def data_release_strategy_id=(value)
+    if value == ''
+      @data_release_strategy_id = nil
+    else
+      @data_release_strategy_id = value
+    end
   end
 
   def save
@@ -31,6 +56,7 @@ class NodeForm
     permission_node = node.is_subproject? ? node.parent : node
     new(id: node.id, parent_id: node.parent_id, name: node.name, description: node.description,
         cost_code: node.cost_code, owner_email: node.owner_email, user_email: user_email,
+        data_release_strategy_id: node.data_release_strategy_id,
         user_writers: node_permitted(permission_node, :write, false),
         group_writers: node_permitted(permission_node, :write, true),
         user_spenders: node_permitted(permission_node, :spend, false),
@@ -38,10 +64,10 @@ class NodeForm
   end
 
   def error_messages
-    @node.errors
+    @node ? @node.errors : errors
   end
 
-private
+#private
 
   def self.node_permitted(node, permission_type, groups)
     permission_type = permission_type.to_sym
@@ -53,9 +79,15 @@ private
     perms.join(',')
   end
 
+  def attrs_for_node_update(attrs={})
+    attrs[:data_release_strategy_id] = @data_release_strategy_id
+    attrs.merge(name: name, cost_code: cost_code, description: description, 
+        parent_id: parent_id)
+  end
+
   def create_objects
     ActiveRecord::Base.transaction do
-      @node = Node.create!(name: name, cost_code: cost_code, description: description, parent_id: parent_id, owner_email: @owner_email)
+      @node = Node.create!(attrs_for_node_update(owner_email: @owner_email))
       @node.permissions.create!(convert_permissions(@owner_email))
     end
     message = EventMessage.new(node: @node, user: @user_email, event: 'created')
@@ -68,7 +100,8 @@ private
   def update_objects
     ActiveRecord::Base.transaction do
       @node = Node.find(id)
-      @node.update_attributes!(name: name, cost_code: cost_code, description: description, parent_id: parent_id)
+      @node.update_attributes!(attrs_for_node_update)
+
       unless @node.is_subproject?
         @node.permissions.destroy_all
         @node.set_permissions

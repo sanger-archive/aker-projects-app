@@ -1,4 +1,5 @@
 require 'billing_facade_client'
+require 'data_release_strategy_client'
 
 class Node < ApplicationRecord
   include AkerPermissionGem::Accessible
@@ -27,6 +28,8 @@ class Node < ApplicationRecord
 
 	has_many :nodes, class_name: 'Node', foreign_key: 'parent_id', dependent: :restrict_with_error
 	belongs_to :parent, class_name: 'Node', required: false
+
+  belongs_to :data_release_strategy, required: false
 
   before_validation :sanitise_blank_cost_code, :sanitise_name, :sanitise_owner, :sanitise_deactivated_by
   before_save :sanitise_blank_cost_code, :sanitise_name, :sanitise_owner, :sanitise_deactivated_by

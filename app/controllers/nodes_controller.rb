@@ -1,4 +1,4 @@
-class NodesController < ApplicationController
+  class NodesController < ApplicationController
   include AkerPermissionControllerConfig
 
   before_action :current_node, except: :create
@@ -106,4 +106,5 @@ class NodesController < ApplicationController
   def can_edit_permission_for(node)
     check_write_permission_for_node(node) && !node.is_subproject?
   end
+
 end
