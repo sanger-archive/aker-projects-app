@@ -5,7 +5,11 @@
 <% else %>
   <%= f.text_field :cost_code, disabled: !write_permission, autocomplete: 'off' %>
 <% end %>
-<%= data_release_strategies_select_for(f, {async: true, include_blank: true}, { disabled: !write_permission })%>
+<% if @node.is_subproject? %>
+  <%= data_release_strategies_select_for(@node.parent, f, {async: false, include_blank: true}, { disabled: true })%>
+<% else %>
+  <%= data_release_strategies_select_for(@node, f, {async: true, include_blank: true, cached: false}, { disabled: !write_permission })%>
+<% end %>
 <%= f.hidden_field :parent_id %>
 <%= f.hidden_field :id %>
 <%= f.text_field :user_writers, label: "Users who can modify this project", data: { behavior: "selectize" }, disabled: !edit_permissions %>

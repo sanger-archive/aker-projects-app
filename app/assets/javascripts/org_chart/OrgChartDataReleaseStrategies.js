@@ -16,10 +16,16 @@
 
       var value = method.apply(this, arguments);
 
-      this.onShownModal(this.loadDataReleaseStrategies());
+      if ($(this._selectSelectorCss).data('psd-async') == true) {
+        this.onShownModal(this.loadDataReleaseStrategies());
+      }
 
       return value;
     }, this);
+  };
+
+  proto.cached = function() {
+    return ($(this._selectSelectorCss).data('psd-cached') == true);
   };
 
   proto.showSpinner = function() {
@@ -43,8 +49,9 @@
   // (in the current code this promise is the ajax call to the data release endpoint)
   // Adds the spinner to the modal.  
   proto.onShownModal = function(promiseDataRelease) {
-    this.showSpinner();
     var select = $(this._selectSelectorCss);
+
+    this.showSpinner();    
 
     this._isDisabledAttributeForSelect = !!select.attr('disabled');
 
@@ -123,7 +130,7 @@
 
   // Performs an ajax request to the data release endpoint and returns a promise
   proto.loadDataReleaseStrategies = function() {
-    if (this._cachedDataReleases) {
+    if (this.cached() && (this._cachedDataReleases)) {
       return new $.Deferred().resolve(this._cachedDataReleases);
     }
     return $.ajax({
