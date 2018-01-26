@@ -23,7 +23,7 @@ module NodesHelper
   # Gets the list of available data release strategies for a user and creates a hash from it where the 
   # key is the name of the strategy, and the value is the uuid.
   def data_release_strategy_options(selected_option)
-    DataReleaseStrategyClient.find_strategies_by_user(current_user.email).reduce(opts) do |memo, strategy|
+    DataReleaseStrategyClient.find_strategies_by_user(current_user.email).reduce(selected_option) do |memo, strategy|
       # We remove any previous occur for the same uuid (this will happen when someone changes the name of the)
       # strategy name in the remote service, so it is different from our cached value in the database
       memo.select do |k,v| 
@@ -41,25 +41,26 @@ module NodesHelper
     {'No strategy'=> ""}
   end
 
-  def data_release_strategy_selected_strategy_option
-    { @node.data_release_strategy.label_to_display => @node.data_release_strategy_id }
+  def data_release_strategy_selected_strategy_option(node)
+    { node.data_release_strategy.label_to_display => node.data_release_strategy_id }
   end
 
-  def data_release_strategies_select_for(f, opts={}, html_options={})
-    if @node.data_release_strategy_id.nil?
+  def data_release_strategies_select_for(node, f, opts={}, html_options={})
+    if node.data_release_strategy_id.nil?
       selected_option = data_release_strategy_no_strategy_option
     else
-      selected_option = data_release_strategy_selected_strategy_option
+      selected_option = data_release_strategy_selected_strategy_option(node)
     end
 
     if (opts[:async] == true)
       options = options_for_select(selected_option, selected_option.values.first)
+      html_options['data-psd-async'] = true
     else
-      options = options_for_select(data_release_strategy_options(selected_option), selected_option)
+      options = options_for_select(data_release_strategy_options(selected_option.dup), selected_option.values.first)
     end
     opts = opts.reject{|k,v| k == :async}
-    if @node.data_release_strategy
-      html_options[:title] = @node.data_release_strategy.name
+    if node.data_release_strategy
+      html_options[:title] = node.data_release_strategy.name
     end
     f.select :data_release_strategy_id, options, opts, html_options
 

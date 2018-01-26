@@ -16,7 +16,9 @@
 
       var value = method.apply(this, arguments);
 
-      this.onShownModal(this.loadDataReleaseStrategies());
+      if ($(this._selectSelectorCss).data('psd-async') == true) {
+        this.onShownModal(this.loadDataReleaseStrategies());
+      }
 
       return value;
     }, this);
@@ -43,8 +45,9 @@
   // (in the current code this promise is the ajax call to the data release endpoint)
   // Adds the spinner to the modal.  
   proto.onShownModal = function(promiseDataRelease) {
-    this.showSpinner();
     var select = $(this._selectSelectorCss);
+
+    this.showSpinner();    
 
     this._isDisabledAttributeForSelect = !!select.attr('disabled');
 
