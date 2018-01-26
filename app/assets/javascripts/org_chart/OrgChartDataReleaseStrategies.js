@@ -9,24 +9,14 @@
   var proto = OrgChartDataReleaseStrategies.prototype;
 
   proto.attachDataReleaseHandlers = function() {
-    var method = this.onUpdateNodes;
+    var method = this.onLoadUpdateNodeForm;
 
     // We will add more actions after the execution of onUpdateNodes
-    this.onUpdateNodes = $.proxy(function() {
+    this.onLoadUpdateNodeForm = $.proxy(function() {
 
       var value = method.apply(this, arguments);
 
-      if (typeof this._previousShownHandler !== 'undefined') {
-        $('#editNodeModal').off('shown.bs.modal', this._previousShownHandler);
-        delete(this._previousShownHandler);
-      }      
-      // Whenever onUpdateNodes is called we will send a request to get the data release strategies (that is why we execute 
-      // loadDataReleaseStrategies here), but we will not render its contents (onLoadDataReleaseStrategies) until 
-      // after the modal has been totally generated and displayed (which it happens when event shown.bs.modal is thrown). That
-      // is why in onShownDataReleaseInModal we attach onLoadDataReleaseStrategies to the .then() for the returned promise ($.ajax)
-      var handler = $.proxy(this.onShownModal, this, this.loadDataReleaseStrategies());
-      $('#editNodeModal').on('shown.bs.modal', handler);
-      this._previousShownHandler = handler;
+      this.onShownModal(this.loadDataReleaseStrategies());
 
       return value;
     }, this);
@@ -54,7 +44,11 @@
   // Adds the spinner to the modal.  
   proto.onShownModal = function(promiseDataRelease) {
     this.showSpinner();
+    var select = $(this._selectSelectorCss);
 
+    this._isDisabledAttributeForSelect = !!select.attr('disabled');
+
+    select.attr('disabled', true);
     return promiseDataRelease.then(
       $.proxy(this.onLoadDataReleaseStrategies, this),
       $.proxy(this.onErrorLoadDataReleaseStrategies, this)
@@ -85,7 +79,7 @@
     if (selectedValue !=='') {
       this.addDataReleaseOptionToSelect(select, selectedValue, selectedText, true);
     }
-    select.attr('disabled', false);
+    select.attr('disabled', this._isDisabledAttributeForSelect);
     this.removeSpinner();
     this.showError('HTTP '+event.status+' - '+event.statusText);
   };
@@ -122,7 +116,7 @@
       this.addDataReleaseOptionToSelect(select, selectedValue, selectedText, true, selectedTitle);
       //this.addDataReleaseOptionToSelect(select, selectedValue, 'ERROR - Selected ID not found in sequencescape', true);
     }
-    select.attr('disabled', false);
+    select.attr('disabled', this._isDisabledAttributeForSelect);
     this.removeSpinner();
     this._cachedDataReleases = json;
   };
