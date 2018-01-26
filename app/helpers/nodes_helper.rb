@@ -45,7 +45,7 @@ module NodesHelper
     { @node.data_release_strategy.label_to_display => @node.data_release_strategy_id }
   end
 
-  def data_release_strategies_select_for(f, opts)
+  def data_release_strategies_select_for(f, opts={}, html_options={})
     if @node.data_release_strategy_id.nil?
       selected_option = data_release_strategy_no_strategy_option
     else
@@ -57,12 +57,11 @@ module NodesHelper
     else
       options = options_for_select(data_release_strategy_options(selected_option), selected_option)
     end
-    html_options = {disabled: opts[:async] || !write_permission}
+    opts = opts.reject{|k,v| k == :async}
     if @node.data_release_strategy
       html_options[:title] = @node.data_release_strategy.name
     end
-    f.select :data_release_strategy_id, options,
-        {include_blank: true}, html_options
+    f.select :data_release_strategy_id, options, opts, html_options
 
   end
 
