@@ -8,7 +8,7 @@
 <% if @node.is_subproject? %>
   <%= data_release_strategies_select_for(@node.parent, f, {async: false, include_blank: true}, { disabled: true })%>
 <% else %>
-  <%= data_release_strategies_select_for(@node, f, {async: true, include_blank: true}, { disabled: !write_permission })%>
+  <%= data_release_strategies_select_for(@node, f, {async: true, include_blank: true, cached: false}, { disabled: !write_permission })%>
 <% end %>
 <%= f.hidden_field :parent_id %>
 <%= f.hidden_field :id %>

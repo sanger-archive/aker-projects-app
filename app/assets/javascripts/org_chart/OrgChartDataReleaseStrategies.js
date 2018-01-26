@@ -24,6 +24,10 @@
     }, this);
   };
 
+  proto.cached = function() {
+    return ($(this._selectSelectorCss).data('psd-cached') == true);
+  };
+
   proto.showSpinner = function() {
     var select = $(this._selectSelectorCss);
     var spinner = $('<span class="fa-li fa fa-spinner fa-spin" style="position:static;"></span>');
@@ -126,7 +130,7 @@
 
   // Performs an ajax request to the data release endpoint and returns a promise
   proto.loadDataReleaseStrategies = function() {
-    if (this._cachedDataReleases) {
+    if (this.cached() && (this._cachedDataReleases)) {
       return new $.Deferred().resolve(this._cachedDataReleases);
     }
     return $.ajax({

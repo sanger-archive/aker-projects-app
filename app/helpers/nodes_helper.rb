@@ -55,10 +55,13 @@ module NodesHelper
     if (opts[:async] == true)
       options = options_for_select(selected_option, selected_option.values.first)
       html_options['data-psd-async'] = true
+      if (opts[:cached] == true)
+        html_options['data-psd-cached'] = true
+      end
     else
       options = options_for_select(data_release_strategy_options(selected_option.dup), selected_option.values.first)
     end
-    opts = opts.reject{|k,v| k == :async}
+    opts = opts.reject{|k,v| k == :async || k == :cached}
     if node.data_release_strategy
       html_options[:title] = node.data_release_strategy.name
     end
