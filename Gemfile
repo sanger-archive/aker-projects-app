@@ -74,7 +74,7 @@ group :development, :test do
   gem 'launchy'
   gem 'capybara'
   gem 'poltergeist'
-  gem 'factory_girl_rails'
+  gem 'factory_bot_rails'
   gem 'database_cleaner'
   gem 'json-schema'
   gem 'brakeman', require: false
