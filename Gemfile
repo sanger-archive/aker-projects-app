@@ -14,7 +14,7 @@ gem 'coffee-rails', '~> 4.2'
 # gem 'therubyracer', platforms: :ruby
 
 gem 'uuid', '~> 2.3'
-gem 'active_model_serializers' 
+gem 'active_model_serializers', '~> 0.10'
 gem 'bunny', '= 0.9.0.pre10'
 
 gem 'aker_credentials_gem', github: 'sanger/aker-credentials'
@@ -36,7 +36,6 @@ gem 'jbuilder', '~> 2.5'
 # gem 'capistrano-rails', group: :development
 
 gem 'bootstrap_form'
-gem 'active_model_serializers'
 gem 'zipkin-tracer'
 gem 'loading_mask'
 gem 'js-routes'
@@ -64,7 +63,7 @@ gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
 
 gem 'bootstrap-sass', '~> 3.3.6'
 gem 'font-awesome-sass'
-gem 'rubocop', '~> 0.41.2', require: false
+gem 'rubocop', '~> 0.52', require: false
 gem 'pg'
 gem 'jsonapi-resources', '~> 0.8'
 gem 'therubyracer'
@@ -74,7 +73,7 @@ group :development, :test do
   gem 'launchy'
   gem 'capybara'
   gem 'poltergeist'
-  gem 'factory_girl_rails'
+  gem 'factory_bot_rails'
   gem 'database_cleaner'
   gem 'json-schema'
   gem 'brakeman', require: false
