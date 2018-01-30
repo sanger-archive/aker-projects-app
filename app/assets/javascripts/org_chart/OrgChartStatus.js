@@ -18,9 +18,33 @@
     alert(status+": "+response.responseJSON.message);
   };
 
-  proto.updateChartOnChanges = function() {
+   proto.updateChartOnChanges = function() {
+    this.websocketsUpdateStart();
+    return;
+  };
+
+  proto.ajaxUpdateStart = function() {
     this.intervalId = setInterval($.proxy(this.keepTreeUpdate, this), 10000);
   };
+
+  proto.websocketsConnect = function() {
+    return App.cable.subscriptions.create({ channel: "TreeStatusChannel" }, {
+      connected: $.proxy(this.resetTree, this),
+      received: $.proxy(function(response) {
+        if (response.notifyChanges === true) {
+          this.resetTree().then(function() { console.log('Updated with web-sockets'); });
+        }
+      }, this)
+    });
+  };
+
+  proto.websocketsUpdateStart = function() {
+    if (!this._websocketsConnectionStablished) {
+      this._websocketsConnectionStablished = this.websocketsConnect();
+    }
+    return this._websocketsConnectionStablished;
+  };
+
 
   proto.stopUpdating = function() {
     clearInterval(this.intervalId);
