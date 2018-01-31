@@ -32,7 +32,7 @@
       connected: $.proxy(this.resetTree, this),
       received: $.proxy(function(response) {
         if (response.notifyChanges === true) {
-          this.resetTree().then(function() { console.log('Updated with web-sockets'); });
+          this.keepTreeUpdate();
         }
       }, this)
     });
@@ -77,8 +77,19 @@
     return this.loadTree().then($.proxy(this.enableTree, this), $.proxy(this.disableTree, this));
   };
 
+  proto.equalAttributes = function(node1, node2) {
+    var nodeWithMetadata = (typeof node1.name === 'undefined') ? node2 : node1;
+    var name = $('.title', $('#'+nodeWithMetadata.id)).text();
+    var costCode = $('.content', $('#'+nodeWithMetadata.id)).text() || null;
+
+    return ((node1.id == node2.id) && 
+      (name == nodeWithMetadata.name) &&
+      (costCode == nodeWithMetadata.cost_code)
+      )
+  };
+
   proto.equalHierarchy = function(tree1, tree2) {
-    if ((!tree1 || !tree2) || (tree1.id !== tree2.id)) {
+    if ((!tree1 || !tree2) || !(this.equalAttributes(tree1, tree2))) {
       return false;
     } else {
       if (tree1.children && (tree1.children.length>0)) {
@@ -86,9 +97,9 @@
           return false;
         }
         return tree1.children.every($.proxy(function(child) {
-          var child2 = tree2.children.filter(function(child2) {
-            return (child2.id == child.id);
-          })[0];
+          var child2 = tree2.children.filter($.proxy(function(child2) {
+            return (this.equalAttributes(child2, child));
+          }, this))[0];
           return (this.equalHierarchy(child, child2));
         }, this));
       }
