@@ -1,8 +1,12 @@
+# frozen_string_literal: true
+
 # A message for the event queue.
 # The information in the event describes the current state of a node.
 # Use generate_json to get the data to put on the queue.
 class EventMessage
   attr_reader :node, :user, :event
+
+  ROUTING_KEY = 'aker.events.study-management'
 
   def initialize(params)
     @node = params[:node]
@@ -16,24 +20,22 @@ class EventMessage
   def roles
     r = [
       {
-        role_type: "project",
-        subject_type: "project",
+        role_type: 'project',
+        subject_type: 'project',
         subject_friendly_name: @node.name,
-        subject_uuid: @node.node_uuid,
-      },
+        subject_uuid: @node.node_uuid
+      }
     ]
     parent_node = @node.parent
     if parent_node
       r.push(
-        {
-          role_type: "parent project",
-          subject_type: "project",
-          subject_friendly_name: parent_node.name,
-          subject_uuid: parent_node.node_uuid,
-        }
+        role_type: 'parent project',
+        subject_type: 'project',
+        subject_friendly_name: parent_node.name,
+        subject_uuid: parent_node.node_uuid
       )
     end
-    return r
+    r
   end
 
   def metadata
@@ -45,20 +47,19 @@ class EventMessage
       cost_code: @node.cost_code,
       deactivated_datetime: @node.deactivated_datetime&.utc&.iso8601,
       deactivated_by: @node.deactivated_by,
-      data_release_uuid: @node.data_release_strategy_id,
+      data_release_uuid: @node.data_release_strategy_id
     }
   end
 
   def generate_json
     {
       event_type: "aker.events.project.#{@event}",
-      lims_id: "aker",
+      lims_id: 'aker',
       uuid: @event_uuid,
       timestamp: @timestamp.utc.iso8601,
       user_identifier: @user,
       roles: roles,
-      metadata: metadata,
+      metadata: metadata
     }.to_json
   end
-
 end
