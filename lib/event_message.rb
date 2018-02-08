@@ -6,7 +6,7 @@
 class EventMessage
   attr_reader :node, :user, :event
 
-  ROUTING_KEY = 'aker.events.study-management'
+  ROUTING_KEY = 'aker.events.project'
 
   def initialize(params)
     @node = params[:node]
