@@ -22,18 +22,23 @@ module NodesHelper
 
   # Gets the list of available data release strategies for a user and creates a hash from it where the 
   # key is the name of the strategy, and the value is the uuid.
+  # If the request fails, just return the current option.
   def data_release_strategy_options(selected_option)
-    DataReleaseStrategyClient.find_strategies_by_user(current_user.email).reduce(selected_option) do |memo, strategy|
-      # We remove any previous occur for the same uuid (this will happen when someone changes the name of the)
-      # strategy name in the remote service, so it is different from our cached value in the database
-      memo.select do |k,v| 
-        v == strategy.id 
-      end.tap do |k,v|
-        memo.delete(k)
-      end
+    begin
+      DataReleaseStrategyClient.find_strategies_by_user(current_user.email).reduce(selected_option) do |memo, strategy|
+        # We remove any previous occur for the same uuid (this will happen when someone changes the name of the)
+        # strategy name in the remote service, so it is different from our cached value in the database
+        memo.select do |k,v|
+          v == strategy.id
+        end.tap do |k,v|
+          memo.delete(k)
+        end
 
-      memo[strategy.label_to_display] = strategy.id
-      memo
+        memo[strategy.label_to_display] = strategy.id
+        memo
+      end
+    rescue Faraday::ConnectionFailed
+      return selected_option
     end
   end
 
