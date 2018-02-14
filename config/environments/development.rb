@@ -1,5 +1,7 @@
 Rails.application.configure do
   # Settings specified here will take precedence over those in config/application.rb.
+  # NOTE: This doesn't need to go into staging.rb. nginx will handle it.
+  # config.relative_url_root = '/study'
 
   # In the development environment your application's code is reloaded on
   # every request. This slows down response time but is perfect for development
@@ -45,6 +47,18 @@ Rails.application.configure do
   # Suppress logger output for asset requests.
   config.assets.quiet = true
 
+  config.events = {
+    enabled: false,
+    broker_host: 'localhost',
+    broker_port: '5672',
+    broker_vhost: '/',
+    broker_username: 'guest',
+    broker_password: 'guest',
+    exchange_name: 'aker.events',
+    warehouse_queue_name: 'aker.events.warehouse',
+    notification_queue_name: 'aker.events.notifications'
+  }
+
   # Raises error for missing translations
   # config.action_view.raise_on_missing_translations = true
 
@@ -52,8 +66,25 @@ Rails.application.configure do
   # routes, locales, etc. This feature depends on the listen gem.
   config.file_watcher = ActiveSupport::EventedFileUpdateChecker
   config.fake_ldap = true
-  config.set_url = 'http://localhost:3000/api/v1'
+
   config.jwt_secret_key = 'development'
-  config.jwt_exp_time = 2*60
-  config.jwt_nbf_time = 1*60
+
+  config.default_jwt_user = {
+    email: ENV.fetch('USER', 'user') + '@sanger.ac.uk',
+    groups: ['world']
+  }
+
+  config.login_url = 'http://localhost:9010/login'
+  config.logout_url = 'http://localhost:9010/logout'
+  config.auth_service_url = 'http://localhost:9010'
+
+  config.urls = { 
+                  submission: '',
+                  permissions: '',
+                  sets: '',
+                  projects: '',
+                  work_orders: '' }
+
+  config.billing_facade_url = 'http://localhost:3601'
+  config.data_release_url = 'http://localhost:6600'
 end

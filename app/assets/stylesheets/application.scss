@@ -1,12 +1,19 @@
 @import "bootstrap-sprockets";
-@import "bootstrap";
+@import "paper.min";
 @import "font-awesome-sprockets";
 @import "font-awesome";
 @import "bootstrap-treeview";
 @import "jquery-orgchart";
 @import 'loading_mask_sass';
+@import "selectize";
 
-
+// macOS font fix
+html {
+  -moz-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-font-smoothing: antialiased;
+  font-smoothing: antialiased;
+}
 
 .orgchart .node .title {
   height: initial;
@@ -15,6 +22,244 @@
 
 #tree-hierarchy {
   overflow: scroll;
+  .orgchart {
+    border: 1px solid lightgray;
+  }
+  margin-top: 10px;
+}
 
-  .orgchart { border: 1px solid lightgray;}
+.tree-button {
+  margin-left: 10px;
+}
+
+#reset-button {
+  margin-top: 22px;
+}
+
+.alert-error {
+  @extend .alert-danger;
+}
+
+.alert-alert {
+  @extend .alert-warning;
+}
+
+.alert-notice {
+  @extend .alert-success;
+}
+
+body {
+  background-color: #f4f4f4;
+}
+
+.navbar {
+  border-radius: 0px;
+}
+
+.container-fluid#content, .container#login, .container#content  {
+  margin-top: 20px;
+  padding-bottom: 10px;
+  background-color: white;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+
+.bg-info {
+  background-color: #d9edf7;
+}
+
+h1 {
+  font-size: 40px;
+}
+
+h2 {
+  font-size: 35px;
+}
+
+// Set variables for owned and editable nodes
+$editable-colour: #009e9e;
+$owned-colour: #009933;
+$default-colour: rgb(63, 114, 155);
+
+// remove transparency from default node backgrounds
+.orgchart .node .title {
+  background-color: $default-colour;
+}
+
+// show the nodes owned by the currently logged-in user in a different colour
+.orgchart .owned-by-current-user {
+  .title {
+    background-color: $owned-colour;
+  }
+  .content {
+    border-color: $owned-colour;
+  }
+}
+
+// Highlight notes editable by current user
+.orgchart .editable-by-current-user {
+  .title {
+    background-color: $editable-colour;
+  }
+  .content {
+    border-color: $editable-colour;
+  }
+}
+
+// Solid background colours for spendable nodes
+.orgchart .spendable-by-current-user {
+  .content {
+    color: white;
+    font-weight: bold;
+  }
+  &.node {
+    .content {
+      background-color: $default-colour;
+      border-color: $default-colour;
+    }
+  }
+  &.owned-by-current-user {
+    .content {
+      background-color: $owned-colour;
+      border-color: $owned-colour;
+    }
+  }
+  &.editable-by-current-user {
+    .content {
+      background-color: $editable-colour;
+      border-color: $editable-colour;
+    }
+  }
+}
+// Show the appropriate colours on the node legend
+.node-legend {
+  font-weight: bold;
+  color: white;
+  border-radius: 3px;
+  &#owned {
+    background-color: $owned-colour;
+  }
+  &#editable {
+    background-color: $editable-colour;
+  }
+  padding: 3px;
+}
+
+// Make textbox underlines clearer
+textarea, textarea.form-control, input.form-control, input[type=text], input[type=password], input[type=email], input[type=number], [type=text].form-control, [type=password].form-control, [type=email].form-control, [type=tel].form-control, [contenteditable].form-control {
+    -webkit-box-shadow: inset 0 -2px 0 #ddd;
+    box-shadow: inset 0 -2px 0 #ddd;
+}
+
+.navbar-text {
+  color: #b2dbfb !important;
+}
+
+// Align dropdown menu with "Aker" button when on desktop
+@media only screen and (min-width: 769px)  {
+  .dropdown-menu {
+    margin-left: -14px;
+  }
+}
+
+// Mobile optimisations
+@media only screen and (max-width: 768px)  {
+  .navbar-text {
+    // Add margin to Aker button so it isn't touch the edge of the display on mobile
+    margin: 10px 15px;
+  }
+  .nav {
+    margin: 0px;
+  }
+  .navbar-toggle {
+    margin: 10px 10px 0px;
+  }
+  .navbar-brand {
+    padding: 20px 15px 0px !important;
+  }
+  .btn {
+    margin-bottom: 5px;
+    margin-right: 0px !important;
+  }
+}
+
+// Make navbar text white
+.navbar-text, .navbar-inverse .navbar-nav > li > a {
+  color: white !important;
+}
+
+
+// LOCAL DEVELOPMENT environment
+$development: #441f84;
+// Set colour for Aker button background
+#development.navbar-inverse .navbar-nav > .open > a {
+  background-color: darken($development, 12.5%);
+  &:hover, &:focus {
+    background-color: darken($development, 12.5%);
+  }
+}
+// Navigation bar background colour
+#development {
+  background-color: $development;
+}
+#current-page-development {
+  background-color: darken($development, 12.5%);
+  font-weight: bold;
+}
+
+
+// STAGING environment
+$dev: #1f7a30;
+// Set colour for Aker button background
+#dev.navbar-inverse .navbar-nav > .open > a {
+  background-color: darken($dev, 12.5%);
+  &:hover, &:focus {
+    background-color: darken($dev, 12.5%);
+  }
+}
+// Navigation bar background colour
+#dev {
+  background-color: $dev;
+}
+#current-page-dev {
+  background-color: darken($dev, 12.5%);
+  font-weight: bold;
+}
+
+
+// UAT environment
+$uat: #2196F3;
+// Set colour for Aker button background
+#uat.navbar-inverse .navbar-nav > .open > a {
+  background-color: darken($uat, 12.5%);
+  &:hover, &:focus {
+    background-color: darken($uat, 12.5%);
+  }
+}
+// Navigation bar background colour
+#uat {
+  background-color: $uat;
+}
+#current-page-uat {
+  background-color: darken($uat, 12.5%);
+  font-weight: bold;
+}
+
+
+// PRODUCTION environment
+$production: #2196F3;
+// Set colour for Aker button background
+#production.navbar-inverse .navbar-nav > .open > a {
+  background-color: darken($production, 12.5%);
+  &:hover, &:focus {
+    background-color: darken($production, 12.5%);
+  }
+}
+// Navigation bar background colour
+#production {
+  background-color: $production;
+}
+#current-page-production {
+  background-color: darken($production, 12.5%);
+  font-weight: bold;
 }

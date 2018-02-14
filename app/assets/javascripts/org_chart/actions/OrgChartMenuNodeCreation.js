@@ -40,7 +40,7 @@
         'children': [{ name: newNodeName, relationship: relationship, id: id }]
       });*/
       $('#chart-container').orgchart('addChildren', $node, {
-        'children': [{ name: newNodeName, relationship: relationship, id: id }]
+        'children': [{ name: newNodeName, relationship: relationship, id: id, writable: true }]
       });
     } else {
       // Relationship will always be "has parent, has sibling(s), no children"
@@ -51,11 +51,14 @@
           'siblings': [{
             'name': newNodeName,
             'relationship': relationship,
-            'id': id
+            'id': id,
+            'writable': true
           }]
         }
       );
     }
+    // Reload the tree when a new node is added (to apply HTML styles)
+    this.loadTree();
   };
 
   proto.createNode = function(newName, parentId) {
@@ -64,9 +67,9 @@
             'Accept' : 'application/vnd.api+json',
             'Content-Type' : 'application/vnd.api+json'
         },
-        url : '/api/v1/nodes/',
+        url : Routes.api_v1_nodes_path(),
         type : 'POST',
-        data : JSON.stringify({ data: { type: 'nodes', attributes: { name: newName}, relationships: { parent: { data: { type: 'nodes', id: parentId }}} }})
+        data : JSON.stringify({ data: { type: 'nodes', attributes: { name: newName }, relationships: { parent: { data: { type: 'nodes', id: parentId }}} }})
     }).then(
       $.proxy(this.onCreateNode, this),
       $.proxy(this.onErrorCreateNode, this)

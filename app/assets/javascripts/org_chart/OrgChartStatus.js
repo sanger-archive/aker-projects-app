@@ -7,8 +7,15 @@
 
   var proto = OrgChartStatus.prototype;
 
-  proto.onErrorConnection = function() {
+  proto.onErrorConnection = function(response, codeId, status) {
+    if (response.status===403) {
+      this.onForbidden(response, status);
+    }
     this.resetTree();
+  };
+
+  proto.onForbidden = function(response, status) {
+    alert(status+": "+response.responseJSON.message);
   };
 
   proto.updateChartOnChanges = function() {
@@ -42,6 +49,7 @@
 
   proto.resetTree = function() {
     this.toggleMask(true);
+    $(this).trigger('orgchart.resetTree');
     return this.loadTree().then($.proxy(this.enableTree, this), $.proxy(this.disableTree, this));
   };
 
@@ -66,7 +74,7 @@
 
   proto.keepTreeUpdate = function() {
     var defer = $.Deferred();
-    return $.get('/api/v1/nodes?include=nodes.parent', $.proxy(function(response, status, promise) {
+    return $.get(Routes.api_v1_nodes_path({'include': 'nodes.parent'}), $.proxy(function(response, status, promise) {
       if (this._treeIsDown) {
         return this.resetTree().then($.proxy(function() {
           this._treeIsDown = false;

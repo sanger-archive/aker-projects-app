@@ -1,6 +1,23 @@
-<%= bootstrap_form_for(@node, remote: true, accept: :json) do |f| %>
-	<%= render "node_fields", f: f %>
-	<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-	<%= hidden_field_tag(:source, 'tree') %>
-  <%= f.submit("Update", class: 'btn btn-primary') %>
-<% end %>
+<div class="modal-header">
+  <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+  <h4 class="modal-title" id="myModalLabel"><%= check_write_permission_for_node(@node) ? "Edit" : "View" %> Node</h4>
+  <% if @node.owner_email %>
+    <b>Owned by <%= @node.owner_email %></b>
+  <% end %>
+</div>
+
+<div class="modal-body">
+  <% if !check_write_permission_for_node(@node) %>
+    <div class="alert alert-warning" role="alert">
+      You don't have permission to edit this node.
+    </div>
+  <% end %>
+  <%= bootstrap_form_for(@nodeform, remote: true, url: node_path(@node), method: :put, accept: :json,) do |f| %>
+    <div class="field">
+      <%= render "node_form", f: f, write_permission: check_write_permission_for_node(@node), edit_permissions: can_edit_permission_for(@node) %>
+      <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      <%= hidden_field_tag(:source, 'tree') %>
+      <%= f.submit("Update", class: 'btn btn-primary', disabled: !check_write_permission_for_node(@node)) %>
+    </div>
+  <% end %>
+</div>

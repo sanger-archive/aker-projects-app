@@ -1,40 +1,43 @@
-class NodesController < ApplicationController
-
-  include AkerAuthenticationGem::AuthController
+  class NodesController < ApplicationController
   include AkerPermissionControllerConfig
 
-  skip_authorization_check
-
   before_action :current_node, except: :create
-  before_action :set_child, only: [:show, :list, :tree]
+  before_action :set_child, only: [:show, :tree]
 
   def show
-    render "list"
+    authorize! :read, Node
+    render :tree
   end
 
   def index
-    render "list"
-  end
-
-  def list
+    render :tree
   end
 
   def tree
+    authorize! :read, Node
   end
 
   def create
-    @node = Node.new(node_params)
+    authorize! :create, Node, message: 'You are not authorized to create this node.'
+    # You must have write permission on the parent node to create
+    # Everyone is allowed to create a node under root
+    authorize! :write, parent_node
 
-    if @node.save
-      flash[:success] = "Node created"
-      @node.set_collection if @node.level==2
+    @node_form = NodeForm.new(node_form_params.merge(owner_email: current_user.email, user_email: current_user.email))
+
+    if @node_form.save
+      flash[:success] = 'Node created'
     else
-      flash[:danger] = "Failed to create node"
+      flash[:danger] = 'Failed to create node'
     end
-    redirect_to node_path(@node.parent_id)
+    redirect_to node_path(@node_form.parent_id)
   end
 
   def edit
+    authorize! :read, current_node
+
+    set_form
+
     respond_to do |format|
       format.html
       format.js { render template: 'nodes/modal' }
@@ -42,41 +45,66 @@ class NodesController < ApplicationController
   end
 
   def update
+    authorize! :write, current_node
+
     respond_to do |format|
-      if @node.update_attributes(node_params)
-        format.html { redirect_to node_path(@node.parent_id), flash: { success: "Node updated" }}
+      @node_form = NodeForm.new(node_form_params.merge(user_email: current_user.email))
+      if @node_form.save
+        format.html { redirect_to node_path(@node.parent_id), flash: { success: 'Node updated' } }
         format.json { render json: @node, status: :ok }
       else
-        format.html { redirect_to edit_node_path(@node.id), flash: { danger: "Failed to update node" }}
-        format.json { render json: @node.errors, status: :unprocessable_entity }
+        format.html {
+          flash[:error] = @node_form.error_messages.full_messages
+          redirect_to edit_node_path(@node.id)
+        }
+        format.json { render json: @node_form.error_messages, status: :unprocessable_entity }
       end
     end
   end
 
   def destroy
+    authorize! :write, current_node, message: 'You are not authorized to delete this node.'
+
     @parent_id = @node.parent_id
 
-    if @node.deactivate(current_user)
-      flash[:success] = "Node deleted"
-      redirect_to node_path(@parent_id)
+    if @node.deactivate(current_user.email)
+      flash[:success] = 'Node deleted'
     else
-      flash[:danger] = @node.errors.empty? ? "This node cannot be deleted." : @node.errors.full_messages.join(" ")
-      redirect_to node_path(@parent_id)
+      flash[:danger] = @node.errors.empty? ? 'This node cannot be deleted.' : @node.errors.full_messages.join(' ')
     end
+    redirect_to node_path(@parent_id)
   end
+
+  helper_method :check_write_permission_for_node, :jwt_provided?, :can_edit_permission_for
 
   private
 
+  def set_form
+    @nodeform = NodeForm.from_node(@node, current_user.email)
+  end
+
   def set_child
-    @child = Node.new(parent: @node)
+    @child = NodeForm.new(parent_id: @node.id, user_email: current_user.email)
   end
 
   def current_node
     @node = (params[:id] && Node.find_by_id(params[:id])) || Node.root
   end
 
-  def node_params
-    params.require(:node).permit(:name, :parent_id, :description, :cost_code)
+  def parent_node
+    Node.find_by_id(node_form_params[:parent_id])
+  end
+
+  def node_form_params
+    params.require(:node_form).permit(NodeForm::ATTRIBUTES)
+  end
+
+  def check_write_permission_for_node(node)
+    current_user && Ability.new(current_user).can?(:write, node)
+  end
+
+  def can_edit_permission_for(node)
+    check_write_permission_for_node(node) && !node.is_subproject?
   end
 
 end

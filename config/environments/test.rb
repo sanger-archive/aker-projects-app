@@ -40,11 +40,28 @@ Rails.application.configure do
   # Raises error for missing translations
   # config.action_view.raise_on_missing_translations = true
 
-  config.set_url = 'http://localhost:3000/api/v1/'
+  config.events = {
+    enabled: false,
+    broker_host: 'localhost',
+    broker_port: '5672',
+    broker_vhost: '/',
+    broker_username: 'guest',
+    broker_password: 'guest',
+    exchange_name: 'aker.events',
+    warehouse_queue_name: 'aker.events.warehouse',
+    notification_queue_name: 'aker.events.notifications'
+  }
 
   config.fake_ldap = true
   config.jwt_secret_key = 'test'
-  config.jwt_exp_time = 2*60
-  config.jwt_nbf_time = 1*60
 
+  config.login_url = 'login_url'
+  config.logout_url = 'logout_url'
+
+  config.billing_facade_url = 'http://some-server'
+  config.urls = { submission: '',
+                  permissions: '',
+                  sets: '',
+                  projects: '',
+                  work_orders: '' }
 end

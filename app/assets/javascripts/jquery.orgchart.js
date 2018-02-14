@@ -30,7 +30,6 @@
       'exportButton': false,
       'exportFilename': 'OrgChart',
       'exportFileextension': 'png',
-      'parentNodeSymbol': 'fa-users',
       'draggable': false,
       'direction': 't2b',
       'pan': false,
@@ -644,9 +643,14 @@
         $nodeDiv.append('<i class="edge horizontalEdge rightEdge fa"></i>' +
           '<i class="edge horizontalEdge leftEdge fa"></i>');
       }
+      if (nodeData.node_type == "project") {
+        $nodeDiv.children('.title').prepend('<i class="fa fa-folder-open symbol"></i>');
+      } else if (nodeData.node_type == "sub-project") {
+        $nodeDiv.children('.title').prepend('<i class="fa fa-file-text symbol"></i>');
+      }
+      // Disable the bottom arrow if the node has no children
       if(Number(flags.substr(2,1))) {
-        $nodeDiv.append('<i class="edge verticalEdge bottomEdge fa"></i>')
-          .children('.title').prepend('<i class="fa '+ opts.parentNodeSymbol + ' symbol"></i>');
+        $nodeDiv.append('<i class="edge verticalEdge bottomEdge fa"></i>');
       }
     }
 
@@ -992,7 +996,7 @@
         }
       })
       .fail(function() {
-        console.log('Failed to creat node')
+        console.log('Failed to create node')
       });
     }
     // Construct the inferior nodes and connectiong lines
@@ -1054,9 +1058,9 @@
         if (!$node.children('.bottomEdge').length) {
           $node.append('<i class="edge verticalEdge bottomEdge fa"></i>');
         }
-        if (!$node.find('.symbol').length) {
-          $node.children('.title').prepend('<i class="fa '+ opts.parentNodeSymbol + ' symbol"></i>');
-        }
+        // if (!$node.find('.symbol').length) {
+        //   $node.children('.title').prepend('<i class="fa fa-folder-open symbol"></i>');
+        // }
         showChildren($node);
       }
     });

@@ -1,4 +1,12 @@
+# frozen_string_literal: true
+
 source 'https://rubygems.org'
+
+# Force git gems to use secure HTTPS
+git_source(:github) do |repo_name|
+  repo_name = "#{repo_name}/#{repo_name}" unless repo_name.include?('/')
+  "https://github.com/#{repo_name}.git"
+end
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'rails', '~> 5.0.0', '>= 5.0.0.1'
@@ -7,16 +15,19 @@ gem 'puma', '~> 3.0'
 # Use SCSS for stylesheets
 gem 'sass-rails', '~> 5.0'
 # Use Uglifier as compressor for JavaScript assets
-gem 'uglifier', '>= 1.3.0'
+gem 'uglifier', '~> 3.2'
 # Use CoffeeScript for .coffee assets and views
 gem 'coffee-rails', '~> 4.2'
 # See https://github.com/rails/execjs#readme for more supported runtimes
 # gem 'therubyracer', platforms: :ruby
 
-#gem 'aker_authentication_gem', :github => 'emrojo/aker-authentication'
-gem 'aker_credentials_gem', :github => 'sanger/aker-credentials'
-gem 'aker_authentication_gem', :github => 'sanger/aker-authentication'
-gem 'aker_permission_gem', :github => 'sanger/aker-permission'
+gem 'uuid', '~> 2.3'
+gem 'active_model_serializers', '~> 0.10'
+gem 'bunny', '= 0.9.0.pre10'
+
+gem 'aker_credentials_gem', github: 'sanger/aker-credentials'
+gem 'aker_permission_gem', github: 'sanger/aker-permission'
+gem 'aker-billing-facade-client', github: 'sanger/aker-billing-facade-client'
 
 # Use jquery as the JavaScript library
 gem 'jquery-rails'
@@ -33,13 +44,11 @@ gem 'jbuilder', '~> 2.5'
 # gem 'capistrano-rails', group: :development
 
 gem 'bootstrap_form'
-gem 'active_model_serializers'
 gem 'zipkin-tracer'
 gem 'loading_mask'
+gem 'js-routes'
 
 gem 'json_api_client', github: 'sanger/json_api_client'
-
-gem 'aker-set-client', :github => 'sanger/aker-set-client'
 
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
@@ -62,8 +71,8 @@ gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
 
 gem 'bootstrap-sass', '~> 3.3.6'
 gem 'font-awesome-sass'
-gem 'rubocop', '~> 0.41.2', require: false
-gem 'pg'
+gem 'rubocop', '~> 0.52', require: false
+gem 'pg', '~> 0.18' # pg version 1.0.0 is not compatible with Rails 5.1.4
 gem 'jsonapi-resources', '~> 0.8'
 gem 'therubyracer'
 
@@ -72,9 +81,11 @@ group :development, :test do
   gem 'launchy'
   gem 'capybara'
   gem 'poltergeist'
-  gem 'factory_girl_rails'
+  gem 'factory_bot_rails'
   gem 'database_cleaner'
   gem 'json-schema'
+  gem 'brakeman', require: false
+  gem 'timecop'
 end
 
 gem 'simplecov', :require => false, :group => :test

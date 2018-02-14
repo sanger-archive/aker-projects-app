@@ -10,57 +10,58 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170605085957) do
+ActiveRecord::Schema.define(version: 20180119101526) do
 
-  create_table "collections", force: :cascade do |t|
-    t.string   "set_id"
-    t.string   "collector_type"
-    t.integer  "collector_id"
-    t.datetime "created_at",     null: false
-    t.datetime "updated_at",     null: false
-    t.index ["collector_type", "collector_id"], name: "index_collections_on_collector_type_and_collector_id"
+  # These are extensions that must be enabled in order to support this database
+  enable_extension "plpgsql"
+  enable_extension "citext"
+  enable_extension "uuid-ossp"
+
+  create_table "data_release_strategies", id: :uuid, default: -> { "uuid_generate_v4()" }, force: :cascade do |t|
+    t.string   "name"
+    t.string   "study_code"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["id"], name: "index_data_release_strategies_on_id", unique: true, using: :btree
   end
 
   create_table "nodes", force: :cascade do |t|
-    t.string   "name"
+    t.citext   "name",                     null: false
     t.integer  "parent_id"
-    t.datetime "created_at",           null: false
-    t.datetime "updated_at",           null: false
+    t.datetime "created_at",               null: false
+    t.datetime "updated_at",               null: false
     t.text     "description"
     t.string   "cost_code"
-    t.integer  "deactivated_by_id"
     t.datetime "deactivated_datetime"
     t.string   "node_uuid"
-    t.index ["cost_code"], name: "index_nodes_on_cost_code"
-    t.index ["deactivated_by_id"], name: "index_nodes_on_deactivated_by_id"
-    t.index ["name"], name: "index_nodes_on_name"
-    t.index ["parent_id"], name: "index_nodes_on_parent_id"
+    t.citext   "owner_email",              null: false
+    t.citext   "deactivated_by"
+    t.uuid     "data_release_strategy_id"
+    t.index ["cost_code"], name: "index_nodes_on_cost_code", using: :btree
+    t.index ["name"], name: "index_nodes_on_name", using: :btree
+    t.index ["owner_email"], name: "index_nodes_on_owner_email", using: :btree
+    t.index ["parent_id"], name: "index_nodes_on_parent_id", using: :btree
   end
 
   create_table "permissions", force: :cascade do |t|
-    t.string   "permitted",                       null: false
-    t.boolean  "r",               default: false, null: false
-    t.boolean  "w",               default: false, null: false
-    t.boolean  "x",               default: false, null: false
-    t.string   "accessible_type",                 null: false
-    t.integer  "accessible_id",                   null: false
-    t.datetime "created_at",                      null: false
-    t.datetime "updated_at",                      null: false
-    t.index ["accessible_type", "accessible_id"], name: "index_permissions_on_accessible_type_and_accessible_id"
-    t.index ["permitted"], name: "index_permissions_on_permitted"
+    t.citext   "permitted",       null: false
+    t.string   "permission_type", null: false
+    t.string   "accessible_type", null: false
+    t.integer  "accessible_id",   null: false
+    t.datetime "created_at",      null: false
+    t.datetime "updated_at",      null: false
+    t.index ["accessible_type", "accessible_id"], name: "index_permissions_on_accessible_type_and_accessible_id", using: :btree
+    t.index ["permitted", "permission_type", "accessible_id", "accessible_type"], name: "index_permissions_on_various", unique: true, using: :btree
+    t.index ["permitted"], name: "index_permissions_on_permitted", using: :btree
   end
 
-  create_table "users", force: :cascade do |t|
-    t.string   "email",               default: "", null: false
-    t.datetime "remember_created_at"
-    t.integer  "sign_in_count",       default: 0,  null: false
-    t.datetime "current_sign_in_at"
-    t.datetime "last_sign_in_at"
-    t.string   "current_sign_in_ip"
-    t.string   "last_sign_in_ip"
-    t.datetime "created_at",                       null: false
-    t.datetime "updated_at",                       null: false
-    t.index ["email"], name: "index_users_on_email", unique: true
+  create_table "tree_layouts", force: :cascade do |t|
+    t.citext   "user_id",    null: false
+    t.text     "layout"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_tree_layouts_on_user_id", unique: true, using: :btree
   end
 
+  add_foreign_key "nodes", "nodes", column: "parent_id"
 end

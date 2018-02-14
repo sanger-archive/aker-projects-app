@@ -2,4 +2,8 @@
 
 require_relative 'config/environment'
 
-run Rails.application
+# Use config.app_mount_dir only if it's been set to something other than an
+# empty string. Otherwise, use default of /
+map Rails.application.config.relative_url_root || '/' do
+  run Rails.application
+end

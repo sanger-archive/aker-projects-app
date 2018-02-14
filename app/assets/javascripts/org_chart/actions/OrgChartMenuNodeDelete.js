@@ -31,7 +31,7 @@
             'Accept' : 'application/vnd.api+json',
             'Content-Type' : 'application/vnd.api+json'
         },
-        url : '/api/v1/nodes/'+id,
+        url : Routes.api_v1_node_path(id),
         type : 'DELETE'
     }).then(
       $.proxy(this.onDeleteNode, this),
