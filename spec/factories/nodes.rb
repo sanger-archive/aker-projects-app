@@ -1,4 +1,4 @@
-FactoryGirl.define do
+FactoryBot.define do
   factory :node do
     sequence(:name) { |n| "Node #{n}" }
     cost_code nil
