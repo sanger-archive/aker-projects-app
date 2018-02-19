@@ -24,6 +24,12 @@ GIT
       cancancan
 
 GIT
+  remote: https://github.com/sanger/aker-shared-navbar.git
+  revision: aa0ef2eb81d4bea961d903f5e9e2cb8192a0f545
+  specs:
+    aker_shared_navbar (0.1.1)
+
+GIT
   remote: https://github.com/sanger/json_api_client.git
   revision: b163f6f4b8ec2db7c5588edcd992f1d2d9c7c4d6
   specs:
@@ -373,6 +379,7 @@ DEPENDENCIES
   aker-billing-facade-client!
   aker_credentials_gem!
   aker_permission_gem!
+  aker_shared_navbar!
   bootstrap-sass (~> 3.3.6)
   bootstrap_form
   brakeman
