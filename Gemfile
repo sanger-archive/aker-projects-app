@@ -9,7 +9,7 @@ git_source(:github) do |repo_name|
 end
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
-gem 'rails', '~> 5.0.0', '>= 5.0.0.1'
+gem 'rails', '~> 5.1'#, '>= 5.0.0.1'
 # Use Puma as the app server
 gem 'puma', '~> 3.0'
 # Use SCSS for stylesheets
@@ -24,6 +24,7 @@ gem 'coffee-rails', '~> 4.2'
 gem 'uuid', '~> 2.3'
 gem 'active_model_serializers', '~> 0.10'
 gem 'bunny', '= 0.9.0.pre10'
+
 
 gem 'aker_credentials_gem', github: 'sanger/aker-credentials'
 gem 'aker_permission_gem', github: 'sanger/aker-permission'
@@ -57,6 +58,11 @@ group :development, :test do
   gem 'sqlite3'
 end
 
+group :development, :test do
+  gem "teaspoon-mocha"
+  gem "phantomjs"
+end
+
 group :development do
   # Access an IRB console on exception pages or by using <%= console %> anywhere in the code.
   gem 'web-console'
@@ -73,7 +79,7 @@ gem 'bootstrap-sass', '~> 3.3.6'
 gem 'font-awesome-sass'
 gem 'rubocop', '~> 0.52', require: false
 gem 'pg', '~> 0.18' # pg version 1.0.0 is not compatible with Rails 5.1.4
-gem 'jsonapi-resources', '~> 0.8'
+gem 'jsonapi-resources', '~> 0.9'
 gem 'therubyracer'
 
 group :development, :test do
