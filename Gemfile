@@ -28,6 +28,7 @@ gem 'bunny', '= 0.9.0.pre10'
 gem 'aker_credentials_gem', github: 'sanger/aker-credentials'
 gem 'aker_permission_gem', github: 'sanger/aker-permission'
 gem 'aker-billing-facade-client', github: 'sanger/aker-billing-facade-client'
+gem 'aker_shared_navbar', github: 'sanger/aker-shared-navbar'
 
 # Use jquery as the JavaScript library
 gem 'jquery-rails'
