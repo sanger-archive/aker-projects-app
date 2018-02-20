@@ -59,6 +59,9 @@ group :development, :test do
 end
 
 group :development, :test do
+  # Latest version of teaspoon (1.1.5) has a bug when executing teaspoon hooks that breaks the tests by generating Http - 500 on
+  # hookup response from the server. This issue is solved only in the master branch, so I'm selecting master until a new 
+  # version of teaspoon is released.
   gem "teaspoon", github: 'jejacks0n/teaspoon', branch: 'master'
   gem "teaspoon-mocha"
   gem "phantomjs"
