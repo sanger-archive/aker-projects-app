@@ -27,14 +27,20 @@
     this.intervalId = setInterval($.proxy(this.keepTreeUpdate, this), 10000);
   };
 
+  proto.onReceiveWebSocketsMessage = function(response) {
+    if (response.notifyChanges === true) {
+      this.keepTreeUpdate();
+    }
+  };
+
+  proto.onConnectWebSocket = function() {
+    this.resetTree();
+  };
+
   proto.websocketsConnect = function() {
     return App.cable.subscriptions.create({ channel: "TreeStatusChannel" }, {
-      connected: $.proxy(this.resetTree, this),
-      received: $.proxy(function(response) {
-        if (response.notifyChanges === true) {
-          this.keepTreeUpdate();
-        }
-      }, this)
+      connected: $.proxy(this.onConnectWebSocket, this),
+      received: $.proxy(this.onReceiveWebSocketsMessage, this)
     });
   };
 

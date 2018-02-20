@@ -66,6 +66,10 @@ Teaspoon.configure do |config|
     # Hooks allow you to use `Teaspoon.hook("fixtures")` before, after, or during your spec run. This will make a
     # synchronous Ajax request to the server that will call all of the blocks you've defined for that hook name.
     #suite.hook :fixtures, &proc{}
+    suite.hook :cable_message do |args|
+      ActionCable.server.broadcast(args[0], args[1].permit(:notifyChanges).to_h.symbolize_keys)
+    end
+
 
     # Determine whether specs loaded into the test harness should be embedded as individual script tags or concatenated
     # into a single file. Similar to Rails' asset `debug: true` and `config.assets.debug = true` options. By default, 
@@ -122,7 +126,7 @@ Teaspoon.configure do |config|
   #config.server_host = nil
 
   # Specify a port to run on a specific port, otherwise Teaspoon will use a random available port.
-  config.server_port = 4413
+  #config.server_port = 4413
 
   # Timeout for starting the server in seconds. If your server is slow to start you may have to bump this, or you may
   # want to lower this if you know it shouldn't take long to start.

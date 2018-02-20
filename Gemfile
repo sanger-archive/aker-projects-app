@@ -59,6 +59,7 @@ group :development, :test do
 end
 
 group :development, :test do
+  gem "teaspoon", github: 'jejacks0n/teaspoon', branch: 'master'
   gem "teaspoon-mocha"
   gem "phantomjs"
 end
