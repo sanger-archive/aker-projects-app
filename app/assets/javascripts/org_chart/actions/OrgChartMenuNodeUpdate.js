@@ -16,7 +16,18 @@
     // and load it into the modal body
     $('#editNodeModal').modal('show');
 
-    $('div.modal-content', '#editNodeModal').load(url+ '/edit.js', $.proxy(this.onLoadUpdateNodeForm, this))
+    // It will wait 10 seconds to get the form from the server; otherwise it will display an error message
+    $.ajax(url+ '/edit.js', {
+      timeout: 10000, 
+      dataType: 'html',
+      success: $.proxy(function(response) {
+        $('div.modal-content', '#editNodeModal').html(response);
+        this.onLoadUpdateNodeForm();
+      }, this), 
+      error: function() {
+        $('div.modal-body', '#editNodeModal').html('There was an error while trying to obtain the form. Please contact the administrator');
+      }
+    });
   };
 
   proto.onLoadUpdateNodeForm = function(response, status, xhr) {
