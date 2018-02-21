@@ -34,6 +34,7 @@
   };
 
   proto.onConnectWebSocket = function() {
+    this.closeAllModals();
     this.resetTree();
   };
 
@@ -71,6 +72,10 @@
       $('#reconnect').on('click', $.proxy(this.resetTree, this));
     }
     this._treeIsDown=true;
+  };
+
+  proto.closeAllModals = function() {
+    $('.modal').modal('hide');
   };
 
   proto.enableTree = function() {
