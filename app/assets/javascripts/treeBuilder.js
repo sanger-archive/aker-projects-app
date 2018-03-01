@@ -26,7 +26,7 @@
       expandedIds = [];
     }
     return parentNodes.sort(function(a,b) {
-      return (Date.parse(a["attributes"]['updated-at']) - Date.parse(b["attributes"]['updated-at']));
+      return (Date.parse(a["attributes"]['created-at']) - Date.parse(b["attributes"]['created-at']));
     }).reduce(function(memo, parent) {
       var classes = ""
       // All references to methods in node_resource.rb must use - instead of _
