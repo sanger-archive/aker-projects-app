@@ -26,8 +26,8 @@ describe("TreeBuilder", function() {
     node2.attributes['updated-at'] = "2018-03-02T11:44:44.829Z";
     node3.attributes['updated-at'] = "2018-03-02T11:45:44.829Z";
 
-    var tree = TreeBuilder.createFrom(json[0].data, true)    
-    var list = tree[0].children[0].children.map(function(node) { return node.id; })
+    var tree = TreeBuilder.createFrom(json[0].data, true);
+    var list = tree[0].children[0].children.map(function(node) { return node.id; });
     var list2 = [node2, node3, node1].map(function(node) { return node.id; });
     expect(list).to.eql(list2);
   })
