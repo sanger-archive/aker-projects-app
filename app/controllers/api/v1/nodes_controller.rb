@@ -3,6 +3,7 @@ module Api
     class NodesController < JSONAPI::ResourceController
       include JWTCredentials
   	  include AkerPermissionControllerConfig
+      include WebSocketsNotification
 
       skip_authorization_check only: [:index, :show]
 
@@ -12,23 +13,27 @@ module Api
         authorize! :create, Node, message: 'You are not authorized to create this node.'
         authorize! :write, parent_node, message: 'You are not authorized to create children nodes under the selected parent node'
         super
+        notify_changes_with_websockets
       end
 
       def update
         authorize! :write, current_node, message: 'You are not authorized to update this node'
         super
+        notify_changes_with_websockets
       end
 
       def destroy
         authorize! :write, current_node, message: 'You are not authorized to delete this node.'
         @node.deactivate(current_user.email)
         super
+        notify_changes_with_websockets
       end
 
       def update_relationship
         authorize! :write, update_current_node, message: 'You are not authorized to update this node.'
         authorize! :write, update_parent_node, message: 'You are not authorized to update children nodes under the selected parent node'
         super
+        notify_changes_with_websockets
       end
 
       def context
