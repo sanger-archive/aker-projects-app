@@ -50,8 +50,14 @@ group :development, :test do
   gem 'factory_bot_rails'
   gem 'json-schema'
   gem 'launchy'
+  gem 'phantomjs'
   gem 'poltergeist'
   gem 'rspec-rails', '~> 3.4'
+  # Latest version of teaspoon (1.1.5) has a bug when executing teaspoon hooks that breaks the
+  # tests by generating Http - 500 on hookup response from the server. This issue is solved only in
+  # the master branch, so I'm selecting master until a new version of teaspoon is released.
+  gem 'teaspoon', github: 'jejacks0n/teaspoon', branch: 'master'
+  gem 'teaspoon-mocha'
   gem 'timecop'
 end
 

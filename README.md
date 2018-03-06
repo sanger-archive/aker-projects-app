@@ -14,3 +14,5 @@
 ## Running tests
 * Before running tests, make sure that the test database has been fully migrated: `bin/rails db:migrate RAILS_ENV=test`
 To execute the current tests, run: `bundle exec rspec`
+
+To run the Javascript tests, execute: `teaspoon`
