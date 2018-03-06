@@ -59,7 +59,7 @@ Rails.application.configure do
     broker_username: 'study_management',
     broker_password: 'password',
     vhost: 'aker',
-    exchange: 'aker.events'
+    exchange: 'aker.events.tx'
   }
 
   # Raises error for missing translations
