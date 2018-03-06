@@ -39,7 +39,9 @@
   };
 
   proto.websocketsConnect = function() {
-    return App.cable.subscriptions.create({ channel: "TreeStatusChannel" }, {
+    var consumer=ActionCable.createConsumer();
+    
+    return consumer.subscriptions.create({ channel: "TreeStatusChannel" }, {
       connected: $.proxy(this.onConnectWebSocket, this),
       received: $.proxy(this.onReceiveWebSocketsMessage, this)
     });
