@@ -30,6 +30,10 @@ gem 'turbolinks', '~> 5' # Turbolinks makes navigating your web application fast
 gem 'uglifier', '~> 3.2' # Use Uglifier as compressor for JavaScript assets
 gem 'uuid', '~> 2.3'
 gem 'zipkin-tracer'
+gem 'lograge'
+gem 'logstash-event'
+gem 'logstash-logger'
+gem 'request_store'
 
 ###
 # Sanger gems
