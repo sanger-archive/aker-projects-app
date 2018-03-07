@@ -1,5 +1,10 @@
 Rails.application.configure do
   # Settings specified here will take precedence over those in config/application.rb.
+
+  # Use the lowest log level to ensure availability of diagnostic information
+  # when problems arise.
+  config.log_level = :debug
+
   # NOTE: This doesn't need to go into staging.rb. nginx will handle it.
   # config.relative_url_root = '/study'
 
@@ -51,12 +56,10 @@ Rails.application.configure do
     enabled: false,
     broker_host: 'localhost',
     broker_port: '5672',
-    broker_vhost: '/',
-    broker_username: 'guest',
-    broker_password: 'guest',
-    exchange_name: 'aker.events',
-    warehouse_queue_name: 'aker.events.warehouse',
-    notification_queue_name: 'aker.events.notifications'
+    broker_username: 'study_management',
+    broker_password: 'password',
+    vhost: 'aker',
+    exchange: 'aker.events.tx'
   }
 
   # Raises error for missing translations
@@ -69,21 +72,20 @@ Rails.application.configure do
 
   config.jwt_secret_key = 'development'
 
-  config.default_jwt_user = {
-    email: ENV.fetch('USER', 'user') + '@sanger.ac.uk',
-    groups: ['world']
-  }
+  config.default_jwt_user = { email: ENV.fetch('USER', 'user') + '@sanger.ac.uk',
+                              groups: ['world'] }
 
   config.login_url = 'http://localhost:9010/login'
   config.logout_url = 'http://localhost:9010/logout'
   config.auth_service_url = 'http://localhost:9010'
 
-  config.urls = { 
-                  submission: '',
-                  permissions: '',
-                  sets: '',
-                  projects: '',
-                  work_orders: '' }
+  config.urls = {
+    submission: '',
+    permissions: '',
+    sets: '',
+    projects: '',
+    work_orders: ''
+  }
 
   config.billing_facade_url = 'http://localhost:3601'
   config.data_release_url = 'http://localhost:6600'
