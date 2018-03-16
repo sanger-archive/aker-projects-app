@@ -18,9 +18,42 @@
     alert(status+": "+response.responseJSON.message);
   };
 
-  proto.updateChartOnChanges = function() {
+   proto.updateChartOnChanges = function() {
+    this.websocketsUpdateStart();
+    return;
+  };
+
+  proto.ajaxUpdateStart = function() {
     this.intervalId = setInterval($.proxy(this.keepTreeUpdate, this), 10000);
   };
+
+  proto.onReceiveWebSocketsMessage = function(response) {
+    if (response.notifyChanges === true) {
+      this.keepTreeUpdate();
+    }
+  };
+
+  proto.onConnectWebSocket = function() {
+    this.closeAllModals();
+    this.resetTree();
+  };
+
+  proto.websocketsConnect = function() {
+    var consumer=ActionCable.createConsumer();
+    
+    return consumer.subscriptions.create({ channel: "TreeStatusChannel" }, {
+      connected: $.proxy(this.onConnectWebSocket, this),
+      received: $.proxy(this.onReceiveWebSocketsMessage, this)
+    });
+  };
+
+  proto.websocketsUpdateStart = function() {
+    if (!this._websocketsConnectionStablished) {
+      this._websocketsConnectionStablished = this.websocketsConnect();
+    }
+    return this._websocketsConnectionStablished;
+  };
+
 
   proto.stopUpdating = function() {
     clearInterval(this.intervalId);
@@ -43,6 +76,10 @@
     this._treeIsDown=true;
   };
 
+  proto.closeAllModals = function() {
+    $('.modal').modal('hide');
+  };
+
   proto.enableTree = function() {
     this.toggleMask(false);
   };
@@ -53,8 +90,19 @@
     return this.loadTree().then($.proxy(this.enableTree, this), $.proxy(this.disableTree, this));
   };
 
+  proto.equalAttributes = function(node1, node2) {
+    var nodeWithMetadata = (typeof node1.name === 'undefined') ? node2 : node1;
+    var name = $('.title', $('#'+nodeWithMetadata.id)).text();
+    var costCode = $('.content', $('#'+nodeWithMetadata.id)).text() || null;
+
+    return ((node1.id == node2.id) && 
+      (name == nodeWithMetadata.name) &&
+      (costCode == nodeWithMetadata.cost_code)
+      )
+  };
+
   proto.equalHierarchy = function(tree1, tree2) {
-    if ((!tree1 || !tree2) || (tree1.id !== tree2.id)) {
+    if ((!tree1 || !tree2) || !(this.equalAttributes(tree1, tree2))) {
       return false;
     } else {
       if (tree1.children && (tree1.children.length>0)) {
@@ -62,9 +110,9 @@
           return false;
         }
         return tree1.children.every($.proxy(function(child) {
-          var child2 = tree2.children.filter(function(child2) {
-            return (child2.id == child.id);
-          })[0];
+          var child2 = tree2.children.filter($.proxy(function(child2) {
+            return (this.equalAttributes(child2, child));
+          }, this))[0];
           return (this.equalHierarchy(child, child2));
         }, this));
       }

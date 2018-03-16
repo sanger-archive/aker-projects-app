@@ -1,17 +1,31 @@
+# frozen_string_literal: true
+
 require 'rails_helper'
 
 RSpec.describe EventMessage do
   let(:root) { build(:node, id: 1, name: 'root', node_uuid: SecureRandom.uuid) }
   let(:project) do
-    build(:node, id: 2, name: 'proj', description: 'A node with a cost code', cost_code: 'S1234',
-          node_uuid: SecureRandom.uuid, parent: root, data_release_strategy_id: SecureRandom.uuid)
+    build(:node,
+          id: 2,
+          name: 'proj',
+          description: 'A node with a cost code',
+          cost_code: 'S1234',
+          node_uuid: SecureRandom.uuid,
+          parent: root,
+          data_release_strategy_id: SecureRandom.uuid)
   end
   let(:new_node) do
     build(:node, id: 3, name: 'newproj', node_uuid: SecureRandom.uuid, parent: root)
   end
   let(:deactivated_node) do
-    build(:node, id: 4, name: 'deac', description: 'A deactivated node', node_uuid: SecureRandom.uuid,
-      parent: root, deactivated_by: 'arnold', deactivated_datetime: DateTime.new(2017, 11, 5, 9, 30))
+    build(:node,
+          id: 4,
+          name: 'deac',
+          description: 'A deactivated node',
+          node_uuid: SecureRandom.uuid,
+          parent: root,
+          deactivated_by: 'arnold',
+          deactivated_datetime: Time.zone.local(2017, 11, 5, 9, 30))
   end
   let(:trace_id) { 'my_trace_id' }
   let(:user) { 'someone@somewhere' }
@@ -35,7 +49,7 @@ RSpec.describe EventMessage do
 
     shared_examples_for 'event message json' do
       it 'should include the event type' do
-        expect(json[:event_type]).to eq('aker.events.project.'+event)
+        expect(json[:event_type]).to eq('aker.events.project.' + event)
       end
       it 'should include the lims id' do
         expect(json[:lims_id]).to eq('aker')
@@ -52,24 +66,24 @@ RSpec.describe EventMessage do
       it 'should include the appropriate roles' do
         expect(roles.size).to eq(node.parent ? 2 : 1)
         proj_role = roles[0]
-        expect(proj_role).to eq({
+        expect(proj_role).to eq(
           role_type: 'project',
           subject_type: 'project',
           subject_friendly_name: node.name,
-          subject_uuid: node.node_uuid,
-        })
+          subject_uuid: node.node_uuid
+        )
         if node.parent
           parent_role = roles[1]
-          expect(parent_role).to eq({
+          expect(parent_role).to eq(
             role_type: 'parent project',
             subject_type: 'project',
             subject_friendly_name: node.parent.name,
-            subject_uuid: node.parent.node_uuid,
-          })
+            subject_uuid: node.parent.node_uuid
+          )
         end
       end
       it 'should include the appropriate metadata' do
-        expect(metadata).to eq({
+        expect(metadata).to eq(
           node_id: node.id,
           zipkin_trace_id: trace_id,
           owner_email: node.owner_email,
@@ -77,8 +91,8 @@ RSpec.describe EventMessage do
           cost_code: node.cost_code,
           deactivated_datetime: node.deactivated_datetime&.utc&.iso8601,
           deactivated_by: node.deactivated_by,
-          data_release_uuid: node.data_release_strategy_id,
-        })
+          data_release_uuid: node.data_release_strategy_id
+        )
       end
 
       it 'should generate the same json each time it is called from the same instance' do
@@ -106,7 +120,5 @@ RSpec.describe EventMessage do
       let(:node) { deactivated_node }
       it_behaves_like 'event message json'
     end
-
   end
-
 end
