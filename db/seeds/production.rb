@@ -19,8 +19,7 @@ programmes = { "Cancer, Aging & Somatic Mutations": ['som', 'cs4', 'im4', 'cdt']
               "Cellular Genetics": ['js43', 'el4', 'bh11', 'gc10'],
               "Human Genetics": ['njl', 'sarah', 'sb49', 'kd9'],
               "Infection Genomics": ['dw2', 'kaa'],
-              "Malaria": ['sg19', 'mjs', 'aa15'],
-              "Dev Team": ['rl15', 'cs24', 'dr6', 'emr', 'hc6', 'pj5', 'ac42']
+              "Malaria": ['sg19', 'mjs', 'aa15']
             }
 
 # Use the above definitions to create programme nodes and assign permissions
