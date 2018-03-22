@@ -29,6 +29,11 @@ programmes.each do |prog, owners|
   node = Node.where(name: prog).first_or_create(parent: root, owner_email: 'aker')
   node.save(validate: false)
 
+  # Assign permissions for each owner, if they don't already exist
+  owners.each do |owner|
+    node.permissions.where(permitted: "#{owner}@sanger.ac.uk", permission_type: :write).first_or_create
+  end
+
   # Remove permissions for the 'aker' user
   node.permissions.where(permitted: "aker").destroy_all
 
