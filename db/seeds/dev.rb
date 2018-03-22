@@ -9,8 +9,8 @@ end
 
 # Update the root name if it's incorrect
 if root.name != "Institute Research QQ 2017-2021"
-  # Using update_attribute to skip validations, as the root node is invalid
   root.name = "Institute Research QQ 2017-2021"
+  # Skip validations, as the root node is invalid
   root.save(validate: false)
 end
 
