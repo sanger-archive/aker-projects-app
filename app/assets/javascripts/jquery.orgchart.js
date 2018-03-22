@@ -646,7 +646,7 @@
       if (nodeData.node_type == "project") {
         $nodeDiv.children('.title').prepend('<i class="fa fa-folder-open symbol"></i>');
       } else if (nodeData.node_type == "sub-project") {
-        $nodeDiv.children('.title').prepend('<i class="fa fa-file-text symbol"></i>');
+        $nodeDiv.children('.title').prepend('<i class="fa fa-file-alt symbol"></i>');
       }
       // Disable the bottom arrow if the node has no children
       if(Number(flags.substr(2,1))) {
