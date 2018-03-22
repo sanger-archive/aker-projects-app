@@ -39,5 +39,5 @@ programmes.each do |prog, owners|
 
   # ***DEV/WIP ENV ONLY***
   # Write permission for everyone
-  # node.permissions.where(permitted: 'world', permission_type: :write).first_or_create
+  node.permissions.where(permitted: 'world', permission_type: :write).first_or_create
 end
