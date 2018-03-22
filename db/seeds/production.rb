@@ -1,5 +1,5 @@
 # Find the root node
-root = Node.find_by(id: 1)
+root = Node.root
 
 # Create the root node if it doesn't exist
 unless root
