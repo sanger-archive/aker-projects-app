@@ -88,11 +88,19 @@
     }
     select.attr('disabled', this._isDisabledAttributeForSelect);
     this.removeSpinner();
-    this.showError('HTTP '+event.status+' - '+event.statusText);
+    this.showErrorForEvent(event);
   };
 
   proto.showError = function(text) {
     $('form', 'div.modal-body').render_form_errors('node_form', {data_release_strategy_id: [text]});
+  }
+
+  proto.showErrorForEvent = function(event) {
+    if (event.status == 404) {
+      this.showError('There is no connection with the Data release service. Please contact with the administrator');
+    } else {
+      this.showError('HTTP '+event.status+' - '+event.statusText);
+    }
   }
 
   // Renders the HTML for the select with the different data release strategies that we got from the AJAX response

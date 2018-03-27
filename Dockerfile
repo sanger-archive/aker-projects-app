@@ -1,4 +1,4 @@
-# aker-work-orders-gui
+# aker-study-management
 # Use ruby 2.3.1
 FROM ruby:2.3.1
 
@@ -22,8 +22,7 @@ WORKDIR /code
 ADD Gemfile /code/Gemfile
 ADD Gemfile.lock /code/Gemfile.lock
 
-# Install bundler
-# http://bundler.io/
+# Install bundler: http://bundler.io/
 RUN gem install bundler
 
 # Install gems required by project

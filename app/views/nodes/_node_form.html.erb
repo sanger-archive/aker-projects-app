@@ -1,7 +1,7 @@
 <%= f.text_field :name, autocomplete: 'off', disabled: !write_permission %>
 <%= f.text_field :description, disabled: !write_permission %>
-<% if Node.find(@node.parent_id).cost_code %>
-  <%= f.select :cost_code, subcostcodes_select_options(@node),{include_blank: true}, {disabled: !write_permission } %>
+<% if @node.parent&.cost_code %>
+  <%= subcostcodes_select_for(@node, f, {include_blank: true}, {disabled: !write_permission}) %>
 <% else %>
   <%= f.text_field :cost_code, disabled: !write_permission, autocomplete: 'off' %>
 <% end %>

@@ -1,5 +1,6 @@
   class NodesController < ApplicationController
   include AkerPermissionControllerConfig
+  include WebSocketsNotification
 
   before_action :current_node, except: :create
   before_action :set_child, only: [:show, :tree]
@@ -50,6 +51,8 @@
     respond_to do |format|
       @node_form = NodeForm.new(node_form_params.merge(user_email: current_user.email))
       if @node_form.save
+        notify_changes_with_websockets
+
         format.html { redirect_to node_path(@node.parent_id), flash: { success: 'Node updated' } }
         format.json { render json: @node, status: :ok }
       else

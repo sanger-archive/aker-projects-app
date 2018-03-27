@@ -1,0 +1,512 @@
+{
+  "data": [
+    {
+      "id": "1",
+      "type": "nodes",
+      "links": {
+        "self": "http://localhost:3300/api/v1/nodes/1"
+      },
+      "attributes": {
+        "name": "Institute Research QQ 2017-2021",
+        "cost-code": null,
+        "description": null,
+        "node-uuid": "eb5f111e-e17a-4222-b389-17e58c673495",
+        "writable": false,
+        "updated-at": "2018-03-01T11:40:56.895Z",
+        "created-at": "2018-03-01T11:40:56.895Z",
+        "owned-by-current-user": false,
+        "editable-by-current-user": false,
+        "is-project-node": false,
+        "is-sub-project-node": false,
+        "parent-id": null,
+        "data-release-strategy-id": null,
+        "spendable-by-current-user": false
+      },
+      "relationships": {
+        "nodes": {
+          "links": {
+            "self": "http://localhost:3300/api/v1/nodes/1/relationships/nodes",
+            "related": "http://localhost:3300/api/v1/nodes/1/nodes"
+          },
+          "data": [
+            {
+              "type": "nodes",
+              "id": "2"
+            },
+            {
+              "type": "nodes",
+              "id": "3"
+            },
+            {
+              "type": "nodes",
+              "id": "4"
+            },
+            {
+              "type": "nodes",
+              "id": "5"
+            },
+            {
+              "type": "nodes",
+              "id": "6"
+            },
+            {
+              "type": "nodes",
+              "id": "7"
+            }
+          ]
+        },
+        "permissions": {
+          "links": {
+            "self": "http://localhost:3300/api/v1/nodes/1/relationships/permissions",
+            "related": "http://localhost:3300/api/v1/nodes/1/permissions"
+          }
+        },
+        "parent": {
+          "links": {
+            "self": "http://localhost:3300/api/v1/nodes/1/relationships/parent",
+            "related": "http://localhost:3300/api/v1/nodes/1/parent"
+          }
+        }
+      },
+      "meta": {
+        "active": true
+      }
+    },
+    {
+      "id": "2",
+      "type": "nodes",
+      "links": {
+        "self": "http://localhost:3300/api/v1/nodes/2"
+      },
+      "attributes": {
+        "name": "Cancer, Aging & Somatic Mutations",
+        "cost-code": null,
+        "description": null,
+        "node-uuid": "e8fb9d46-c0d7-422b-9ea3-ea5c8d24c775",
+        "writable": true,
+        "updated-at": "2018-03-01T11:40:56.936Z",
+        "created-at": "2018-03-01T11:40:56.936Z",
+        "owned-by-current-user": false,
+        "editable-by-current-user": true,
+        "is-project-node": false,
+        "is-sub-project-node": false,
+        "parent-id": 1,
+        "data-release-strategy-id": null,
+        "spendable-by-current-user": false
+      },
+      "relationships": {
+        "nodes": {
+          "links": {
+            "self": "http://localhost:3300/api/v1/nodes/2/relationships/nodes",
+            "related": "http://localhost:3300/api/v1/nodes/2/nodes"
+          },
+          "data": [
+            {
+              "type": "nodes",
+              "id": "8"
+            },
+            {
+              "type": "nodes",
+              "id": "10"
+            },
+            {
+              "type": "nodes",
+              "id": "9"
+            }
+          ]
+        },
+        "permissions": {
+          "links": {
+            "self": "http://localhost:3300/api/v1/nodes/2/relationships/permissions",
+            "related": "http://localhost:3300/api/v1/nodes/2/permissions"
+          }
+        },
+        "parent": {
+          "links": {
+            "self": "http://localhost:3300/api/v1/nodes/2/relationships/parent",
+            "related": "http://localhost:3300/api/v1/nodes/2/parent"
+          }
+        }
+      },
+      "meta": {
+        "active": true
+      }
+    },
+    {
+      "id": "3",
+      "type": "nodes",
+      "links": {
+        "self": "http://localhost:3300/api/v1/nodes/3"
+      },
+      "attributes": {
+        "name": "Cellular Genetics",
+        "cost-code": null,
+        "description": null,
+        "node-uuid": "17cc82fb-d580-4fa3-bf09-5e113d66c0b2",
+        "writable": true,
+        "updated-at": "2018-03-01T11:40:56.944Z",
+        "created-at": "2018-03-01T11:40:56.944Z",
+        "owned-by-current-user": false,
+        "editable-by-current-user": true,
+        "is-project-node": false,
+        "is-sub-project-node": false,
+        "parent-id": 1,
+        "data-release-strategy-id": null,
+        "spendable-by-current-user": false
+      },
+      "relationships": {
+        "nodes": {
+          "links": {
+            "self": "http://localhost:3300/api/v1/nodes/3/relationships/nodes",
+            "related": "http://localhost:3300/api/v1/nodes/3/nodes"
+          },
+          "data": []
+        },
+        "permissions": {
+          "links": {
+            "self": "http://localhost:3300/api/v1/nodes/3/relationships/permissions",
+            "related": "http://localhost:3300/api/v1/nodes/3/permissions"
+          }
+        },
+        "parent": {
+          "links": {
+            "self": "http://localhost:3300/api/v1/nodes/3/relationships/parent",
+            "related": "http://localhost:3300/api/v1/nodes/3/parent"
+          }
+        }
+      },
+      "meta": {
+        "active": true
+      }
+    },
+    {
+      "id": "4",
+      "type": "nodes",
+      "links": {
+        "self": "http://localhost:3300/api/v1/nodes/4"
+      },
+      "attributes": {
+        "name": "Human Genetics",
+        "cost-code": null,
+        "description": null,
+        "node-uuid": "467d4926-2dba-43f3-8c2e-0a28eeced485",
+        "writable": true,
+        "updated-at": "2018-03-01T11:40:56.962Z",
+        "created-at": "2018-03-01T11:40:56.962Z",
+        "owned-by-current-user": false,
+        "editable-by-current-user": true,
+        "is-project-node": false,
+        "is-sub-project-node": false,
+        "parent-id": 1,
+        "data-release-strategy-id": null,
+        "spendable-by-current-user": false
+      },
+      "relationships": {
+        "nodes": {
+          "links": {
+            "self": "http://localhost:3300/api/v1/nodes/4/relationships/nodes",
+            "related": "http://localhost:3300/api/v1/nodes/4/nodes"
+          },
+          "data": []
+        },
+        "permissions": {
+          "links": {
+            "self": "http://localhost:3300/api/v1/nodes/4/relationships/permissions",
+            "related": "http://localhost:3300/api/v1/nodes/4/permissions"
+          }
+        },
+        "parent": {
+          "links": {
+            "self": "http://localhost:3300/api/v1/nodes/4/relationships/parent",
+            "related": "http://localhost:3300/api/v1/nodes/4/parent"
+          }
+        }
+      },
+      "meta": {
+        "active": true
+      }
+    },
+    {
+      "id": "5",
+      "type": "nodes",
+      "links": {
+        "self": "http://localhost:3300/api/v1/nodes/5"
+      },
+      "attributes": {
+        "name": "Infection Genomics",
+        "cost-code": null,
+        "description": null,
+        "node-uuid": "494a64b1-8ed7-49b2-bf8b-a35325e94df4",
+        "writable": true,
+        "updated-at": "2018-03-01T11:40:56.973Z",
+        "created-at": "2018-03-01T11:40:56.973Z",
+        "owned-by-current-user": false,
+        "editable-by-current-user": true,
+        "is-project-node": false,
+        "is-sub-project-node": false,
+        "parent-id": 1,
+        "data-release-strategy-id": null,
+        "spendable-by-current-user": false
+      },
+      "relationships": {
+        "nodes": {
+          "links": {
+            "self": "http://localhost:3300/api/v1/nodes/5/relationships/nodes",
+            "related": "http://localhost:3300/api/v1/nodes/5/nodes"
+          },
+          "data": []
+        },
+        "permissions": {
+          "links": {
+            "self": "http://localhost:3300/api/v1/nodes/5/relationships/permissions",
+            "related": "http://localhost:3300/api/v1/nodes/5/permissions"
+          }
+        },
+        "parent": {
+          "links": {
+            "self": "http://localhost:3300/api/v1/nodes/5/relationships/parent",
+            "related": "http://localhost:3300/api/v1/nodes/5/parent"
+          }
+        }
+      },
+      "meta": {
+        "active": true
+      }
+    },
+    {
+      "id": "6",
+      "type": "nodes",
+      "links": {
+        "self": "http://localhost:3300/api/v1/nodes/6"
+      },
+      "attributes": {
+        "name": "Malaria",
+        "cost-code": null,
+        "description": null,
+        "node-uuid": "6ff605d2-ba44-439c-951f-90245d137a23",
+        "writable": true,
+        "updated-at": "2018-03-01T11:40:56.982Z",
+        "created-at": "2018-03-01T11:40:56.982Z",
+        "owned-by-current-user": false,
+        "editable-by-current-user": true,
+        "is-project-node": false,
+        "is-sub-project-node": false,
+        "parent-id": 1,
+        "data-release-strategy-id": null,
+        "spendable-by-current-user": false
+      },
+      "relationships": {
+        "nodes": {
+          "links": {
+            "self": "http://localhost:3300/api/v1/nodes/6/relationships/nodes",
+            "related": "http://localhost:3300/api/v1/nodes/6/nodes"
+          },
+          "data": []
+        },
+        "permissions": {
+          "links": {
+            "self": "http://localhost:3300/api/v1/nodes/6/relationships/permissions",
+            "related": "http://localhost:3300/api/v1/nodes/6/permissions"
+          }
+        },
+        "parent": {
+          "links": {
+            "self": "http://localhost:3300/api/v1/nodes/6/relationships/parent",
+            "related": "http://localhost:3300/api/v1/nodes/6/parent"
+          }
+        }
+      },
+      "meta": {
+        "active": true
+      }
+    },
+    {
+      "id": "7",
+      "type": "nodes",
+      "links": {
+        "self": "http://localhost:3300/api/v1/nodes/7"
+      },
+      "attributes": {
+        "name": "Pathogens",
+        "cost-code": null,
+        "description": null,
+        "node-uuid": "56b7dd9f-9fd6-4e63-bff3-fbf7a71486d3",
+        "writable": true,
+        "updated-at": "2018-03-01T11:40:56.991Z",
+        "created-at": "2018-03-01T11:40:56.991Z",
+        "owned-by-current-user": false,
+        "editable-by-current-user": true,
+        "is-project-node": false,
+        "is-sub-project-node": false,
+        "parent-id": 1,
+        "data-release-strategy-id": null,
+        "spendable-by-current-user": false
+      },
+      "relationships": {
+        "nodes": {
+          "links": {
+            "self": "http://localhost:3300/api/v1/nodes/7/relationships/nodes",
+            "related": "http://localhost:3300/api/v1/nodes/7/nodes"
+          },
+          "data": []
+        },
+        "permissions": {
+          "links": {
+            "self": "http://localhost:3300/api/v1/nodes/7/relationships/permissions",
+            "related": "http://localhost:3300/api/v1/nodes/7/permissions"
+          }
+        },
+        "parent": {
+          "links": {
+            "self": "http://localhost:3300/api/v1/nodes/7/relationships/parent",
+            "related": "http://localhost:3300/api/v1/nodes/7/parent"
+          }
+        }
+      },
+      "meta": {
+        "active": true
+      }
+    },
+    {
+      "id": "9",
+      "type": "nodes",
+      "links": {
+        "self": "http://localhost:3300/api/v1/nodes/9"
+      },
+      "attributes": {
+        "name": "Node2",
+        "cost-code": "S1234",
+        "description": "",
+        "node-uuid": "eb89ce6a-6fe2-4b90-9d8a-b18345eaa09b",
+        "writable": true,
+        "updated-at": "2018-03-02T11:41:44.829Z",
+        "created-at": "2018-03-01T11:41:26.440Z",
+        "owned-by-current-user": true,
+        "editable-by-current-user": true,
+        "is-project-node": true,
+        "is-sub-project-node": false,
+        "parent-id": 2,
+        "data-release-strategy-id": null,
+        "spendable-by-current-user": true
+      },
+      "relationships": {
+        "nodes": {
+          "links": {
+            "self": "http://localhost:3300/api/v1/nodes/9/relationships/nodes",
+            "related": "http://localhost:3300/api/v1/nodes/9/nodes"
+          },
+          "data": []
+        },
+        "permissions": {
+          "links": {
+            "self": "http://localhost:3300/api/v1/nodes/9/relationships/permissions",
+            "related": "http://localhost:3300/api/v1/nodes/9/permissions"
+          }
+        },
+        "parent": {
+          "links": {
+            "self": "http://localhost:3300/api/v1/nodes/9/relationships/parent",
+            "related": "http://localhost:3300/api/v1/nodes/9/parent"
+          }
+        }
+      },
+      "meta": {
+        "active": true
+      }
+    },
+    {
+      "id": "8",
+      "type": "nodes",
+      "links": {
+        "self": "http://localhost:3300/api/v1/nodes/8"
+      },
+      "attributes": {
+        "name": "Node1",
+        "cost-code": null,
+        "description": null,
+        "node-uuid": "5d68e818-1674-4d6d-bd66-8330949b17e2",
+        "writable": true,
+        "updated-at": "2018-03-02T11:42:44.829Z",
+        "created-at": "2018-03-01T11:41:22.133Z",
+        "owned-by-current-user": true,
+        "editable-by-current-user": true,
+        "is-project-node": false,
+        "is-sub-project-node": false,
+        "parent-id": 2,
+        "data-release-strategy-id": null,
+        "spendable-by-current-user": true
+      },
+      "relationships": {
+        "nodes": {
+          "links": {
+            "self": "http://localhost:3300/api/v1/nodes/8/relationships/nodes",
+            "related": "http://localhost:3300/api/v1/nodes/8/nodes"
+          },
+          "data": []
+        },
+        "permissions": {
+          "links": {
+            "self": "http://localhost:3300/api/v1/nodes/8/relationships/permissions",
+            "related": "http://localhost:3300/api/v1/nodes/8/permissions"
+          }
+        },
+        "parent": {
+          "links": {
+            "self": "http://localhost:3300/api/v1/nodes/8/relationships/parent",
+            "related": "http://localhost:3300/api/v1/nodes/8/parent"
+          }
+        }
+      },
+      "meta": {
+        "active": true
+      }
+    },    
+    {
+      "id": "10",
+      "type": "nodes",
+      "links": {
+        "self": "http://localhost:3300/api/v1/nodes/10"
+      },
+      "attributes": {
+        "name": "Node3",
+        "cost-code": null,
+        "description": null,
+        "node-uuid": "2cec3227-5dc4-4478-b45f-7eaa3b80e8ef",
+        "writable": true,
+        "updated-at": "2018-03-02T11:43:44.829Z",
+        "created-at": "2018-03-01T11:41:34.072Z",
+        "owned-by-current-user": true,
+        "editable-by-current-user": true,
+        "is-project-node": false,
+        "is-sub-project-node": false,
+        "parent-id": 2,
+        "data-release-strategy-id": null,
+        "spendable-by-current-user": true
+      },
+      "relationships": {
+        "nodes": {
+          "links": {
+            "self": "http://localhost:3300/api/v1/nodes/10/relationships/nodes",
+            "related": "http://localhost:3300/api/v1/nodes/10/nodes"
+          },
+          "data": []
+        },
+        "permissions": {
+          "links": {
+            "self": "http://localhost:3300/api/v1/nodes/10/relationships/permissions",
+            "related": "http://localhost:3300/api/v1/nodes/10/permissions"
+          }
+        },
+        "parent": {
+          "links": {
+            "self": "http://localhost:3300/api/v1/nodes/10/relationships/parent",
+            "related": "http://localhost:3300/api/v1/nodes/10/parent"
+          }
+        }
+      },
+      "meta": {
+        "active": true
+      }
+    }
+  ]
+}

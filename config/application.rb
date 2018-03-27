@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require_relative 'boot'
 
 require 'rails/all'
@@ -24,7 +26,10 @@ module Projects
 
     config.ldap = config_for(:ldap)
 
-    config.autoload_paths += %W("#{config.root}/app/forms")
+    config.autoload_paths += %W["#{config.root}/app/forms"]
+
+    # http://api.rubyonrails.org/classes/ActiveSupport/TimeZone.html
+    config.time_zone = 'London'
 
     # Settings in config/environments/* take precedence over those specified here.
     # Application configuration should go into files in config/initializers

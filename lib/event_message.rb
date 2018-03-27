@@ -14,7 +14,7 @@ class EventMessage
     @event = params[:event]
     @event_uuid = SecureRandom.uuid
     @trace_id = ZipkinTracer::TraceContainer.current&.next_id&.trace_id&.to_s
-    @timestamp = Time.now
+    @timestamp = Time.zone.now
   end
 
   def roles
