@@ -1,5 +1,4 @@
 Rails.application.routes.draw do
-
   root 'nodes#show', id: nil
 
   resources :nodes do
@@ -24,7 +23,7 @@ Rails.application.routes.draw do
 
   namespace :api do
     namespace :v1 do
-      # https://github.com/cerebris/jsonapi-resources#routing
+      # https://github.com/cerebris/jsonapi-resources#routing
       jsonapi_resources :nodes do
         jsonapi_relationships
       end
@@ -32,5 +31,4 @@ Rails.application.routes.draw do
 
     end
   end
-
 end

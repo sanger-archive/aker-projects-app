@@ -39,9 +39,7 @@
   };
 
   proto.websocketsConnect = function() {
-    var consumer=ActionCable.createConsumer();
-    
-    return consumer.subscriptions.create({ channel: "TreeStatusChannel" }, {
+    return App.cable.subscriptions.create({ channel: "TreeStatusChannel" }, {
       connected: $.proxy(this.onConnectWebSocket, this),
       received: $.proxy(this.onReceiveWebSocketsMessage, this)
     });
@@ -95,7 +93,7 @@
     var name = $('.title', $('#'+nodeWithMetadata.id)).text();
     var costCode = $('.content', $('#'+nodeWithMetadata.id)).text() || null;
 
-    return ((node1.id == node2.id) && 
+    return ((node1.id == node2.id) &&
       (name == nodeWithMetadata.name) &&
       (costCode == nodeWithMetadata.cost_code)
       )

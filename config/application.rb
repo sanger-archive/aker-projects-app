@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 require_relative 'boot'
 
 require 'rails/all'
@@ -10,6 +8,14 @@ Bundler.require(*Rails.groups)
 
 module Projects
   class Application < Rails::Application
+    # Initialize configuration defaults for originally generated Rails version.
+    config.load_defaults 5.0
+
+    # Settings in config/environments/* take precedence over those specified here.
+    # Application configuration can go into files in config/initializers
+    # -- all .rb files in that directory are automatically loaded after loading
+    # the framework and any gems in your application.
+
     config.generators do |g|
       g.test_framework :rspec,
                        fixtures: true,
@@ -24,15 +30,8 @@ module Projects
       g.assets false
     end
 
-    config.ldap = config_for(:ldap)
-
-    config.autoload_paths += %W["#{config.root}/app/forms"]
-
     # http://api.rubyonrails.org/classes/ActiveSupport/TimeZone.html
     config.time_zone = 'London'
 
-    # Settings in config/environments/* take precedence over those specified here.
-    # Application configuration should go into files in config/initializers
-    # -- all .rb files in that directory are automatically loaded.
   end
 end
