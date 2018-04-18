@@ -236,7 +236,7 @@ RSpec.describe 'Nodes', type: :feature do
                 end
 
                 context 'when the selected data release for the node is not in the available list for the user' do
-                  it 'displays the options for \'No strategy\', the current selection and the other options for the user' do
+                  xit 'displays the options for \'No strategy\', the current selection and the other options for the user' do
                     double_clicking_subproj
 
                     opts = ['No strategy', another_strategy.name, data_releases_strategies.values.map(&:name)].flatten
