@@ -198,42 +198,49 @@ RSpec.describe 'Nodes', type: :feature do
       context 'Double-clicking a node' do
         let(:modal) { page.find_by_id('editNodeModal') }
 
-        let(:double_clicking) { 
-          page.find('div', class: 'node', text: program1.name).double_click
+        let(:double_clicking_subproj) {
+          page.find('div', class: 'node', text: subproj.name).double_click
           wait_for_ajax
         }
-
         it 'displays a modal with an edit form' do
-          double_clicking
+          double_clicking_subproj
 
           expect(modal.visible?).to be(true)
           expect(modal.has_css?('form')).to be(true)
         end
 
+        it "doesn't show data release strategy selection for projects" do
+          page.find('div', class: 'node', text: proj.name).double_click
+          wait_for_ajax
+          expect(modal.has_select?('Data release strategy')).to eq(false)
+        end
+
+        it "doesn't show data release strategy selection for programs" do
+          page.find('div', class: 'node', text: program1.name).double_click
+          wait_for_ajax
+          expect(modal.has_select?('Data release strategy')).to eq(false)
+        end
+
         context 'when showing the modal' do
           context 'the data release strategy control' do
-
             it 'is showing the data release control' do
-              double_clicking
-
+              double_clicking_subproj
               expect(modal.has_select?('Data release strategy')).to eq(true)
             end
 
             context 'the data release control' do
-              
               context 'when displaying the options for the data release strategy for the user' do
                 let(:another_strategy) { create :data_release_strategy}
                 before do
-                  program1.update_attributes(data_release_strategy_id: another_strategy.id)
+                  subproj.update_attributes(data_release_strategy_id: another_strategy.id)
                 end
 
-                context 'when the selected data release for the node is not in the available list for the user' do  
+                context 'when the selected data release for the node is not in the available list for the user' do
                   it 'displays the options for \'No strategy\', the current selection and the other options for the user' do
-                    double_clicking
+                    double_clicking_subproj
 
                     opts = ['No strategy', another_strategy.name, data_releases_strategies.values.map(&:name)].flatten
-                    expect(modal.has_select?('Data release strategy', 
-                      options: opts)).to eq(true)
+                    expect(modal.has_select?('Data release strategy', options: opts)).to eq(true)
                   end
                 end
                 context 'when the selected data release is in the available list for the user' do
@@ -244,13 +251,13 @@ RSpec.describe 'Nodes', type: :feature do
                         .with(user.email)
                         .and_return(data_releases_strategies.values)
                     )
-
                   end
+
                   it 'displays all the different choices in the control' do
-                    double_clicking
+                    double_clicking_subproj
 
                     opts = ['No strategy', data_releases_strategies.values.map(&:name)].flatten
-                    expect(modal.has_select?('Data release strategy', 
+                    expect(modal.has_select?('Data release strategy',
                       options: opts)).to eq(true)
                   end
                 end
@@ -263,20 +270,17 @@ RSpec.describe 'Nodes', type: :feature do
                     )
                   end
                   it 'displays just \'No strategy\' and the current selection ' do
-                    double_clicking
+                    double_clicking_subproj
 
                     opts = ['No strategy', another_strategy.name].flatten
-                    expect(modal.has_select?('Data release strategy', 
-                      options: opts)).to eq(true)                    
+                    expect(modal.has_select?('Data release strategy', options: opts)).to eq(true)
                   end
                 end
               end
             end
           end
         end
-
       end
-
     end
   end
 
