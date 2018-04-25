@@ -84,7 +84,9 @@
   private
 
   def build_tree
-    @tree = OrgChart::Builder.build.to_json
+    @tree = Rails.cache.fetch("org_chart", expires_in: 7.days) do
+      OrgChart::Builder.build.to_json
+    end
   end
 
   def set_form
