@@ -1,5 +1,6 @@
 (function($, undefined) {
   function OrgChartStatus() {
+    this._websocketsConnectionEstablished = false;
     this.updateChartOnChanges();
   };
 
@@ -11,7 +12,6 @@
     if (response.status===403) {
       this.onForbidden(response, status);
     }
-    this.resetTree();
   };
 
   proto.onForbidden = function(response, status) {
@@ -20,44 +20,39 @@
 
    proto.updateChartOnChanges = function() {
     this.websocketsUpdateStart();
-    return;
-  };
-
-  proto.ajaxUpdateStart = function() {
-    this.intervalId = setInterval($.proxy(this.keepTreeUpdate, this), 10000);
   };
 
   proto.onReceiveWebSocketsMessage = function(response) {
-    if (response.notifyChanges === true) {
-      this.keepTreeUpdate();
+    if (response.treeData) {
+      this.setTreeData(JSON.parse(response.treeData));
     }
   };
 
   proto.onConnectWebSocket = function() {
     this.closeAllModals();
-    this.resetTree();
+    this.toggleMask(false);
+    if (this._reconnectInterval) {
+      clearInterval(this._reconnectInterval)
+    }
+    this._treeIsDown = false;
   };
 
   proto.websocketsConnect = function() {
     var consumer=ActionCable.createConsumer();
-    
+
     return consumer.subscriptions.create({ channel: "TreeStatusChannel" }, {
       connected: $.proxy(this.onConnectWebSocket, this),
+      disconnected: $.proxy(this.disableTree, this),
       received: $.proxy(this.onReceiveWebSocketsMessage, this)
     });
   };
 
   proto.websocketsUpdateStart = function() {
-    if (!this._websocketsConnectionStablished) {
-      this._websocketsConnectionStablished = this.websocketsConnect();
+    if (!this._websocketsConnectionEstablished) {
+      this._websocketsConnectionEstablished = this.websocketsConnect();
     }
-    return this._websocketsConnectionStablished;
+    return this._websocketsConnectionEstablished;
   };
-
-
-  proto.stopUpdating = function() {
-    clearInterval(this.intervalId);
-  }
 
   proto.toggleMask = function(state) {
     if (state !== this._maskStatus) {
@@ -69,11 +64,10 @@
   proto.disableTree = function() {
     if (!this._treeIsDown) {
       this.toggleMask(true);
-      $('#tree-hierarchy').prepend('<button id="reconnect" class="button btn btn-default">Reconnect?</button>');
-      $('#tree-hierarchy').prepend('<div class="alert alert-danger">Sorry, there was a problem while updating the server</div>');
-      $('#reconnect').on('click', $.proxy(this.resetTree, this));
+      $('#tree-hierarchy').prepend('<div class="alert alert-danger">Sorry, Aker Projects is currently unavailable.</div>');
     }
-    this._treeIsDown=true;
+    this._treeIsDown = true;
+    this._reconnectInterval = setInterval(function() { this.websocketsConnect() }.bind(this), 3000)
   };
 
   proto.closeAllModals = function() {
@@ -82,63 +76,6 @@
 
   proto.enableTree = function() {
     this.toggleMask(false);
-  };
-
-  proto.resetTree = function() {
-    this.toggleMask(true);
-    $(this).trigger('orgchart.resetTree');
-    return this.loadTree().then($.proxy(this.enableTree, this), $.proxy(this.disableTree, this));
-  };
-
-  proto.equalAttributes = function(node1, node2) {
-    var nodeWithMetadata = (typeof node1.name === 'undefined') ? node2 : node1;
-    var name = $('.title', $('#'+nodeWithMetadata.id)).text();
-    var costCode = $('.content', $('#'+nodeWithMetadata.id)).text() || null;
-
-    return ((node1.id == node2.id) && 
-      (name == nodeWithMetadata.name) &&
-      (costCode == nodeWithMetadata.cost_code)
-      )
-  };
-
-  proto.equalHierarchy = function(tree1, tree2) {
-    if ((!tree1 || !tree2) || !(this.equalAttributes(tree1, tree2))) {
-      return false;
-    } else {
-      if (tree1.children && (tree1.children.length>0)) {
-        if (!((tree2.children) && (tree2.children.length>0))) {
-          return false;
-        }
-        return tree1.children.every($.proxy(function(child) {
-          var child2 = tree2.children.filter($.proxy(function(child2) {
-            return (this.equalAttributes(child2, child));
-          }, this))[0];
-          return (this.equalHierarchy(child, child2));
-        }, this));
-      }
-      return true;
-    }
-  };
-
-  proto.keepTreeUpdate = function() {
-    var defer = $.Deferred();
-    return $.get(Routes.api_v1_nodes_path({'include': 'nodes.parent'}), $.proxy(function(response, status, promise) {
-      if (this._treeIsDown) {
-        return this.resetTree().then($.proxy(function() {
-          this._treeIsDown = false;
-          defer.resolve(true);
-        },this));
-      }
-      var localTree = $('#tree-hierarchy').orgchart('getHierarchy');
-      var remoteTree = TreeBuilder.createFrom(response.data, true)[0];
-      if (!this.equalHierarchy(localTree, remoteTree) || !this.equalHierarchy(remoteTree, localTree)) {
-        return this.resetTree().then(function() {
-          defer.resolve(true);
-        });
-      }
-      defer.resolve(true);
-    }, this)).fail($.proxy(this.onErrorConnection, this));
-    return promise;
   };
 
 }(jQuery));

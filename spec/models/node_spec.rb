@@ -516,4 +516,51 @@ RSpec.describe Node, type: :model do
     end
 
   end
+
+  describe '#owned_by?' do
+
+    context 'when user owns the node' do
+
+      it 'returns true' do
+        owner = build(:user)
+        node = build(:node, owner_email: owner.email)
+        expect(node.owned_by?(owner)).to eq(true)
+      end
+
+    end
+
+    context 'when user does not own the node' do
+
+      it 'returns false' do
+        owner = build(:user)
+        node = build(:node, owner_email: 'someone@else.com')
+        expect(node.owned_by?(owner)).to eq(false)
+      end
+    end
+
+  end
+
+  describe 'has_sibling?' do
+
+    context 'when node has a sibling' do
+
+      it 'returns true' do
+        node = create(:node, parent: program1)
+        sibling = create(:node, parent: program1)
+        expect(node.has_sibling?).to be true
+      end
+
+    end
+
+    context 'when node has no siblings' do
+
+      it 'returns false' do
+        node = create(:node, parent: program1)
+        expect(node.has_sibling?).to be false
+      end
+
+    end
+
+
+  end
 end

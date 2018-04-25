@@ -1,7 +1,6 @@
 (function($, undefined) {
   function OrgChartMenuNodeDelete() {};
 
-
   window.OrgChartMenuNodeDelete = OrgChartMenuNodeDelete;
 
   var proto = OrgChartMenuNodeDelete.prototype;
@@ -11,14 +10,7 @@
   };
 
   proto.onDeleteNode = function () {
-    // If all the parent nodes are hidden, reload the tree
-    // Fixes issue of there being an empty chart after deletion
-    if (this.selectedNode().closest('tr.nodes').siblings().is('.hidden')) {
-      this.loadTree();
-    } else {
-      $('#chart-container').orgchart('removeNodes', this.selectedNode());
-      this.unselectNode();
-    }
+    this.unselectNode();
   };
 
   proto.onErrorDeleteNode = function() {
@@ -36,10 +28,7 @@
     }).then(
       $.proxy(this.onDeleteNode, this),
       $.proxy(this.onErrorConnection, this)
-    ).then(
-      $.proxy(this.keepTreeUpdate, this),
-      $.proxy(this.onErrorConnection, this)
-    );
+    )
   };
 
 }(jQuery));

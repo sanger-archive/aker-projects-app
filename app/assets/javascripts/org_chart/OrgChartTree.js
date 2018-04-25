@@ -23,7 +23,6 @@
     OrgChartMenu,         // UI to create, modify and remove some nodes
     OrgChartStatus,       // Behavioral methods to keep the local copy of the tree up to date with server
     OrgChartDataReleaseStrategies,  // Loads the Data release strategy select inside the modal while updating a node
-    // OrgChartIconChildren, // Bugfix/Workaround: Small modification of default behaviour to display children icon
     OrgChartPreferences   // Save & Restore current view of the tree for the logged in user
   ];
 
@@ -53,53 +52,37 @@
   //
   // The value returned by loadTreee() is a promise that will be resolved successfully if
   // all these tasks have occured successfully
-  proto.loadTree = function(opts) {
-    var defer = $.Deferred(); // Returned value
-    var self = this;
+  proto.loadTree = function(treeData) {
+    // Remove the previous display of the tree (if there is one)
+    $('#tree-hierarchy').html('');
 
-    return $.get(Routes.api_v1_nodes_path({'include': 'nodes.parent'}), $.proxy(function(response) {
-      var treeData = TreeBuilder.createFrom(response.data, true)[0];
-      // Remove the previous display of the tree (if there is one)
-      $('#tree-hierarchy').html('');
-
-      var chart = $('#tree-hierarchy').orgchart({
-        // Extracts the nodes structure from the Ajax response, and creates a valid JS for orgchart
-        'data' : treeData,
-        // Max depth to show
-        'depth': response.data.length,
-        // Custom attribute that we'll use on node creation to set some info inside the created nodes
-        // of the tree
-        'nodeContent': 'cost_code',
-        'nodeID': 'id',
-        // The box that contains the tree can be traversed by pulling
-        'draggable' : true,
-        // No zoom allowed
-        'pan': false,
-        // Callback function called every time a node is created
-        createNode: $.proxy(this.createTreeNode, this),
-        // Condition to check before being able to drop a node on another one. It will identify a valid
-        // droppable node
-        dropCriteria: $.proxy(this.onBeforeDrop, this)
-      })
-      // Deselect selected node
-      .on('click', '.orgchart', $.proxy(this.onClickOnTree, this))
-      .children('.orgchart')
-      // Callback function when a node is actually dropped on another
-      .on('nodedropped.orgchart', $.proxy(this.onDrop, this));
-
-      //this.attachTriggerAnyAction(chart);
-      //this.attachTriggerAnyAction($.fn);
+    var chart = $('#tree-hierarchy').orgchart({
+      // Extracts the nodes structure from the Ajax response, and creates a valid JS for orgchart
+      'data' : treeData,
+      // Max depth to show
+      'depth': treeData.length,
+      // Custom attribute that we'll use on node creation to set some info inside the created nodes
+      // of the tree
+      'nodeContent': 'cost_code',
+      'nodeID': 'id',
+      // The box that contains the tree can be traversed by pulling
+      'draggable' : true,
+      // No zoom allowed
+      'pan': false,
+      // Callback function called every time a node is created
+      createNode: $.proxy(this.createTreeNode, this),
+      // Condition to check before being able to drop a node on another one. It will identify a valid
+      // droppable node
+      dropCriteria: $.proxy(this.onBeforeDrop, this)
+    })
+    // Deselect selected node
+    .on('click', '.orgchart', $.proxy(this.onClickOnTree, this))
+    .children('.orgchart')
+    // Callback function when a node is actually dropped on another
+    .on('nodedropped.orgchart', $.proxy(this.onDrop, this));
 
 
-      // Resolves the promise as successful (no exceptions up to this point)
-      defer.resolve(true);
-    }, this)).then($.proxy(function() {
-      $(this).trigger('orgchart.restoreStateRequested', opts);
-    }, this));
-
-    // Returns a promise not resolved yet (this will happen when the Ajax response provided to the $.get
-    // has occured)
-    return defer;
+    // $(this).trigger('orgchart.restoreStateRequested', opts);
   };
 
 

@@ -194,6 +194,21 @@ RSpec.describe 'Nodes', type: :feature do
       end
     end
 
+    describe 'expanding tree' do
+      context 'when some nodes are hidden and EXPAND TREE is clicked' do
+        before do
+          page.find('div', class: 'node', text: program2.name)
+              .find('i', class: 'verticalEdge').trigger('click')
+        end
+
+        it 'reloads the whole tree' do
+          expect(page.find('div', class: 'orgchart')).to_not have_content(root.name)
+          click_button 'Expand Tree'
+          expect(page.find('div', class: 'orgchart')).to have_content(root.name)
+        end
+      end
+    end
+
     describe 'editing nodes' do
       context 'Double-clicking a node' do
         let(:modal) { page.find_by_id('editNodeModal') }

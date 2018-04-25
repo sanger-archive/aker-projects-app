@@ -3,6 +3,7 @@
   include WebSocketsNotification
 
   before_action :current_node, except: :create
+  before_action :build_tree, except: :create
   before_action :set_child, only: [:show, :tree]
 
   def show
@@ -78,9 +79,13 @@
     redirect_to node_path(@parent_id)
   end
 
-  helper_method :check_write_permission_for_node, :jwt_provided?, :can_edit_permission_for
+  helper_method :check_write_permission_for_node, :jwt_provided?, :can_edit_permission_for, :current_user
 
   private
+
+  def build_tree
+    @tree = OrgChart::Builder.build.to_json
+  end
 
   def set_form
     @nodeform = NodeForm.from_node(@node, current_user.email)

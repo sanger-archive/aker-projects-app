@@ -111,6 +111,11 @@ class Node < ApplicationRecord
     nodes.select(&:active?)
   end
 
+  def has_sibling?
+    return false if root?
+    parent.active_children.length > 1
+  end
+
   def sanitise_name
     if name
       sanitised = name.strip.gsub(/\s+/, ' ')
@@ -142,6 +147,10 @@ class Node < ApplicationRecord
   def permissions
     return self.parent.permissions if is_subproject?
     super
+  end
+
+  def owned_by?(user)
+    return (user.email == owner_email)
   end
 
   private

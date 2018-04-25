@@ -12,17 +12,18 @@
   var proto = OrgChartPreferences.prototype;
 
   proto.attachPreferencesHandlers = function() {
-    $('[data-user-preferences-expand]').on('click', $.proxy(function() {
-      this.loadTree({restoreStateRequested: false}).then($.proxy(this.saveUserConfig, this));
+    $('#reset-button').on('click', $.proxy(function() {
+      this.reloadTree();
     }, this));
-    $(this).on('orgchart.restoreStateRequested', $.proxy(function(event, opts) {
-      $('.edge').on('click', $.proxy(function() {
-        setTimeout($.proxy(this.saveUserConfig, this), 500);
-      }, this));
-      if ((!opts) || (!!opts.restoreStateRequested)) {
-        this.restoreUserConfig();
-      }
-    }, this));
+
+    // $(this).on('orgchart.restoreStateRequested', $.proxy(function(event, opts) {
+    //   $('.edge').on('click', $.proxy(function() {
+    //     setTimeout($.proxy(this.saveUserConfig, this), 500);
+    //   }, this));
+    //   if ((!opts) || (!!opts.restoreStateRequested)) {
+    //     this.restoreUserConfig();
+    //   }
+    // }, this));
   };
 
   proto.onSaveUserConfig = function() {
