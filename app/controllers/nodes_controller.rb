@@ -3,7 +3,7 @@
   include WebSocketsNotification
 
   before_action :current_node, except: :create
-  before_action :build_tree, except: :create
+  before_action :build_org_chart, except: :create
   before_action :set_child, only: [:show, :tree]
 
   def show
@@ -12,7 +12,10 @@
   end
 
   def index
-    render :tree
+    authorize! :read, Node
+    respond_to do |format|
+      format.json { render json: @tree }
+    end
   end
 
   def tree
@@ -83,7 +86,7 @@
 
   private
 
-  def build_tree
+  def build_org_chart
     @tree = Rails.cache.fetch("org_chart", expires_in: 7.days) do
       OrgChart::Builder.build.to_json
     end

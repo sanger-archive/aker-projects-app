@@ -24,23 +24,21 @@
 
   proto.onReceiveWebSocketsMessage = function(response) {
     if (response.treeData) {
-      this.setTreeData(JSON.parse(response.treeData));
+      $.getJSON(Routes.nodes_path() + '.json').then(
+        this.setTreeData.bind(this),
+        this.disableTree.bind(this)
+      );
     }
   };
 
   proto.onConnectWebSocket = function() {
     this.closeAllModals();
     this.toggleMask(false);
-    if (this._reconnectInterval) {
-      clearInterval(this._reconnectInterval)
-    }
     this._treeIsDown = false;
   };
 
   proto.websocketsConnect = function() {
-    var consumer=ActionCable.createConsumer();
-
-    return consumer.subscriptions.create({ channel: "TreeStatusChannel" }, {
+    return App.cable.subscriptions.create({ channel: "TreeStatusChannel" }, {
       connected: $.proxy(this.onConnectWebSocket, this),
       disconnected: $.proxy(this.disableTree, this),
       received: $.proxy(this.onReceiveWebSocketsMessage, this)
@@ -67,7 +65,6 @@
       $('#tree-hierarchy').prepend('<div class="alert alert-danger">Sorry, Aker Projects is currently unavailable.</div>');
     }
     this._treeIsDown = true;
-    this._reconnectInterval = setInterval(function() { this.websocketsConnect() }.bind(this), 3000)
   };
 
   proto.closeAllModals = function() {
