@@ -10,6 +10,9 @@ Bundler.require(*Rails.groups)
 
 module Projects
   class Application < Rails::Application
+
+    config.middleware.insert_before Rack::Sendfile, ActionDispatch::DebugLocks
+
     config.generators do |g|
       g.test_framework :rspec,
                        fixtures: true,
