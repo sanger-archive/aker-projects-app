@@ -11,6 +11,8 @@ module Projects
     # Initialize configuration defaults for originally generated Rails version.
     config.load_defaults 5.0
 
+    config.middleware.insert_before Rack::Sendfile, ActionDispatch::DebugLocks
+
     config.generators do |g|
       g.test_framework :rspec,
                        fixtures: true,
