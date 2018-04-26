@@ -85,7 +85,7 @@ RSpec.describe EventMessage do
       it 'should include the appropriate metadata' do
         expect(metadata).to eq(
           node_id: node.id,
-          zipkin_trace_id: trace_id,
+          # zipkin_trace_id: trace_id,
           owner_email: node.owner_email,
           description: node.description,
           cost_code: node.cost_code,
