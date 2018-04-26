@@ -10,7 +10,13 @@
   };
 
   proto.onDeleteNode = function () {
-    this.unselectNode();
+    // If all the parent nodes are hidden, reload the tree
+    // Fixes issue of there being an empty chart after deletion
+    if (this.selectedNode().closest('tr.nodes').siblings().is('.hidden')) {
+      this.reloadTree();
+    } else {
+      this.unselectNode();
+    }
   };
 
   proto.onErrorDeleteNode = function() {
