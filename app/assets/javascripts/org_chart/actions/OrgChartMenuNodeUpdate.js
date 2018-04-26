@@ -71,7 +71,10 @@
         data : JSON.stringify({ data: { type: 'nodes', id: id }})
     }).then(
       $.proxy(this.onUpdateNode, this, id, event),
-      $.proxy(this.onErrorConnection, this)
+      function(response, codeId, status) {
+        this.reloadTree();
+        this.onErrorConnection(response, codeId, status);
+      }.bind(this)
     )
   };
 
