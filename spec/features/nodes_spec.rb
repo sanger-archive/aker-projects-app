@@ -186,11 +186,6 @@ RSpec.describe 'Nodes', type: :feature do
           expect(page.find_by_id('selected-node').value).to eq root.name
         end
 
-        it 'clears the New Node input' do
-          expect(page.find_by_id('new-node').value).to eq 'child'
-          page.find('div', class: 'node', text: root.name).click
-          expect(page.find_by_id('new-node').value).to eq ''
-        end
       end
     end
 

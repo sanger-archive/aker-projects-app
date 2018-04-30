@@ -81,7 +81,7 @@
     // Callback function when a node is actually dropped on another
     .on('nodedropped.orgchart', $.proxy(this.onDrop, this));
 
-
+    if (this.selectedNodeId()) $('div#' + this.selectedNodeId()).click();
     // $(this).trigger('orgchart.restoreStateRequested', opts);
   };
 
@@ -147,6 +147,17 @@
     return $('#selected-node').data('node');
   };
 
+  // selectedNodeId()
+  //
+  // Arguments: None
+  // Returns: String
+  //
+  // Gets the ID of the currently selected node
+  proto.selectedNodeId = function() {
+    if (!this.selectedNode()) return "";
+    return this.selectedNode().attr('id');
+  }
+
   // selectNode()
   //
   // Arguments: DOM element to be selected
@@ -158,7 +169,6 @@
   // value of input#selected-node).
   proto.selectNode = function(node) {
     $('#selected-node').val(node.attr('title')).data('node', node);
-    $('#new-node').val('');
   };
 
   // unselectNode()
@@ -190,9 +200,9 @@
   // - Adds the handler to update the node on double click
   proto.createTreeNode = function($node, data) {
     // After creating a new node, unselects the current node
-    this.unselectNode();
+    // this.unselectNode();
     // Resets the menu for add/delete/update to its default values
-    this.resetStatusMenu();
+    // this.resetStatusMenu();
     // Update some config in the node
     $node.attr('title', data.name);
     $node.attr('id', data.id);
