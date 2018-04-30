@@ -23,7 +23,7 @@ gem 'jsonapi-resources', '~> 0.8'
 gem 'loading_mask'
 gem 'pg', '~> 0.18' # pg version 1.0.0 is not compatible with Rails 5.1.4
 gem 'puma', '~> 3.0' # Use Puma as the app server
-gem 'rails', '~> 5.0.0', '>= 5.0.0.1'
+gem 'rails', '~> 5.1.0'
 gem 'sass-rails', '~> 5.0' # Use SCSS for stylesheets
 gem 'therubyracer'
 gem 'turbolinks', '~> 5' # Turbolinks makes navigating your web application faster.
