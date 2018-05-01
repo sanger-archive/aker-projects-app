@@ -532,7 +532,7 @@ RSpec.describe Node, type: :model do
     context 'when user does not own the node' do
 
       it 'returns false' do
-        owner = build(:user)
+        owner = build(:user, email: 'me@here.com')
         node = build(:node, owner_email: 'someone@else.com')
         expect(node.owned_by?(owner)).to eq(false)
       end

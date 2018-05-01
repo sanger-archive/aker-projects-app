@@ -46,29 +46,23 @@ RSpec.describe OrgChart::Tree do
   describe 'node_type' do
 
     context 'when node is a project' do
-
       it 'sets node_type to project' do
         org_chart_tree = OrgChart::Tree.new(node: project, user: user)
         expect(org_chart_tree.node_type).to eq('project')
       end
-
     end
 
     context 'when node is a sub_project' do
-
       it 'sets node_type to sub-project' do
         org_chart_tree = OrgChart::Tree.new(node: sub_project, user: user)
         expect(org_chart_tree.node_type).to eq('sub-project')
       end
-
     end
 
     context 'when node is neither a project nor sub-project' do
-
       it 'sets node_type to organisational' do
         expect(org_chart_tree.node_type).to eq('organisational')
       end
-
     end
 
   end
@@ -182,7 +176,7 @@ RSpec.describe OrgChart::Tree do
       expect(result[:writers]).to eq(org_chart_tree.writers)
       expect(result[:spenders]).to eq(org_chart_tree.spenders)
       expect(result[:children]).to be_kind_of(Array)
-      expect(result[:children].length).to eq(3)
+      expect(result[:children].length).to eq(children.length)
     end
 
   end

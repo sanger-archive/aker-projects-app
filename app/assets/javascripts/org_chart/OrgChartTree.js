@@ -201,11 +201,6 @@
   // - Adds the handler to select the node on single click
   // - Adds the handler to update the node on double click
   proto.createTreeNode = function($node, data) {
-    // After creating a new node, unselects the current node
-    // this.unselectNode();
-    // Resets the menu for add/delete/update to its default values
-    // this.resetStatusMenu();
-    // Update some config in the node
     $node.attr('title', data.name);
     $node.attr('id', data.id);
     // Attaches handler for single click for selecting a node
