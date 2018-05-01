@@ -136,12 +136,12 @@ module Api
       end
 
       def publish_created
-        message = EventMessage.new(node: @model, event: 'created', user: context[:current_user].email)
+        message = EventMessage.new(node: @model, event: 'created', trace_id: context[:request_id], user: context[:current_user].email)
         EventService.publish(message)
       end
 
       def publish_updated
-        message = EventMessage.new(node: @model, event: 'updated', user: context[:current_user].email)
+        message = EventMessage.new(node: @model, event: 'updated', trace_id: context[:request_id], user: context[:current_user].email)
         EventService.publish(message)
       end
 

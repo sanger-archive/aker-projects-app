@@ -32,6 +32,7 @@
 
     if @node_form.save
       flash[:success] = 'Node created'
+      publish_created
     else
       flash[:danger] = 'Failed to create node'
     end
@@ -56,6 +57,7 @@
       @node_form = NodeForm.new(node_form_params.merge(user_email: current_user.email))
       if @node_form.save
         notify_changes_with_websockets
+        publish_updated
 
         format.html { redirect_to node_path(@node.parent_id), flash: { success: 'Node updated' } }
         format.json { render json: @node, status: :ok }
@@ -118,6 +120,16 @@
 
   def can_edit_permission_for(node)
     check_write_permission_for_node(node) && !node.is_subproject?
+  end
+
+  def publish_created
+    message = EventMessage.new(node: @node_form.node, user: current_user.email, trace_id: request.request_id, event: 'created')
+    EventService.publish(message)
+  end
+
+  def publish_updated
+    message = EventMessage.new(node: @node_form.node, user: current_user.email, trace_id: request.request_id, event: 'updated')
+    EventService.publish(message)
   end
 
 end

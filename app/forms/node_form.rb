@@ -16,7 +16,7 @@ class NodeForm
 
   attr_accessor *ATTRIBUTES
 
-  attr_reader :user_email
+  attr_reader :user_email, :node
 
   def initialize(attributes = {})
     ATTRIBUTES.each do |attribute|
@@ -24,7 +24,7 @@ class NodeForm
       send("#{attribute}=", value)
     end
     @owner_email = attributes[:owner_email]
-    @user_email = attributes[:user_email]    
+    @user_email = attributes[:user_email]
   end
 
   def validate_uuid(value)
@@ -81,7 +81,7 @@ class NodeForm
 
   def attrs_for_node_update(attrs={})
     attrs[:data_release_strategy_id] = @data_release_strategy_id
-    attrs.merge(name: name, cost_code: cost_code, description: description, 
+    attrs.merge(name: name, cost_code: cost_code, description: description,
         parent_id: parent_id)
   end
 
@@ -90,8 +90,6 @@ class NodeForm
       @node = Node.create!(attrs_for_node_update(owner_email: @owner_email))
       @node.permissions.create!(convert_permissions(@owner_email))
     end
-    message = EventMessage.new(node: @node, user: @user_email, event: 'created')
-    EventService.publish(message)
     true
   rescue
     false
@@ -108,8 +106,6 @@ class NodeForm
         @node.permissions.create!(convert_permissions(@node.owner_email))
       end
     end
-    message = EventMessage.new(node: @node, user: @user_email, event: 'updated')
-    EventService.publish(message)
     true
   rescue
     false
