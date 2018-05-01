@@ -90,6 +90,8 @@
       //this.attachTriggerAnyAction(chart);
       //this.attachTriggerAnyAction($.fn);
 
+      // Reselect the previously selected node if there is one
+      if (this.selectedNodeId()) $('div#' + this.selectedNodeId()).click();
 
       // Resolves the promise as successful (no exceptions up to this point)
       defer.resolve(true);
@@ -101,6 +103,17 @@
     // has occured)
     return defer;
   };
+
+  // selectedNodeId()
+  //
+  // Arguments: None
+  // Returns: String
+  //
+  // Gets the ID of the currently selected node
+  proto.selectedNodeId = function() {
+    if (!this.selectedNode()) return "";
+    return this.selectedNode().attr('id');
+  }
 
 
   // onBeforeDrop()
