@@ -33,7 +33,6 @@
   // OrgCharTree functionality
   var proto = OrgChartTree.prototype;
 
-
   // loadTree()
   //
   // Arguments: None
@@ -81,8 +80,11 @@
     // Callback function when a node is actually dropped on another
     .on('nodedropped.orgchart', $.proxy(this.onDrop, this));
 
+    // Restore a user's layout any time the tree is loaded
+    this.restoreUserConfig();
+
+    // Reselect the previously selected node if there is one
     if (this.selectedNodeId()) $('div#' + this.selectedNodeId()).click();
-    // $(this).trigger('orgchart.restoreStateRequested', opts);
   };
 
 

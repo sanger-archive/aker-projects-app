@@ -9,8 +9,7 @@ module Api
                  :owned_by_current_user,
                  :editable_by_current_user,
                  :is_project_node, :is_sub_project_node, :parent_id,
-                 :data_release_strategy_id
-                 :spendable_by_current_user
+                 :data_release_strategy_id, :spendable_by_current_user
       before_create :set_owner
 
       after_create :publish_created
