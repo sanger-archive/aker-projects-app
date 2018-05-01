@@ -18,12 +18,12 @@
 
     // It will wait 10 seconds to get the form from the server; otherwise it will display an error message
     $.ajax(url+ '/edit.js', {
-      timeout: 10000, 
+      timeout: 10000,
       dataType: 'html',
       success: $.proxy(function(response) {
         $('div.modal-content', '#editNodeModal').html(response);
         this.onLoadUpdateNodeForm();
-      }, this), 
+      }, this),
       error: function() {
         $('div.modal-body', '#editNodeModal').html('There was an error while trying to obtain the form. Please contact the administrator');
       }
@@ -46,9 +46,6 @@
   };
 
   proto.onSuccessfulFormUpdateNode = function(e, data, status, xhr) {
-    // If the node has updated, we need reload the tree to show changes
-    this.loadTree();
-
     // Show a success message
     $('div.modal-body', '#editNodeModal').prepend('<div class="alert alert-success">Update successful</div>');
 
@@ -74,11 +71,11 @@
         data : JSON.stringify({ data: { type: 'nodes', id: id }})
     }).then(
       $.proxy(this.onUpdateNode, this, id, event),
-      $.proxy(this.onErrorConnection, this)
-    ).then(
-      $.proxy(this.keepTreeUpdate, this),
-      $.proxy(this.onErrorConnection, this)
-    );
+      function(response, codeId, status) {
+        this.reloadTree();
+        this.onErrorConnection(response, codeId, status);
+      }.bind(this)
+    )
   };
 
 }(jQuery));

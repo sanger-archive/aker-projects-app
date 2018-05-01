@@ -1,3 +1,8 @@
+<script type="text/javascript">
+  aker.treeData = <%= @tree.html_safe %>;
+  aker.currentUser = <%= current_user.to_h.to_json.html_safe %>
+</script>
+
 <div class="row">
   <div class="col-md-6">
     <div class="panel panel-default">

@@ -1,5 +1,4 @@
 require "faraday"
-require "zipkin-tracer"
 require 'uuid'
 
 
@@ -18,7 +17,7 @@ module DataReleaseStrategyClient
       end
       value = nil
       begin
-        value = DataReleaseStrategyClient.find_strategies_by_user(record.user_email).any? do |strategy| 
+        value = DataReleaseStrategyClient.find_strategies_by_user(record.user_email).any? do |strategy|
           strategy.id == record.data_release_strategy_id
         end
       rescue Faraday::ConnectionFailed => e
@@ -41,11 +40,11 @@ module DataReleaseStrategyClient
     end
   end
 
-  # Gets the list of strategies available for the user. It also updates the current database with 
+  # Gets the list of strategies available for the user. It also updates the current database with
   # the response, as this keeps the local copy for the name of data releases up to date
   def self.find_strategies_by_user(user)
     conn = get_connection
-    
+
     username = user.gsub(/@.*/, '')
     studies = JSON.parse(conn.get('/api/v2/studies?filter[state]=active&filter[user]='+username).body)['data']
 
@@ -59,7 +58,6 @@ module DataReleaseStrategyClient
   # Connection to access the data release server
   def self.get_connection
     conn = Faraday.new(:url => Rails.application.config.data_release_url) do |faraday|
-      faraday.use ZipkinTracer::FaradayHandler, 'Sequencescape'
       faraday.request  :url_encoded
       faraday.response :logger
       faraday.adapter  Faraday.default_adapter

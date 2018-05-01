@@ -22,6 +22,10 @@ RSpec.describe NodesController, type: :controller do
     allow(controller).to receive(:current_user).and_return(user)
   end
 
+  before do
+    allow(EventService).to receive(:publish)
+  end
+
   describe 'DELETE #destroy' do
 
     context "when a user does not have write permission on the node" do
@@ -69,6 +73,7 @@ RSpec.describe NodesController, type: :controller do
       before do
         @prog = create(:node, name: "prog", parent: program1, owner_email: user.email)
       end
+
       it "should create a new node" do
         expect { post :create, params: { node_form: { parent_id: @prog.id, name: "Bananas", user_writers: 'dirk,jeff@sanger.ac.uk', group_writers: 'team_gamma,team_DELTA', user_spenders: 'DIRK@sanger.ac.uk', group_spenders: 'team_delta,team_epsilon' } } }.to change{Node.all.count}.by(1)
         node = Node.find_by(name: "Bananas")
@@ -87,11 +92,24 @@ RSpec.describe NodesController, type: :controller do
         expect(node.permitted?(user.email, :write)).to be_truthy
         expect(node.permitted?(user.email, :spend)).to be_truthy
       end
+
+      it 'should have published a create event' do
+        post :create, params: { node_form: { parent_id: @prog.id, name: "Bananas", user_writers: 'dirk,jeff@sanger.ac.uk', group_writers: 'team_gamma,team_DELTA', user_spenders: 'DIRK@sanger.ac.uk', group_spenders: 'team_delta,team_epsilon' } }
+        expect(EventService).to have_received(:publish) do |message|
+          expect(message.node).to eq(Node.find_by(name: 'Bananas'))
+          expect(message.user).to eq(user.email)
+          expect(message.event).to eq('created')
+        end
+      end
     end
 
     context "when a user does not have write permission on the parent node" do
       it "should not create a new node" do
         expect { post :create, params: { node_form: { parent_id: @program2.id, name: "Bananas" } } }.to change{Node.all.count}.by(0)
+      end
+      it "should not have published an event" do
+        post :create, params: { node_form: { parent_id: @program2.id, name: "Bananas" } }
+        expect(EventService).not_to have_received(:publish)
       end
     end
 
@@ -124,18 +142,32 @@ RSpec.describe NodesController, type: :controller do
     end
 
     context "when a user does have write permissions on the node" do
-      it "should update the node" do
+      before(:each) do
         put :update, params: { id: @program3.id, node_form: { id: @program3.id, name: "test", parent_id: program1.id } }
         @program3.reload
+      end
+      it "should update the node" do
         expect(@program3.name).to eq "test"
+      end
+      it 'should have published an update event' do
+        expect(EventService).to have_received(:publish) do |message|
+          expect(message.node).to eq(Node.find_by(name: @program3.name))
+          expect(message.user).to eq(user.email)
+          expect(message.event).to eq('updated')
+        end
       end
     end
 
     context "when a user does not have write permissions on the node" do
-      it "should not update the node" do
+      before do
         put :update, params: { id: @program2.id, node_form: { id: @program2.id, name: "test", parent_id: program1.id } }
+      end
+      it "should not update the node" do
         @program2.reload
         expect(@program2.name).to eq "program2"
+      end
+      it "should not have published an event" do
+        expect(EventService).not_to have_received(:publish)
       end
     end
 

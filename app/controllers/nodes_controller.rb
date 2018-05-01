@@ -3,6 +3,7 @@
   include WebSocketsNotification
 
   before_action :current_node, except: :create
+  before_action :build_org_chart, except: :create
   before_action :set_child, only: [:show, :tree]
 
   def show
@@ -11,7 +12,10 @@
   end
 
   def index
-    render :tree
+    authorize! :read, Node
+    respond_to do |format|
+      format.json { render json: @tree }
+    end
   end
 
   def tree
@@ -28,6 +32,7 @@
 
     if @node_form.save
       flash[:success] = 'Node created'
+      publish_created
     else
       flash[:danger] = 'Failed to create node'
     end
@@ -52,6 +57,7 @@
       @node_form = NodeForm.new(node_form_params.merge(user_email: current_user.email))
       if @node_form.save
         notify_changes_with_websockets
+        publish_updated
 
         format.html { redirect_to node_path(@node.parent_id), flash: { success: 'Node updated' } }
         format.json { render json: @node, status: :ok }
@@ -78,9 +84,15 @@
     redirect_to node_path(@parent_id)
   end
 
-  helper_method :check_write_permission_for_node, :jwt_provided?, :can_edit_permission_for
+  helper_method :check_write_permission_for_node, :jwt_provided?, :can_edit_permission_for, :current_user
 
   private
+
+  def build_org_chart
+    @tree = Rails.cache.fetch("org_chart", expires_in: 7.days) do
+      OrgChart::Builder.build.to_json
+    end
+  end
 
   def set_form
     @nodeform = NodeForm.from_node(@node, current_user.email)
@@ -108,6 +120,16 @@
 
   def can_edit_permission_for(node)
     check_write_permission_for_node(node) && !node.is_subproject?
+  end
+
+  def publish_created
+    message = EventMessage.new(node: @node_form.node, user: current_user.email, trace_id: request.request_id, event: 'created')
+    EventService.publish(message)
+  end
+
+  def publish_updated
+    message = EventMessage.new(node: @node_form.node, user: current_user.email, trace_id: request.request_id, event: 'updated')
+    EventService.publish(message)
   end
 
 end
