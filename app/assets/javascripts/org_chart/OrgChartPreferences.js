@@ -12,21 +12,15 @@
   var proto = OrgChartPreferences.prototype;
 
   proto.attachPreferencesHandlers = function() {
-    $('[data-user-preferences-expand]').on('click', $.proxy(function() {
-      this.loadTree({restoreStateRequested: false}).then($.proxy(this.saveUserConfig, this));
-    }, this));
-    $(this).on('orgchart.restoreStateRequested', $.proxy(function(event, opts) {
-      $('.edge').on('click', $.proxy(function() {
-        setTimeout($.proxy(this.saveUserConfig, this), 500);
-      }, this));
-      if ((!opts) || (!!opts.restoreStateRequested)) {
-        this.restoreUserConfig();
-      }
-    }, this));
-  };
+    // Save the layout any time an edge is clicked
+    $('i.edge', '#tree').on('click', function() {
+      setTimeout(this.saveUserConfig.bind(this), 500);
+    }.bind(this));
 
-  proto.onSaveUserConfig = function() {
-    //this.info('Tree layout saved')
+    // Delete the user's layout then reload the tree
+    $('#reset-button').on('click', $.proxy(function() {
+      this.deleteUserConfig().then(this.reloadTree.bind(this))
+    }, this));
   };
 
   proto.onErrorSaveUserConfig = function() {

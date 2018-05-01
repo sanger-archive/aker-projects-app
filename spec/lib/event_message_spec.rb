@@ -35,9 +35,8 @@ RSpec.describe EventMessage do
     let(:message) do
       Timecop.freeze do
         @timestamp = Time.now.utc.iso8601
-        m = EventMessage.new(node: node, user: user, event: event)
+        m = EventMessage.new(node: node, user: user, event: event, trace_id: trace_id)
         m.instance_variable_set(:@event_uuid, event_uuid)
-        m.instance_variable_set(:@trace_id, trace_id)
         m
       end
     end
@@ -85,7 +84,7 @@ RSpec.describe EventMessage do
       it 'should include the appropriate metadata' do
         expect(metadata).to eq(
           node_id: node.id,
-          zipkin_trace_id: trace_id,
+          trace_id: trace_id,
           owner_email: node.owner_email,
           description: node.description,
           cost_code: node.cost_code,
