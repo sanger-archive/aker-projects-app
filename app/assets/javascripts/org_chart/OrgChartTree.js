@@ -87,6 +87,17 @@
     if (this.selectedNodeId()) $('div#' + this.selectedNodeId()).click();
   };
 
+  // selectedNodeId()
+  //
+  // Arguments: None
+  // Returns: String
+  //
+  // Gets the ID of the currently selected node
+  proto.selectedNodeId = function() {
+    if (!this.selectedNode()) return "";
+    return this.selectedNode().attr('id');
+  }
+
 
   // onBeforeDrop()
   //
