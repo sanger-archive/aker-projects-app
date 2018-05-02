@@ -126,7 +126,7 @@ RSpec.describe 'API::V1::Nodes', type: :request do
           expect(@json[:data].length).to eq(3)
         end
       end
-    end    
+    end
 
     describe '#filter[node_type]' do
 
@@ -139,13 +139,13 @@ RSpec.describe 'API::V1::Nodes', type: :request do
         expected_ids = proposals.pluck(:id)
 
         expect(response_data.length).to eql(proposals.length)
-        expect(response_ids).to match_array(expected_ids)        
+        expect(response_ids).to match_array(expected_ids)
       end
 
       it 'can filter nodes that represent subprojects' do
         mock_subproject_cost_code('S1234-45')
-        subprojects = create_list(:node, 3, 
-          cost_code: "S1234-45", description: "This is a subproject", parent: proposals.first) 
+        subprojects = create_list(:node, 3,
+          cost_code: "S1234-45", description: "This is a subproject", parent: proposals.first)
         get api_v1_nodes_path, params: { "filter[node_type]": "subproject" }, headers: headers
 
         json = JSON.parse(response.body, symbolize_names: true)
@@ -154,7 +154,7 @@ RSpec.describe 'API::V1::Nodes', type: :request do
         expected_ids = subprojects.pluck(:id)
 
         expect(response_data.length).to eql(subprojects.length)
-        expect(response_ids).to match_array(expected_ids)        
+        expect(response_ids).to match_array(expected_ids)
       end
     end
 
@@ -239,7 +239,7 @@ RSpec.describe 'API::V1::Nodes', type: :request do
           @some_other_nodes = create_list(:node, 2, parent: @ken_node_2)
           @nodes_that_dont_match_condition = create_list(:node, 4, parent: @gary.last)
           @expected_result = [@some_nodes, @some_other_nodes].flatten
-        end 
+        end
 
         it 'can filter the nodes that have a parent with a given spend permission' do
           get api_v1_nodes_path, params: { "filter[with_parent_spendable_by]": "ken" }, headers: headers
@@ -250,7 +250,7 @@ RSpec.describe 'API::V1::Nodes', type: :request do
           expected_ids = @expected_result.pluck(:id)
 
           expect(response_data.length).to eql(7)
-          expect(response_ids).to match_array(expected_ids)          
+          expect(response_ids).to match_array(expected_ids)
         end
       end
 

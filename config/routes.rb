@@ -1,5 +1,5 @@
 Rails.application.routes.draw do
-
+  # For details on the DSL available within this file, see http://guides.rubyonrails.org/routing.html
   root 'nodes#show', id: nil
 
   resources :nodes do
@@ -24,13 +24,10 @@ Rails.application.routes.draw do
 
   namespace :api do
     namespace :v1 do
-      # https://github.com/cerebris/jsonapi-resources#routing
+      # https://github.com/cerebris/jsonapi-resources#routing
       jsonapi_resources :nodes do
         jsonapi_relationships
       end
-
-
     end
   end
-
 end

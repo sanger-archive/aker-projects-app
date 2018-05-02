@@ -186,10 +186,20 @@ RSpec.describe 'Nodes', type: :feature do
           expect(page.find_by_id('selected-node').value).to eq root.name
         end
 
-        it 'clears the New Node input' do
-          expect(page.find_by_id('new-node').value).to eq 'child'
-          page.find('div', class: 'node', text: root.name).click
-          expect(page.find_by_id('new-node').value).to eq ''
+      end
+    end
+
+    describe 'expanding tree' do
+      context 'when some nodes are hidden and EXPAND TREE is clicked' do
+        before do
+          page.find('div', class: 'node', text: program2.name)
+              .find('i', class: 'verticalEdge').trigger('click')
+        end
+
+        it 'reloads the whole tree' do
+          expect(page.find('div', class: 'orgchart')).to_not have_content(root.name)
+          click_button 'Expand Tree'
+          expect(page.find('div', class: 'orgchart')).to have_content(root.name)
         end
       end
     end

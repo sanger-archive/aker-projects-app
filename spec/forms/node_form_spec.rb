@@ -17,8 +17,6 @@ RSpec.describe NodeForm do
   }
 
   let(:data_release_strategy) { build(:data_release_strategy) }
-  before { allow(EventService).to receive(:publish) }
-
 
   describe '#new' do
     let(:form) {
@@ -49,7 +47,7 @@ RSpec.describe NodeForm do
     end
 
     context 'when defining the data release strategy' do
-      let(:node) {NodeForm.new(name: 'dirk', data_release_strategy_id: strategy_id, description: 'foo', cake: 'banana', 
+      let(:node) {NodeForm.new(name: 'dirk', data_release_strategy_id: strategy_id, description: 'foo', cake: 'banana',
         owner_email: user.email, user_email: user.email, group_writers: 'zombies,pirates') }
       context 'when the data release is an empty string' do
         let(:strategy_id) {''}
@@ -160,15 +158,15 @@ RSpec.describe NodeForm do
       before do
         allow(DataReleaseStrategyClient).to receive(:find_strategies_by_user)
       end
-      let(:form) { NodeForm.new(name: 'jelly', description: 'foo', 
+      let(:form) { NodeForm.new(name: 'jelly', description: 'foo',
         data_release_strategy_id: strategy_id,
         user_email: user.email,
-        parent_id: root.id, owner_email: user.email, cost_code: valid_project_cost_code, 
-        user_writers: 'dirk,jeff', group_writers: 'zombies,   PIRATES', user_spenders: 'DIRK', 
+        parent_id: root.id, owner_email: user.email, cost_code: valid_project_cost_code,
+        user_writers: 'dirk,jeff', group_writers: 'zombies,   PIRATES', user_spenders: 'DIRK',
         group_spenders: 'ninjas') }
 
       context 'when it is nil' do
-        let(:strategy_id) { nil } 
+        let(:strategy_id) { nil }
         it 'is valid' do
           expect(form.valid?).to eq(true)
         end
@@ -178,18 +176,18 @@ RSpec.describe NodeForm do
         end
       end
       context 'when is empty string' do
-        let(:strategy_id) { '' } 
+        let(:strategy_id) { '' }
         it 'is valid' do
           expect(form.valid?).to eq(true)
-        end        
+        end
         it 'does not check the external service' do
           form.valid?
           expect(DataReleaseStrategyClient).not_to have_received(:find_strategies_by_user)
-        end 
+        end
       end
       context 'when is a uuid' do
         let(:strategy) { create :data_release_strategy }
-        let(:strategy_id) { strategy.id } 
+        let(:strategy_id) { strategy.id }
         before do
           allow(DataReleaseStrategyClient).to receive(:find_strategies_by_user).with(user.email).and_return([strategy])
         end
@@ -201,7 +199,7 @@ RSpec.describe NodeForm do
         context 'when the strategy is in the list returned by the service' do
           before do
             allow(DataReleaseStrategyClient).to receive(:find_strategies_by_user).with(user.email).and_return([strategy])
-          end        
+          end
           it 'is valid' do
             expect(form.valid?).to eq(true)
           end
@@ -230,7 +228,7 @@ RSpec.describe NodeForm do
           expect(form.errors.messages[:data_release_strategy_id].first).to include('UUID')
         end
       end
-    end    
+    end
   end
 
   describe '#save' do
@@ -246,7 +244,7 @@ RSpec.describe NodeForm do
       pr
     end
     let(:project) do
-      pr = create(:node, name: 'project', description: 'desc', cost_code: valid_project_cost_code, 
+      pr = create(:node, name: 'project', description: 'desc', cost_code: valid_project_cost_code,
         parent: program, owner_email: user.email)
     end
 
@@ -258,8 +256,8 @@ RSpec.describe NodeForm do
           user_spenders: 'DIRK', group_spenders: 'ninjas', user_email: some_email)
       end
 
-      before { 
-        @result = form.save 
+      before {
+        @result = form.save
       }
 
       it { expect(@result).to be_truthy }
@@ -297,18 +295,11 @@ RSpec.describe NodeForm do
         node = Node.find_by(name: 'jelly')
         expect(node.data_release_strategy_id).to eq(data_release_strategy.id)
       end
-      it 'should have published a create event' do
-        expect(EventService).to have_received(:publish) do |message|
-          expect(message.node).to eq(Node.find_by(name: 'jelly'))
-          expect(message.user).to eq(some_email)
-          expect(message.event).to eq('created')
-        end
-      end
     end
 
     context 'when the form represents an existing node' do
       let(:form) do
-        NodeForm.new(id: project.id, name: 'jelly', description: 'foo', parent_id: project.parent_id, 
+        NodeForm.new(id: project.id, name: 'jelly', description: 'foo', parent_id: project.parent_id,
           data_release_strategy_id: data_release_strategy.id,
           cost_code: another_valid_project_cost_code,
                      user_writers: 'dirk,jeff', group_writers: 'zombies,   PIRATES', user_spenders: 'DIRK', group_spenders: 'ninjas', user_email: some_email)
@@ -347,15 +338,8 @@ RSpec.describe NodeForm do
       it 'sets up the correct data release policy' do
         node = Node.find(project.id)
         expect(node.data_release_strategy_id).to eq(data_release_strategy.id)
-      end      
-
-      it 'should have published an update event' do
-        expect(EventService).to have_received(:publish) do |message|
-          expect(message.node).to eq(Node.find_by(name: 'jelly'))
-          expect(message.user).to eq(some_email)
-          expect(message.event).to eq('updated')
-        end
       end
+
     end
 
     context 'when the node cannot be created' do
@@ -375,9 +359,6 @@ RSpec.describe NodeForm do
         expect(Node.find_by(name: 'jelly')).to be_nil
       end
 
-      it "should not have published an event" do
-        expect(EventService).not_to have_received(:publish)
-      end
     end
 
     context 'when the node cannot be updated' do
@@ -397,10 +378,6 @@ RSpec.describe NodeForm do
         node = Node.find(project.id)
         expect(node.name).to eq('project') # change has been rolled back
       end
-
-      it "should not have published an event" do
-        expect(EventService).not_to have_received(:publish)
-      end
     end
 
     context 'when selecting a data release strategy' do
@@ -417,7 +394,7 @@ RSpec.describe NodeForm do
         it 'does not update the node' do
           expect(form.save).to be_falsey
           project.reload
-          expect(project.data_release_strategy_id).to eq(current_strategy.id)          
+          expect(project.data_release_strategy_id).to eq(current_strategy.id)
         end
 
         context 'but if the node already has the data release strategy the user is trying to set' do
@@ -435,7 +412,7 @@ RSpec.describe NodeForm do
         before do
           allow(DataReleaseStrategyClient).to receive(:find_strategies_by_user).and_return([strategy])
         end
-        
+
         it 'does update the node' do
           expect(form.save).to be_truthy
           project.reload
@@ -448,7 +425,7 @@ RSpec.describe NodeForm do
         before do
           allow(DataReleaseStrategyClient).to receive(:find_strategies_by_user).and_return([strategy])
         end
-        
+
         it 'does update the node' do
           project.reload
           project.update_attributes!(data_release_strategy_id: current_strategy.id)
