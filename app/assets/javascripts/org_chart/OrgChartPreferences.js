@@ -12,11 +12,6 @@
   var proto = OrgChartPreferences.prototype;
 
   proto.attachPreferencesHandlers = function() {
-    // Save the layout any time an edge is clicked
-    $('i.edge', '#tree').on('click', function() {
-      setTimeout(this.saveUserConfig.bind(this), 500);
-    }.bind(this));
-
     // Delete the user's layout then reload the tree
     $('#reset-button').on('click', $.proxy(function() {
       this.deleteUserConfig().then(this.reloadTree.bind(this))
