@@ -5,7 +5,6 @@
   before_action :current_node, except: :create
   before_action :build_org_chart, except: :create
   before_action :set_child, only: [:show, :tree]
-  skip_before_action :verify_authenticity_token, only: :update
 
   def show
     authorize! :read, Node
