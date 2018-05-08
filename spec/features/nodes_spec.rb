@@ -78,7 +78,7 @@ RSpec.describe 'Nodes', type: :feature do
       expect(page.find_by_id('tree-hierarchy').visible?).to be(true)
     end
 
-    it 'does show the edit panel' do
+    it 'shows the edit panel' do
       expect(page.find(:css, '#edit-panel', visible: true)).to be_visible
     end
 
@@ -119,6 +119,16 @@ RSpec.describe 'Nodes', type: :feature do
           click_button 'Add Node'
           wait_for_ajax
         end.to change { program1.nodes.count }.by(1)
+      end
+
+      context 'when a node with the same name already exists' do
+        it 'notifies the user the node can not be created' do
+          page.find('div', class: 'node', text: program1.name).click
+          page.fill_in 'New Node:', with: program1.name
+          click_button 'Add Node'
+          wait_for_ajax
+          expect(page).to have_content("name - must be unique")
+        end
       end
 
     end

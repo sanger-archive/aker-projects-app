@@ -62,7 +62,7 @@
   proto.disableTree = function() {
     if (!this._treeIsDown) {
       this.toggleMask(true);
-      $('#tree-hierarchy').prepend('<div class="alert alert-danger">Sorry, Aker Projects is currently unavailable.</div>');
+      this.alert('Sorry, Aker Projects is currently unavailable.');
     }
     this._treeIsDown = true;
   };
