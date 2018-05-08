@@ -24,6 +24,9 @@
   };
 
   proto.attachMenuHandlers = function() {
+    $('input#new-node').on('keypress', function(e) {
+      if (e.keyCode == 13 /* Enter key */) this.onAddNodes();
+    }.bind(this))
     $('#btn-add-nodes').on('click', $.proxy(this.onAddNodes, this));
     $('#btn-delete-nodes').on('click', $.proxy(this.onDeleteNodes, this));
   };
