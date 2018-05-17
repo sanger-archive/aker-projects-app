@@ -126,7 +126,7 @@
     );
   };
 
-  proto.onDeleteUserConfig = function() { this.info('Tree layout deleted')};
+  proto.onDeleteUserConfig = function() { };
   proto.onErrorDeleteUserConfig = function() { this.alert('Error while deleting tree layout')};
 
   proto.restoreUserConfig = function() {

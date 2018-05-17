@@ -20,14 +20,16 @@
 
   var proto = OrgTree.prototype;
 
+  var dismissButton = '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>';
+
   proto.alert = function(msg) {
     $('.alert.alert-danger').remove();
-    $('#tree-hierarchy').prepend('<div class="alert alert-danger">'+msg+'</div>');
+    $('#tree').prepend('<div class="alert alert-danger alert-dismissible">'+dismissButton+msg+'</div>');
   }
 
   proto.info = function(msg) {
     $('.alert.alert-info').remove();
-    $('#tree-hierarchy').prepend('<div class="alert alert-info">'+msg+'</div>');
+    $('#tree').prepend('<div class="alert alert-info alert-dismissible">'+dismissButton+msg+'</div>');
   }
 
   proto.attachHandlers = function() {
