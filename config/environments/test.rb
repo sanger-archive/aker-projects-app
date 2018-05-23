@@ -56,9 +56,9 @@ Rails.application.configure do
   config.logout_url = 'logout_url'
 
   config.billing_facade_url = 'http://some-server'
-  config.urls = { submission: '',
+  config.urls = { reception: '',
                   permissions: '',
                   sets: '',
                   projects: '',
-                  work_orders: '' }
+                  work: '' }
 end
