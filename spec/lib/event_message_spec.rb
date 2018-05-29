@@ -11,8 +11,7 @@ RSpec.describe EventMessage do
           description: 'A node with a cost code',
           cost_code: 'S1234',
           node_uuid: SecureRandom.uuid,
-          parent: root,
-          data_release_strategy_id: SecureRandom.uuid)
+          parent: root)
   end
   let(:new_node) do
     build(:node, id: 3, name: 'newproj', node_uuid: SecureRandom.uuid, parent: root)
@@ -89,8 +88,7 @@ RSpec.describe EventMessage do
           description: node.description,
           cost_code: node.cost_code,
           deactivated_datetime: node.deactivated_datetime&.utc&.iso8601,
-          deactivated_by: node.deactivated_by,
-          data_release_uuid: node.data_release_strategy_id
+          deactivated_by: node.deactivated_by
         )
       end
 

@@ -47,7 +47,6 @@ class EventMessage
       cost_code: @node.cost_code,
       deactivated_datetime: @node.deactivated_datetime&.utc&.iso8601,
       deactivated_by: @node.deactivated_by,
-      data_release_uuid: @node.data_release_strategy_id
     }
   end
 
