@@ -6,8 +6,7 @@ module Api
       has_many :permissions, class_name: 'Permission', relation_name: :permissions
       has_one :parent
       attributes :name, :cost_code, :description, :node_uuid, :writable, :updated_at, :created_at,
-                 :owned_by_current_user, :data_release_strategy_id,
-                 :editable_by_current_user,
+                 :owned_by_current_user, :editable_by_current_user,
                  :is_project_node, :is_sub_project_node, :parent_id, :spendable_by_current_user
       before_create :set_owner
 
