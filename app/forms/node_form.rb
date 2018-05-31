@@ -9,9 +9,7 @@ class NodeForm
     false
   end
 
-  validates_with DataReleaseStrategyClient::DataReleaseStrategyValidator, if: :changing_data_release_strategy?
-
-  ATTRIBUTES = [:id, :parent_id, :name, :description, :cost_code, :data_release_strategy_id,
+  ATTRIBUTES = [:id, :parent_id, :name, :description, :cost_code,
     :user_writers, :group_writers, :user_spenders, :group_spenders]
 
   attr_accessor *ATTRIBUTES
@@ -31,22 +29,6 @@ class NodeForm
     UUID.validate(value)
   end
 
-  def changing_data_release_strategy?
-    node = nil
-    node = Node.find(id) if id
-    return true if node.nil?
-    (data_release_strategy_id != node.data_release_strategy_id)
-  end
-
-  # It sanitizes the input
-  def data_release_strategy_id=(value)
-    if value == ''
-      @data_release_strategy_id = nil
-    else
-      @data_release_strategy_id = value
-    end
-  end
-
   def save
     # valid? currently does nothing
     valid? && (id.present? ? update_objects : create_objects)
@@ -56,7 +38,6 @@ class NodeForm
     permission_node = node.is_subproject? ? node.parent : node
     new(id: node.id, parent_id: node.parent_id, name: node.name, description: node.description,
         cost_code: node.cost_code, owner_email: node.owner_email, user_email: user_email,
-        data_release_strategy_id: node.data_release_strategy_id,
         user_writers: node_permitted(permission_node, :write, false),
         group_writers: node_permitted(permission_node, :write, true),
         user_spenders: node_permitted(permission_node, :spend, false),
@@ -80,7 +61,6 @@ class NodeForm
   end
 
   def attrs_for_node_update(attrs={})
-    attrs[:data_release_strategy_id] = @data_release_strategy_id
     attrs.merge(name: name, cost_code: cost_code, description: description,
         parent_id: parent_id)
   end

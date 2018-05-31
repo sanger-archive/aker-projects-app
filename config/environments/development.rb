@@ -90,5 +90,4 @@ Rails.application.configure do
   }
 
   config.billing_facade_url = 'http://localhost:3601'
-  config.data_release_url = 'http://localhost:6600'
 end
