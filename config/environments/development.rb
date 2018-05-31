@@ -82,13 +82,12 @@ Rails.application.configure do
   config.auth_service_url = 'http://localhost:9010'
 
   config.urls = {
-    submission: '',
+    reception: '',
     permissions: '',
     sets: '',
     projects: '',
-    work_orders: ''
+    work: ''
   }
 
   config.billing_facade_url = 'http://localhost:3601'
-  config.data_release_url = 'http://localhost:6600'
 end
