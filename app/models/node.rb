@@ -37,7 +37,7 @@ class Node < ApplicationRecord
 
   scope :active, -> { where(deactivated_by: nil) }
 
-  scope :with_cost_code, -> { where(Node.arel_table[:cost_code].matches('S%')) }
+  scope :with_cost_code, -> { where(Node.arel_table[:cost_code].matches('S%').or(Node.arel_table[:cost_code].matches('G%'))) }
   scope :with_project_cost_code, -> { with_cost_code.where.not(Node.arel_table[:cost_code].matches("%#{BillingFacadeClient::CostCodeValidator::SPLIT_CHARACTER}%")) }
   scope :with_subproject_cost_code, -> { with_cost_code.where(Node.arel_table[:cost_code].matches("%#{BillingFacadeClient::CostCodeValidator::SPLIT_CHARACTER}%")) }
 
