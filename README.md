@@ -8,7 +8,7 @@
   * Seed DB with `rake db:seed` (first verify that your username has been added to the seed)
 
 # Testing
-## Requirements
+## Requirements
 * [PhantomJS](http://phantomjs.org/): `npm install phantomjs -g`
 
 ## Running tests
