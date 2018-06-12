@@ -1,5 +1,7 @@
 # Aker - Study management GUI
 
+[![Build Status](https://travis-ci.org/sanger/aker-projects-app.svg?branch=devel)](https://travis-ci.org/sanger/aker-projects-app)
+
 # Installation
 ## Dev environment
 1. Configure or update ports to services in `development.rb`.

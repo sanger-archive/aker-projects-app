@@ -47,6 +47,21 @@ gem 'json_api_client', github: 'sanger/json_api_client'
 ###
 # Groups
 ###
+group :development do
+  gem 'listen', '~> 3.0.5'
+  gem 'rubocop', '~> 0.52', require: false
+  gem 'spring' # Spring speeds up development by keeping your application running in the background
+  gem 'spring-watcher-listen', '~> 2.0.0'
+  gem 'web-console' # Access an IRB console on exception pages or by using <%= console %>
+end
+
+group :test do
+  gem 'database_cleaner'
+  gem 'rubycritic'
+  gem 'simplecov', require: false
+  gem 'simplecov-rcov'
+end
+
 group :development, :test do
   gem 'brakeman', require: false
   gem 'byebug', platform: :mri # Call 'byebug' anywhere in the code to get a debugger console
@@ -63,19 +78,4 @@ group :development, :test do
   gem 'teaspoon', github: 'jejacks0n/teaspoon', branch: 'master'
   gem 'teaspoon-mocha'
   gem 'timecop'
-end
-
-group :development do
-  gem 'listen', '~> 3.0.5'
-  gem 'rubocop', '~> 0.52', require: false
-  gem 'spring' # Spring speeds up development by keeping your application running in the background
-  gem 'spring-watcher-listen', '~> 2.0.0'
-  gem 'web-console' # Access an IRB console on exception pages or by using <%= console %>
-end
-
-group :test do
-  gem 'database_cleaner'
-  gem 'rubycritic'
-  gem 'simplecov', require: false
-  gem 'simplecov-rcov'
 end
