@@ -1,6 +1,4 @@
 language: ruby
-git:
-  depth: false
 env:
   global:
     - CC_TEST_REPORTER_ID=09e649b265e9ae3c734c8ae0565e93357b6a586af609b07e6c64f4bd5bf1ffcc
@@ -16,3 +14,12 @@ script:
   - bundle exec rspec
 after_script:
   - ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT
+git:
+  depth: false
+  submodules: false
+branches:
+  only:
+    - devel
+    - wip
+    - uat
+    - master
