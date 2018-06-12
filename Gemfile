@@ -11,6 +11,7 @@ end
 # All the gems not in a group will always be installed:
 #   http://bundler.io/v1.6/groups.html#grouping-your-dependencies
 gem 'active_model_serializers', '~> 0.10'
+gem 'bootsnap'
 gem 'bootstrap-sass', '~> 3.3.6'
 gem 'bootstrap_form'
 gem 'bunny', '~> 2.9', '>= 2.9.2', require: false
@@ -21,19 +22,18 @@ gem 'jquery-rails' # Use jquery as the JavaScript library
 gem 'js-routes'
 gem 'jsonapi-resources', '~> 0.8'
 gem 'loading_mask'
+gem 'lograge'
+gem 'logstash-event'
+gem 'logstash-logger'
 gem 'pg', '~> 0.18' # pg version 1.0.0 is not compatible with Rails 5.1.4
 gem 'puma', '~> 3.0' # Use Puma as the app server
 gem 'rails', '~> 5.2'
+gem 'request_store'
 gem 'sass-rails', '~> 5.0' # Use SCSS for stylesheets
 gem 'therubyracer'
 gem 'turbolinks', '~> 5' # Turbolinks makes navigating your web application faster.
 gem 'uglifier', '~> 3.2' # Use Uglifier as compressor for JavaScript assets
 gem 'uuid', '~> 2.3'
-gem 'lograge'
-gem 'logstash-event'
-gem 'logstash-logger'
-gem 'request_store'
-gem 'bootsnap'
 
 ###
 # Sanger gems
