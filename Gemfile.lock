@@ -10,15 +10,15 @@ GIT
 
 GIT
   remote: https://github.com/sanger/aker-billing-facade-client.git
-  revision: 95fefe3e375bcbbc0a881a4225fc9192d069c1ff
+  revision: ba42e2a6aad254b2f3bc4fa5076d6c955f5fc01e
   specs:
-    aker-billing-facade-client (0.1.6)
+    aker-billing-facade-client (0.1.8)
       activemodel
       faraday
 
 GIT
   remote: https://github.com/sanger/aker-credentials.git
-  revision: fa2e9f56090993df1d6c45e68ba9b8090593080d
+  revision: 2d116d61e8ad0403cd12dc659221c75d39465ffe
   specs:
     aker_credentials_gem (0.2.6)
       activesupport
@@ -28,14 +28,14 @@ GIT
 
 GIT
   remote: https://github.com/sanger/aker-permission.git
-  revision: 3c8ea05a11a558bb912b84085323990e1192e64b
+  revision: a50887337e2a8672e6c601025d726b9b76b42c92
   specs:
     aker_permission_gem (0.4.1)
       cancancan
 
 GIT
   remote: https://github.com/sanger/aker-shared-navbar.git
-  revision: 799c36ad63c98b3894efbbb2ec6aef983ce35b47
+  revision: f67cda0704b8f19665ef2f2642fcd8bd159206d8
   specs:
     aker_shared_navbar (0.1.7)
 
@@ -104,7 +104,7 @@ GEM
     amq-protocol (2.3.0)
     arel (9.0.0)
     ast (2.4.0)
-    autoprefixer-rails (8.4.1)
+    autoprefixer-rails (8.6.2)
       execjs
     axiom-types (0.1.1)
       descendants_tracker (~> 0.0.4)
@@ -117,19 +117,19 @@ GEM
       autoprefixer-rails (>= 5.2.1)
       sass (>= 3.3.4)
     bootstrap_form (2.7.0)
-    brakeman (4.2.1)
+    brakeman (4.3.1)
     builder (3.2.3)
-    bunny (2.9.2)
+    bunny (2.10.0)
       amq-protocol (~> 2.3.0)
     byebug (10.0.2)
     cancancan (2.2.0)
-    capybara (3.0.3)
+    capybara (3.2.1)
       addressable
       mini_mime (>= 0.1.3)
       nokogiri (~> 1.8)
       rack (>= 1.6.0)
       rack-test (>= 0.6.3)
-      xpath (~> 3.0)
+      xpath (~> 3.1)
     case_transform (0.2)
       activesupport
     cliver (0.3.2)
@@ -150,21 +150,21 @@ GEM
     descendants_tracker (0.0.4)
       thread_safe (~> 0.3, >= 0.3.1)
     diff-lcs (1.3)
-    docile (1.3.0)
+    docile (1.3.1)
     equalizer (0.0.11)
     erubi (1.7.1)
     erubis (2.7.0)
     execjs (2.7.0)
-    factory_bot (4.8.2)
+    factory_bot (4.10.0)
       activesupport (>= 3.0.0)
-    factory_bot_rails (4.8.2)
-      factory_bot (~> 4.8.2)
+    factory_bot_rails (4.10.0)
+      factory_bot (~> 4.10.0)
       railties (>= 3.0.0)
-    faraday (0.15.0)
+    faraday (0.15.2)
       multipart-post (>= 1.2, < 3)
     faraday_middleware (0.12.2)
       faraday (>= 0.7.4, < 1.0)
-    ffi (1.9.23)
+    ffi (1.9.25)
     flay (2.12.0)
       erubis (~> 2.7.0)
       path_expander (~> 1.0)
@@ -174,13 +174,14 @@ GEM
       path_expander (~> 1.0)
       ruby_parser (~> 3.1, > 3.1.0)
       sexp_processor (~> 4.8)
-    font-awesome-sass (5.0.9)
-      sass (>= 3.2)
+    font-awesome-sass (5.0.13)
+      sassc (>= 1.11)
     globalid (0.4.1)
       activesupport (>= 4.2.0)
     i18n (1.0.1)
       concurrent-ruby (~> 1.0)
     ice_nine (0.11.2)
+    jaro_winkler (1.5.1)
     jbuilder (2.7.0)
       activesupport (>= 4.2.0)
       multi_json (>= 1.2)
@@ -241,11 +242,11 @@ GEM
     path_expander (1.0.3)
     pg (0.21.0)
     phantomjs (2.1.1.0)
-    poltergeist (1.18.0)
+    poltergeist (1.18.1)
       capybara (>= 2.1, < 4)
       cliver (~> 0.3.1)
       websocket-driver (>= 0.2.0)
-    powerpack (0.1.1)
+    powerpack (0.1.2)
     public_suffix (3.0.2)
     puma (3.11.4)
     rack (2.0.5)
@@ -304,7 +305,8 @@ GEM
       rspec-mocks (~> 3.7.0)
       rspec-support (~> 3.7.0)
     rspec-support (3.7.1)
-    rubocop (0.55.0)
+    rubocop (0.57.2)
+      jaro_winkler (~> 1.5.1)
       parallel (~> 1.10)
       parser (>= 2.5)
       powerpack (~> 0.1)
@@ -335,6 +337,10 @@ GEM
       sprockets (>= 2.8, < 4.0)
       sprockets-rails (>= 2.0, < 4.0)
       tilt (>= 1.1, < 3)
+    sassc (1.11.4)
+      bundler
+      ffi (~> 1.9.6)
+      sass (>= 3.3.0)
     sexp_processor (4.11.0)
     simplecov (0.16.1)
       docile (~> 1.1)
@@ -371,8 +377,8 @@ GEM
       thread_safe (~> 0.1)
     uglifier (3.2.0)
       execjs (>= 0.3.0, < 3)
-    unicode-display_width (1.3.2)
-    uuid (2.3.8)
+    unicode-display_width (1.4.0)
+    uuid (2.3.9)
       macaddr (~> 1.0)
     virtus (1.0.5)
       axiom-types (~> 0.1)
@@ -387,7 +393,7 @@ GEM
     websocket-driver (0.7.0)
       websocket-extensions (>= 0.1.0)
     websocket-extensions (0.1.3)
-    xpath (3.0.0)
+    xpath (3.1.0)
       nokogiri (~> 1.8)
 
 PLATFORMS
@@ -446,4 +452,4 @@ DEPENDENCIES
   web-console
 
 BUNDLED WITH
-   1.16.1
+   1.16.2
