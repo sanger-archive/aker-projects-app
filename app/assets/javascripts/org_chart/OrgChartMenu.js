@@ -1,5 +1,5 @@
 (function($, undefined) {
-  
+
   function OrgChartMenu() {
     this.resetStatusMenu();
   };
@@ -7,8 +7,8 @@
   window.OrgChartMenu = OrgChartMenu;
 
   var MODULES = [
-    OrgChartMenuNodeCreation, 
-    OrgChartMenuNodeDelete, 
+    OrgChartMenuNodeCreation,
+    OrgChartMenuNodeDelete,
     OrgChartMenuNodeUpdate
   ];
 
@@ -23,18 +23,12 @@
     this.unselectNode();
   };
 
-
   proto.attachMenuHandlers = function() {
+    $('input#new-node').on('keypress', function(e) {
+      if (e.keyCode == 13 /* Enter key */) this.onAddNodes();
+    }.bind(this))
     $('#btn-add-nodes').on('click', $.proxy(this.onAddNodes, this));
-    // Delete Button
     $('#btn-delete-nodes').on('click', $.proxy(this.onDeleteNodes, this));
-    // Reset Button
-    $('#btn-reset').on('click', $.proxy(this.onResetNodes, this));
   };
-  
-  proto.onResetNodes = function() {
-    this.unselectNode();
-    $('#new-node').val('');
-  };
-  
+
 }(jQuery));

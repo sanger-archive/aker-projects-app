@@ -21,6 +21,7 @@ Rails.application.configure do
   # Show full error reports and disable caching.
   config.consider_all_requests_local       = true
   config.action_controller.perform_caching = false
+  config.cache_store = :null_store
 
   # Raise exceptions instead of rendering exception templates.
   config.action_dispatch.show_exceptions = false
@@ -48,16 +49,16 @@ Rails.application.configure do
       enabled: false
     }
 
-    config.fake_ldap = true
-    config.jwt_secret_key = 'test'
+  config.fake_ldap = true
+  config.jwt_secret_key = 'test'
 
-    config.login_url = 'login_url'
-    config.logout_url = 'logout_url'
+  config.login_url = 'login_url'
+  config.logout_url = 'logout_url'
 
-    config.billing_facade_url = 'http://some-server'
-    config.urls = { submission: '',
-                    permissions: '',
-                    sets: '',
-                    projects: '',
-                    work_orders: '' }
+  config.billing_facade_url = 'http://some-server'
+  config.urls = { reception: '',
+                  permissions: '',
+                  sets: '',
+                  projects: '',
+                  work: '' }
 end

@@ -1,5 +1,6 @@
 Rails.application.configure do
   # Settings specified here will take precedence over those in config/application.rb.
+  config.log_level = :debug
 
   # In the development environment your application's code is reloaded on
   # every request. This slows down response time but is perfect for development
@@ -60,21 +61,15 @@ Rails.application.configure do
   config.file_watcher = ActiveSupport::EventedFileUpdateChecker
 
   config.events = {
-    enabled: false,
-    broker_host: 'localhost',
-    broker_port: '5672',
-    broker_username: 'study_management',
-    broker_password: 'password',
-    vhost: 'aker',
-    exchange: 'aker.events.tx'
+      enabled: false,
+      broker_host: 'localhost',
+      broker_port: '5672',
+      broker_username: 'study_management',
+      broker_password: 'password',
+      vhost: 'aker',
+      exchange: 'aker.events.tx'
   }
 
-  # Raises error for missing translations
-  # config.action_view.raise_on_missing_translations = true
-
-  # Use an evented file watcher to asynchronously detect changes in source code,
-  # routes, locales, etc. This feature depends on the listen gem.
-  config.file_watcher = ActiveSupport::EventedFileUpdateChecker
   config.fake_ldap = true
 
   config.jwt_secret_key = 'development'
@@ -87,13 +82,12 @@ Rails.application.configure do
   config.auth_service_url = 'http://localhost:9010'
 
   config.urls = {
-    submission: '',
+    reception: '',
     permissions: '',
     sets: '',
     projects: '',
-    work_orders: ''
+    work: ''
   }
 
   config.billing_facade_url = 'http://localhost:3601'
-  config.data_release_url = 'http://localhost:6600'
 end

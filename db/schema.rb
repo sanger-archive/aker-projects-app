@@ -10,57 +10,48 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180329105458) do
+ActiveRecord::Schema.define(version: 2018_05_29_135327) do
 
   # These are extensions that must be enabled in order to support this database
-  enable_extension "plpgsql"
   enable_extension "citext"
+  enable_extension "plpgsql"
   enable_extension "uuid-ossp"
 
-  create_table "data_release_strategies", id: :uuid, default: -> { "uuid_generate_v4()" }, force: :cascade do |t|
-    t.string   "name"
-    t.string   "study_code"
+  create_table "nodes", id: :serial, force: :cascade do |t|
+    t.citext "name", null: false
+    t.integer "parent_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["id"], name: "index_data_release_strategies_on_id", unique: true, using: :btree
-  end
-
-  create_table "nodes", force: :cascade do |t|
-    t.citext   "name",                     null: false
-    t.integer  "parent_id"
-    t.datetime "created_at",               null: false
-    t.datetime "updated_at",               null: false
-    t.text     "description"
-    t.string   "cost_code"
+    t.text "description"
+    t.string "cost_code"
     t.datetime "deactivated_datetime"
-    t.string   "node_uuid"
-    t.citext   "owner_email",              null: false
-    t.citext   "deactivated_by"
-    t.uuid     "data_release_strategy_id"
-    t.index ["cost_code"], name: "index_nodes_on_cost_code", using: :btree
-    t.index ["name"], name: "index_nodes_on_name", using: :btree
-    t.index ["owner_email"], name: "index_nodes_on_owner_email", using: :btree
-    t.index ["parent_id"], name: "index_nodes_on_parent_id", using: :btree
+    t.string "node_uuid"
+    t.citext "owner_email", null: false
+    t.citext "deactivated_by"
+    t.index ["cost_code"], name: "index_nodes_on_cost_code"
+    t.index ["name"], name: "index_nodes_on_name"
+    t.index ["owner_email"], name: "index_nodes_on_owner_email"
+    t.index ["parent_id"], name: "index_nodes_on_parent_id"
   end
 
-  create_table "permissions", force: :cascade do |t|
-    t.citext   "permitted",       null: false
-    t.string   "permission_type", null: false
-    t.string   "accessible_type", null: false
-    t.integer  "accessible_id",   null: false
-    t.datetime "created_at",      null: false
-    t.datetime "updated_at",      null: false
-    t.index ["accessible_type", "accessible_id"], name: "index_permissions_on_accessible_type_and_accessible_id", using: :btree
-    t.index ["permitted", "permission_type", "accessible_id", "accessible_type"], name: "index_permissions_on_various", unique: true, using: :btree
-    t.index ["permitted"], name: "index_permissions_on_permitted", using: :btree
-  end
-
-  create_table "tree_layouts", force: :cascade do |t|
-    t.citext   "user_id",    null: false
-    t.text     "layout"
+  create_table "permissions", id: :serial, force: :cascade do |t|
+    t.citext "permitted", null: false
+    t.string "permission_type", null: false
+    t.string "accessible_type", null: false
+    t.integer "accessible_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["user_id"], name: "index_tree_layouts_on_user_id", unique: true, using: :btree
+    t.index ["accessible_type", "accessible_id"], name: "index_permissions_on_accessible_type_and_accessible_id"
+    t.index ["permitted", "permission_type", "accessible_id", "accessible_type"], name: "index_permissions_on_various", unique: true
+    t.index ["permitted"], name: "index_permissions_on_permitted"
+  end
+
+  create_table "tree_layouts", id: :serial, force: :cascade do |t|
+    t.citext "user_id", null: false
+    t.text "layout"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_tree_layouts_on_user_id", unique: true
   end
 
   add_foreign_key "nodes", "nodes", column: "parent_id"

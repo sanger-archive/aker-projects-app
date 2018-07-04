@@ -13,7 +13,7 @@ class EventMessage
     @user = params[:user]
     @event = params[:event]
     @event_uuid = SecureRandom.uuid
-    @trace_id = ZipkinTracer::TraceContainer.current&.next_id&.trace_id&.to_s
+    @trace_id = params.fetch(:trace_id)
     @timestamp = Time.zone.now
   end
 
@@ -41,13 +41,12 @@ class EventMessage
   def metadata
     {
       node_id: @node.id,
-      zipkin_trace_id: @trace_id,
+      trace_id: @trace_id,
       owner_email: @node.owner_email,
       description: @node.description,
       cost_code: @node.cost_code,
       deactivated_datetime: @node.deactivated_datetime&.utc&.iso8601,
       deactivated_by: @node.deactivated_by,
-      data_release_uuid: @node.data_release_strategy_id
     }
   end
 
