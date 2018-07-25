@@ -1,0 +1,3 @@
+class OrgChartData
+
+end

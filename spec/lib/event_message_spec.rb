@@ -11,8 +11,7 @@ RSpec.describe EventMessage do
           description: 'A node with a cost code',
           cost_code: 'S1234',
           node_uuid: SecureRandom.uuid,
-          parent: root,
-          data_release_strategy_id: SecureRandom.uuid)
+          parent: root)
   end
   let(:new_node) do
     build(:node, id: 3, name: 'newproj', node_uuid: SecureRandom.uuid, parent: root)
@@ -35,9 +34,8 @@ RSpec.describe EventMessage do
     let(:message) do
       Timecop.freeze do
         @timestamp = Time.now.utc.iso8601
-        m = EventMessage.new(node: node, user: user, event: event)
+        m = EventMessage.new(node: node, user: user, event: event, trace_id: trace_id)
         m.instance_variable_set(:@event_uuid, event_uuid)
-        m.instance_variable_set(:@trace_id, trace_id)
         m
       end
     end
@@ -85,13 +83,12 @@ RSpec.describe EventMessage do
       it 'should include the appropriate metadata' do
         expect(metadata).to eq(
           node_id: node.id,
-          zipkin_trace_id: trace_id,
+          trace_id: trace_id,
           owner_email: node.owner_email,
           description: node.description,
           cost_code: node.cost_code,
           deactivated_datetime: node.deactivated_datetime&.utc&.iso8601,
-          deactivated_by: node.deactivated_by,
-          data_release_uuid: node.data_release_strategy_id
+          deactivated_by: node.deactivated_by
         )
       end
 

@@ -37,7 +37,7 @@ module Api
       end
 
       def context
-        { current_user: current_user}
+        { current_user: current_user, request_id: request.request_id }
       end
 
       private

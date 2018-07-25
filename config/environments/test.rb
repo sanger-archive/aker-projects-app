@@ -15,18 +15,23 @@ Rails.application.configure do
   # Configure public file server for tests with Cache-Control for performance.
   config.public_file_server.enabled = true
   config.public_file_server.headers = {
-    'Cache-Control' => 'public, max-age=3600'
+    'Cache-Control' => "public, max-age=#{1.hour.to_i}"
   }
 
   # Show full error reports and disable caching.
   config.consider_all_requests_local       = true
   config.action_controller.perform_caching = false
+  config.cache_store = :null_store
 
   # Raise exceptions instead of rendering exception templates.
   config.action_dispatch.show_exceptions = false
 
   # Disable request forgery protection in test environment.
   config.action_controller.allow_forgery_protection = false
+
+  # Store uploaded files on the local file system in a temporary directory
+  config.active_storage.service = :test
+
   config.action_mailer.perform_caching = false
 
   # Tell Action Mailer not to deliver emails to the real world.
@@ -41,8 +46,8 @@ Rails.application.configure do
   # config.action_view.raise_on_missing_translations = true
 
   config.events = {
-    enabled: false
-  }
+      enabled: false
+    }
 
   config.fake_ldap = true
   config.jwt_secret_key = 'test'
@@ -51,9 +56,9 @@ Rails.application.configure do
   config.logout_url = 'logout_url'
 
   config.billing_facade_url = 'http://some-server'
-  config.urls = { submission: '',
+  config.urls = { reception: '',
                   permissions: '',
                   sets: '',
                   projects: '',
-                  work_orders: '' }
+                  work: '' }
 end

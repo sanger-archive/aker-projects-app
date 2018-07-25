@@ -12,21 +12,10 @@
   var proto = OrgChartPreferences.prototype;
 
   proto.attachPreferencesHandlers = function() {
-    $('[data-user-preferences-expand]').on('click', $.proxy(function() {
-      this.loadTree({restoreStateRequested: false}).then($.proxy(this.saveUserConfig, this));
+    // Delete the user's layout then reload the tree
+    $('#reset-button').on('click', $.proxy(function() {
+      this.deleteUserConfig().then(this.reloadTree.bind(this))
     }, this));
-    $(this).on('orgchart.restoreStateRequested', $.proxy(function(event, opts) {
-      $('.edge').on('click', $.proxy(function() {
-        setTimeout($.proxy(this.saveUserConfig, this), 500);
-      }, this));
-      if ((!opts) || (!!opts.restoreStateRequested)) {
-        this.restoreUserConfig();
-      }
-    }, this));
-  };
-
-  proto.onSaveUserConfig = function() {
-    //this.info('Tree layout saved')
   };
 
   proto.onErrorSaveUserConfig = function() {
@@ -137,7 +126,7 @@
     );
   };
 
-  proto.onDeleteUserConfig = function() { this.info('Tree layout deleted')};
+  proto.onDeleteUserConfig = function() { };
   proto.onErrorDeleteUserConfig = function() { this.alert('Error while deleting tree layout')};
 
   proto.restoreUserConfig = function() {

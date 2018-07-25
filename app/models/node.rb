@@ -1,6 +1,3 @@
-require 'billing_facade_client'
-require 'data_release_strategy_client'
-
 class Node < ApplicationRecord
   include AkerPermissionGem::Accessible
 
@@ -29,8 +26,6 @@ class Node < ApplicationRecord
 	has_many :nodes, class_name: 'Node', foreign_key: 'parent_id', dependent: :restrict_with_error
 	belongs_to :parent, class_name: 'Node', required: false
 
-  belongs_to :data_release_strategy, required: false
-
   before_validation :sanitise_blank_cost_code, :sanitise_name, :sanitise_owner, :sanitise_deactivated_by
   before_save :sanitise_blank_cost_code, :sanitise_name, :sanitise_owner, :sanitise_deactivated_by
   before_create :create_uuid
@@ -40,7 +35,7 @@ class Node < ApplicationRecord
 
   scope :active, -> { where(deactivated_by: nil) }
 
-  scope :with_cost_code, -> { where(Node.arel_table[:cost_code].matches('S%')) }
+  scope :with_cost_code, -> { where.not(cost_code: nil) }
   scope :with_project_cost_code, -> { with_cost_code.where.not(Node.arel_table[:cost_code].matches("%#{BillingFacadeClient::CostCodeValidator::SPLIT_CHARACTER}%")) }
   scope :with_subproject_cost_code, -> { with_cost_code.where(Node.arel_table[:cost_code].matches("%#{BillingFacadeClient::CostCodeValidator::SPLIT_CHARACTER}%")) }
 
@@ -111,6 +106,11 @@ class Node < ApplicationRecord
     nodes.select(&:active?)
   end
 
+  def has_sibling?
+    return false if root?
+    parent.active_children.length > 1
+  end
+
   def sanitise_name
     if name
       sanitised = name.strip.gsub(/\s+/, ' ')
@@ -142,6 +142,10 @@ class Node < ApplicationRecord
   def permissions
     return self.parent.permissions if is_subproject?
     super
+  end
+
+  def owned_by?(user)
+    return (user.email == owner_email)
   end
 
   private
