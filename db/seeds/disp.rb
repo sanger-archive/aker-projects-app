@@ -36,4 +36,8 @@ programmes.each do |prog, owners|
 
   # Remove permissions for the 'aker' user
   node.permissions.where(permitted: "aker").destroy_all
+
+  # ***DEV/WIP ENV ONLY***
+  # Write permission for everyone
+  node.permissions.where(permitted: 'world', permission_type: :write).first_or_create
 end
