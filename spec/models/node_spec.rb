@@ -220,6 +220,13 @@ RSpec.describe Node, type: :model do
       expect(build(:node, parent: program1, name: "   \tALPHA\n   ", owner_email: "   \tALPHA\n   ")).to be_valid
     end
 
+    it 'is invalid to try update the costcode of a node when it has grandchildren' do
+      program2 = create(:node, name: 'program2', parent: program1, owner_email: user.email)
+      program3 = create(:node, name: 'program3', parent: program2, owner_email: user.email)
+      expect(program1.update_attributes(cost_code: "S1234")).to eq false
+      expect(program1).not_to be_valid
+    end
+
   end
 
   describe '#create' do
