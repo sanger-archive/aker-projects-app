@@ -22,6 +22,7 @@ class Node < ApplicationRecord
   validate :validate_cant_update_project_cost_code_if_subcostcodes_exist
   validate :validate_subproject_cost_code_is_valid_for_parent_project, if: :is_subproject?, on: :update
   validate :validate_no_children, if: :is_subproject?, on: :update
+  validate :validate_cant_update_node_costcode_if_grandchildren_exist, on: :update
 
 	has_many :nodes, class_name: 'Node', foreign_key: 'parent_id', dependent: :restrict_with_error
 	belongs_to :parent, class_name: 'Node', required: false
@@ -217,6 +218,12 @@ class Node < ApplicationRecord
   def validate_no_children
     if active_children.size > 0
       errors.add(:base, "A node with children can not be a subproject")
+    end
+  end
+
+  def validate_cant_update_node_costcode_if_grandchildren_exist
+    if self.active_children.map(&:active_children).flatten.length > 0 && cost_code_changed
+      errors.add(:cost_code, "A node with grandchildren cannot update the cost code")
     end
   end
 
