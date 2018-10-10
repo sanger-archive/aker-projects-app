@@ -1,3 +1,5 @@
+require 'billing_facade_client'
+
 class Node < ApplicationRecord
   include AkerPermissionGem::Accessible
 
