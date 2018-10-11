@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'billing_facade_client'
 
 class Node < ApplicationRecord
