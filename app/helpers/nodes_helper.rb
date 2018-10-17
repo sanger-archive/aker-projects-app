@@ -1,4 +1,3 @@
-require 'billing_facade_client'
 
 module NodesHelper
 
