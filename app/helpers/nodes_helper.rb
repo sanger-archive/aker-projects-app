@@ -1,4 +1,4 @@
-require 'billing_facade_client'
+# frozen_string_literal: true
 
 module NodesHelper
 

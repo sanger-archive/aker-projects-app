@@ -143,9 +143,9 @@ RSpec.describe 'API::V1::Nodes', type: :request do
       end
 
       it 'can filter nodes that represent subprojects' do
-        mock_subproject_cost_code('S1234-45')
+        mock_subproject_cost_code('S1234-450')
         subprojects = create_list(:node, 3,
-          cost_code: "S1234-45", description: "This is a subproject", parent: proposals.first)
+          cost_code: "S1234-450", description: "This is a subproject", parent: proposals.first)
         get api_v1_nodes_path, params: { "filter[node_type]": "subproject" }, headers: headers
 
         json = JSON.parse(response.body, symbolize_names: true)

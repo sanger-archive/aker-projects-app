@@ -10,7 +10,7 @@ GIT
 
 GIT
   remote: https://github.com/sanger/aker-billing-facade-client.git
-  revision: ba42e2a6aad254b2f3bc4fa5076d6c955f5fc01e
+  revision: a9b26fd14f64005d5d2f2721cb6b3dd6c1ecb1c7
   specs:
     aker-billing-facade-client (0.1.8)
       activemodel
@@ -160,7 +160,7 @@ GEM
     factory_bot_rails (4.10.0)
       factory_bot (~> 4.10.0)
       railties (>= 3.0.0)
-    faraday (0.15.2)
+    faraday (0.15.3)
       multipart-post (>= 1.2, < 3)
     faraday_middleware (0.12.2)
       faraday (>= 0.7.4, < 1.0)
@@ -180,7 +180,7 @@ GEM
       activesupport (>= 4.2.0)
     health_check (3.0.0)
       railties (>= 5.0)
-    i18n (1.0.1)
+    i18n (1.1.0)
       concurrent-ruby (~> 1.0)
     ice_nine (0.11.2)
     jaro_winkler (1.5.1)
