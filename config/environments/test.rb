@@ -56,6 +56,7 @@ Rails.application.configure do
   config.logout_url = 'logout_url'
 
   config.billing_facade_url = 'http://some-server'
+  config.ubw_service_url = 'http://some-server:3602/'
   config.urls = { reception: '',
                   permissions: '',
                   sets: '',
