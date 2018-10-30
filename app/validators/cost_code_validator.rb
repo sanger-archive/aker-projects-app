@@ -1,3 +1,5 @@
+# Validate for validating a Project Cost Code
+# It just has to exist in UBW right now
 class CostCodeValidator < ActiveModel::EachValidator
   def validate_each(record, attribute, value)
     if Ubw::SubProject.where(cost_code: value).result_count.zero?
