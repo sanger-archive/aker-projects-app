@@ -36,11 +36,11 @@ class Node < ApplicationRecord
 
   scope :with_cost_code, -> { where.not(cost_code: nil) }
 
-  scope :with_project_cost_code, -> {
+  scope :with_project_cost_code, lambda {
     with_cost_code.where.not(Node.arel_table[:cost_code].matches('%-%'))
   }
 
-  scope :with_subproject_cost_code, -> {
+  scope :with_subproject_cost_code, lambda {
     with_cost_code.where(Node.arel_table[:cost_code].matches('%-%'))
   }
 
