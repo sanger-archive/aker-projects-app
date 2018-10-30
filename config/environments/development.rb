@@ -89,7 +89,6 @@ Rails.application.configure do
     work: ''
   }
 
-  config.billing_facade_url = 'http://localhost:3601'
   config.ubw_service_url = 'http://localhost:3602/'
 
   config.ubw = {

@@ -39,7 +39,6 @@ gem 'health_check'
 ###
 # Sanger gems
 ###
-gem 'aker-billing-facade-client', github: 'sanger/aker-billing-facade-client'
 gem 'ubw-client', '~> 0.1', github: 'sanger/ubw-client'
 gem 'aker_credentials_gem', github: 'sanger/aker-credentials'
 gem 'aker_permission_gem', github: 'sanger/aker-permission'
