@@ -58,7 +58,7 @@ FactoryBot.define do
     #
     # A sub-project is a node with a sub-costcode (Sxxxx-xx)
     factory :sub_project do
-      cost_code { "#{parent.cost_code}-S%02d" % rand(9) }
+      cost_code { "#{parent.cost_code}-%02d" % rand(9) }
 
       factory :spendable_sub_project, traits: [:spendable]
     end

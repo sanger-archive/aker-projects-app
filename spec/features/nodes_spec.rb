@@ -3,8 +3,6 @@ require 'ostruct'
 
 RSpec.describe 'Nodes', type: :feature do
 
-  include MockBilling
-
   let(:user) { OpenStruct.new(email: 'user@sanger.ac.uk', groups: ['world']) }
 
   let(:user2) { OpenStruct.new(email: 'user2@sanger.ac.uk', groups: ['world']) }
@@ -43,7 +41,7 @@ RSpec.describe 'Nodes', type: :feature do
   end
 
   let!(:proj_with_costcode) do
-    create(:node, name: 'Proj with costcode', parent: proj2, owner_email: user.email, cost_code: valid_project_cost_code)
+    create(:project, name: 'Proj with costcode', parent: proj2, owner_email: user.email)
   end
 
   let!(:subproj) do

@@ -1,10 +1,7 @@
 require 'rails_helper'
 require 'ostruct'
-require 'support/mock_billing'
 
 RSpec.describe NodeForm do
-
-  include MockBilling
 
   let(:user) { OpenStruct.new(email: 'user@sanger.ac.uk', groups: ['world']) }
 
@@ -50,8 +47,7 @@ RSpec.describe NodeForm do
       node
     }
     let(:project) do
-      project = create(:node, parent_id: node.id, name: 'project', description: 'desc',
-          cost_code: valid_project_cost_code, owner_email: user.email)
+      project = create(:project, parent: node, name: 'project', description: 'desc', owner_email: user.email)
 
       permissions = [
         build(:permission, permitted: 'dirk@sanger.ac.uk', permission_type: :write),
@@ -70,7 +66,7 @@ RSpec.describe NodeForm do
       expect(form.parent_id).to eq(node.id)
       expect(form.name).to eq('project')
       expect(form.description).to eq('desc')
-      expect(form.cost_code).to eq(valid_project_cost_code)
+      expect(form.cost_code).to eq(project.cost_code)
     end
     it 'has the owner specified' do
       expect(form.instance_variable_get('@owner_email')).to eq(user.email)
@@ -86,7 +82,7 @@ RSpec.describe NodeForm do
     end
 
     context 'if node is a subproject' do
-      let(:subproject) { create(:node, name: 'subproject', cost_code: valid_subproject_cost_code, parent: project, owner_email: user.email)}
+      let(:subproject) { create(:sub_project, name: 'subproject', parent: project, owner_email: user.email)}
       let(:form) { NodeForm.from_node(subproject, some_email) }
 
       it 'should have the permissions of its parent' do
@@ -102,7 +98,7 @@ RSpec.describe NodeForm do
         expect(form.parent_id).to eq(project.id)
         expect(form.name).to eq('subproject')
         expect(form.description).to eq(nil)
-        expect(form.cost_code).to eq(valid_subproject_cost_code)
+        expect(form.cost_code).to eq(subproject.cost_code)
       end
       it 'has the owner specified' do
         expect(form.instance_variable_get('@owner_email')).to eq(user.email)
@@ -134,14 +130,14 @@ RSpec.describe NodeForm do
       pr
     end
     let(:project) do
-      pr = create(:node, name: 'project', description: 'desc', cost_code: valid_project_cost_code,
+      pr = create(:project, name: 'project', description: 'desc',
         parent: program, owner_email: user.email)
     end
 
     context 'when the form represents a new node' do
       let(:form) do
         NodeForm.new(name: 'jelly', description: 'foo', parent_id: program.id, owner_email: user.email,
-          cost_code: valid_project_cost_code, user_writers: 'dirk,jeff', group_writers: 'zombies,   PIRATES',
+          cost_code: 'S1234', user_writers: 'dirk,jeff', group_writers: 'zombies,   PIRATES',
           user_spenders: 'DIRK', group_spenders: 'ninjas', user_email: some_email)
       end
 
@@ -155,7 +151,7 @@ RSpec.describe NodeForm do
         node = Node.find_by(name: 'jelly')
         expect(node).not_to be_nil
         expect(node.name).to eq('jelly')
-        expect(node.cost_code).to eq(valid_project_cost_code)
+        expect(node.cost_code).to eq('S1234')
         expect(node.description).to eq('foo')
         expect(node.parent).to eq(program)
         expect(node.id).not_to be_nil
@@ -185,7 +181,7 @@ RSpec.describe NodeForm do
     context 'when the form represents an existing node' do
       let(:form) do
         NodeForm.new(id: project.id, name: 'jelly', description: 'foo', parent_id: project.parent_id,
-          cost_code: another_valid_project_cost_code,
+          cost_code: 'S1234',
                      user_writers: 'dirk,jeff', group_writers: 'zombies,   PIRATES', user_spenders: 'DIRK', group_spenders: 'ninjas', user_email: some_email)
       end
 
@@ -197,7 +193,7 @@ RSpec.describe NodeForm do
         node = Node.find(project.id)
         expect(node.name).to eq('jelly')
         expect(node.description).to eq('foo')
-        expect(node.cost_code).to eq(another_valid_project_cost_code)
+        expect(node.cost_code).to eq('S1234')
         expect(node.parent).to eq(program)
         expect(node.owner_email).to eq(user.email) # no change
       end
@@ -224,7 +220,7 @@ RSpec.describe NodeForm do
 
     context 'when the node cannot be created' do
       let(:form) do
-        NodeForm.new(name: 'jelly', description: 'foo', parent_id: program.id, owner_email: user.email, cost_code: valid_project_cost_code,
+        NodeForm.new(name: 'jelly', description: 'foo', parent_id: program.id, owner_email: user.email, cost_code: 'S1234',
                      user_writers: 'dirk,jeff', group_writers: 'zombies,   PIRATES', user_spenders: 'DIRK', group_spenders: 'ninjas', user_email: some_email)
       end
 
@@ -243,7 +239,7 @@ RSpec.describe NodeForm do
 
     context 'when the node cannot be updated' do
       let(:form) do
-        NodeForm.new(id: project.id, name: 'jelly', description: 'foo', parent_id: project.parent_id, cost_code: another_valid_project_cost_code,
+        NodeForm.new(id: project.id, name: 'jelly', description: 'foo', parent_id: project.parent_id, cost_code: 'S1234',
                      user_writers: 'dirk,jeff', group_writers: 'zombies,   PIRATES', user_spenders: 'DIRK', group_spenders: 'ninjas', user_email: some_email)
       end
 

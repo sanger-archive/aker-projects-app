@@ -46,8 +46,12 @@ Rails.application.configure do
   # config.action_view.raise_on_missing_translations = true
 
   config.events = {
-      enabled: false
-    }
+    enabled: false
+  }
+
+  config.ubw = {
+    enabled: false
+  }
 
   config.fake_ldap = true
   config.jwt_secret_key = 'test'
