@@ -3,8 +3,6 @@ require 'ostruct'
 require 'jwt'
 
 RSpec.describe 'API::V1::Nodes', type: :request do
-  include MockBilling
-
   let(:jwt) { JWT.encode({ data: { 'email' => 'user@here.com', 'groups' => ['world'] } }, Rails.configuration.jwt_secret_key, 'HS256') }
 
   let(:user) { OpenStruct.new(email: 'user@here.com', groups: ['world']) }
@@ -37,7 +35,7 @@ RSpec.describe 'API::V1::Nodes', type: :request do
   describe 'GET' do
 
     before(:each) do
-      node = create(:node, cost_code: valid_project_cost_code, description: "Here is my node", parent: program1)
+      node = create(:project, description: "Here is my node", parent: program1)
 
       get api_v1_node_path(node), headers: headers
     end
@@ -56,9 +54,9 @@ RSpec.describe 'API::V1::Nodes', type: :request do
   end
 
   describe 'filtering' do
-    let!(:proposals) { create_list(:node, 3, cost_code: valid_project_cost_code, description: "This is a proposal", parent: program1) }
+    let!(:proposals) { create_list(:project, 3, description: "This is a proposal", parent: program1) }
     let!(:nodes) { create_list(:node, 2, parent: program1) }
-    let!(:deactivated_proposals) { create_list(:node, 2, deactivated_by: user.email, deactivated_datetime: DateTime.now, cost_code: valid_project_cost_code, parent: program1) }
+    let!(:deactivated_proposals) { create_list(:project, 2, deactivated_by: user.email, deactivated_datetime: DateTime.now, parent: program1) }
 
     it 'will filter out deactivated nodes by default' do
       get api_v1_nodes_path, headers: headers
@@ -143,9 +141,8 @@ RSpec.describe 'API::V1::Nodes', type: :request do
       end
 
       it 'can filter nodes that represent subprojects' do
-        mock_subproject_cost_code('S1234-450')
-        subprojects = create_list(:node, 3,
-          cost_code: "S1234-450", description: "This is a subproject", parent: proposals.first)
+        subprojects = create_list(:sub_project, 3,
+          description: "This is a subproject", parent: proposals.first)
         get api_v1_nodes_path, params: { "filter[node_type]": "subproject" }, headers: headers
 
         json = JSON.parse(response.body, symbolize_names: true)
