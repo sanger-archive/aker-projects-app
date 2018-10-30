@@ -76,7 +76,7 @@ RSpec.describe Node, type: :model do
 
         context 'and parent cost code does not match UBW parent cost code' do
           before do
-            allow(Ubw::SubProject).to receive(:find).and_return(double('SubProject', cost_code: 'S1234'))
+            allow(Ubw::SubProject).to receive(:find).and_return(double('SubProject', cost_code: 'S1234', is_active?: true))
           end
 
           it 'is invalid' do

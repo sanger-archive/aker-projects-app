@@ -133,8 +133,9 @@
   end
 
   def set_ubw_subprojects
-    return if current_node.parent.cost_code.blank?
-    result_set = Ubw::SubProject.where(cost_code: current_node.parent.cost_code)
+    parent_cost_code = current_node.parent.cost_code
+    return if parent_cost_code.blank?
+    result_set = Ubw::SubProject.where(cost_code: parent_cost_code)
     @ubw_subprojects = result_set.items
   end
 end

@@ -39,11 +39,11 @@ gem 'health_check'
 ###
 # Sanger gems
 ###
-gem 'ubw-client', '~> 0.1', github: 'sanger/ubw-client'
 gem 'aker_credentials_gem', github: 'sanger/aker-credentials'
 gem 'aker_permission_gem', github: 'sanger/aker-permission'
 gem 'aker_shared_navbar', github: 'sanger/aker-shared-navbar'
 gem 'json_api_client', github: 'sanger/json_api_client'
+gem 'ubw-client', '~> 0.1', github: 'sanger/ubw-client'
 
 ###
 # Groups
