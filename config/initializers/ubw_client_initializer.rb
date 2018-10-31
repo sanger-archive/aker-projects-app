@@ -1,10 +1,6 @@
 Rails.application.config.after_initialize do
   Ubw::Client.site = Rails.application.config.ubw_service_url
 
-  Ubw::Client.connection do |conn|
-    conn.proxy = {}
-  end
-
   # If not enabled mock the behaviour. Useful for development.
   if !Rails.application.config.ubw[:enabled]
     require 'ostruct'
