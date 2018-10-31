@@ -40,7 +40,7 @@ class Node < ApplicationRecord
     with_cost_code.left_outer_joins(:parent).where(parents_nodes: { cost_code: nil })
   }
 
-  # Nodes SubProjects if their parent has a cost_code
+  # Nodes are SubProjects if their parent has a cost_code
   scope :is_subproject, lambda {
     left_outer_joins(:parent).where.not(parents_nodes: { cost_code: nil })
   }
