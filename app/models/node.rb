@@ -33,21 +33,17 @@ class Node < ApplicationRecord
   after_create :set_permissions
 
   scope :active, -> { where(deactivated_by: nil) }
-
   scope :with_cost_code, -> { where.not(cost_code: nil) }
 
-  # Not used anywhere
-  scope :with_project_cost_code, lambda {
-    with_cost_code.where.not(Node.arel_table[:cost_code].matches('%-%'))
+  # Nodes are Projects if they have a cost_code and their parent doesn't
+  scope :is_project, lambda {
+    with_cost_code.left_outer_joins(:parent).where(parents_nodes: { cost_code: nil })
   }
 
-  # Not used anywhere
-  scope :with_subproject_cost_code, lambda {
-    with_cost_code.where(Node.arel_table[:cost_code].matches('%-%'))
+  # Nodes SubProjects if their parent has a cost_code
+  scope :is_subproject, lambda {
+    left_outer_joins(:parent).where.not(parents_nodes: { cost_code: nil })
   }
-
-  scope :is_project, -> { with_project_cost_code }
-  scope :is_subproject, -> { with_subproject_cost_code }
 
   def is_project?
     # https://stackoverflow.com/questions/524658/what-does-mean-in-ruby
