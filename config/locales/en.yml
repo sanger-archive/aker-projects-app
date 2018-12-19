@@ -31,3 +31,8 @@
 
 en:
   hello: "Hello world"
+  errors:
+    cost_code_not_found: "could not be found in UBW"
+    sub_cost_code_not_found: "could not be found in UBW"
+    sub_cost_code_parent_mismatch: "not valid with UBW parent Cost Code %s"
+    sub_project_inactive: "found in UBW is inactive"
