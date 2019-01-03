@@ -151,7 +151,18 @@ class Node < ApplicationRecord
     return (user.email == owner_email)
   end
 
-  private
+  def program
+    return self unless parent_id
+    cur = self
+    par = cur.parent
+    while par&.parent_id do
+      cur = par
+      par = cur.parent
+    end
+    return cur
+  end
+
+private
 
   def validate_deactivate
     if nodes.reload.any?(&:active?)
