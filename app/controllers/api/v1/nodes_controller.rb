@@ -5,7 +5,7 @@ module Api
   	  include AkerPermissionControllerConfig
       include WebSocketsNotification
 
-      skip_authorization_check only: [:index, :show]
+      skip_authorization_check only: [:index, :show, :get_related_resource]
 
       skip_credentials only: [:show]
 
