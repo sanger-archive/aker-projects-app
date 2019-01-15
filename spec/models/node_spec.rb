@@ -608,6 +608,27 @@ RSpec.describe Node, type: :model do
 
     end
 
+  end
 
+  describe '#program' do
+    context 'when the node is root' do
+      it 'should return the same node' do
+        expect(root.program).to eq(root)
+      end
+    end
+
+    context 'when the node is a child of root' do
+      it 'should return the same node' do
+        expect(program1.program).to eq(program1)
+      end
+    end
+
+    context 'when the node is lower down the hierarchy' do
+      it 'should return the program above the node' do
+        proj = create(:node, name: 'proj', parent: program1, owner_email: user.email)
+        subproj = create(:node, name: 'subproj', parent: proj, owner_email: user.email)
+        expect(subproj.program).to eq(program1)
+      end
+    end
   end
 end
