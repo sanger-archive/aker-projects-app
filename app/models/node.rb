@@ -5,11 +5,8 @@ class Node < ApplicationRecord
 
   validates :name, presence: true
   validates :parent, presence: true, if: :parent_id
-  validates_presence_of :description, :allow_blank => true
-
-  validates :cost_code, :presence => true, :allow_blank => true, :on => [:create, :update]
-  validates_with BillingFacadeClient::ProjectCostCodeValidator, :on => [:create, :update], if: :is_project?
-  validates_with BillingFacadeClient::SubprojectCostCodeValidator, :on => [:create, :update], if: :is_subproject?
+  validates :cost_code, cost_code: true, allow_blank: true, if: :is_project?
+  validates :cost_code, sub_cost_code: true, allow_blank: true, if: :is_subproject?
 
   validates :deactivated_datetime, presence: true, unless: :active?
   validates :deactivated_datetime, absence: true, if: :active?
@@ -22,7 +19,6 @@ class Node < ApplicationRecord
   validate :validate_node_cant_move_from_under_root
   validate :validate_cant_create_node_under_subproject
   validate :validate_cant_update_project_cost_code_if_subcostcodes_exist
-  validate :validate_subproject_cost_code_is_valid_for_parent_project, if: :is_subproject?, on: :update
   validate :validate_no_children, if: :is_subproject?, on: :update
   validate :validate_cant_update_node_costcode_if_grandchildren_exist, on: :update
 
@@ -37,13 +33,17 @@ class Node < ApplicationRecord
   after_create :set_permissions
 
   scope :active, -> { where(deactivated_by: nil) }
-
   scope :with_cost_code, -> { where.not(cost_code: nil) }
-  scope :with_project_cost_code, -> { with_cost_code.where.not(Node.arel_table[:cost_code].matches("%#{BillingFacadeClient::CostCodeValidator::SPLIT_CHARACTER}%")) }
-  scope :with_subproject_cost_code, -> { with_cost_code.where(Node.arel_table[:cost_code].matches("%#{BillingFacadeClient::CostCodeValidator::SPLIT_CHARACTER}%")) }
 
-  scope :is_project, -> { with_project_cost_code }
-  scope :is_subproject, -> { with_subproject_cost_code }
+  # Nodes are Projects if they have a cost_code and their parent doesn't
+  scope :is_project, lambda {
+    with_cost_code.left_outer_joins(:parent).where(parents_nodes: { cost_code: nil })
+  }
+
+  # Nodes are SubProjects if their parent has a cost_code
+  scope :is_subproject, lambda {
+    left_outer_joins(:parent).where.not(parents_nodes: { cost_code: nil })
+  }
 
   def is_project?
     # https://stackoverflow.com/questions/524658/what-does-mean-in-ruby
@@ -151,7 +151,18 @@ class Node < ApplicationRecord
     return (user.email == owner_email)
   end
 
-  private
+  def program
+    return self unless parent_id
+    cur = self
+    par = cur.parent
+    while par&.parent_id do
+      cur = par
+      par = cur.parent
+    end
+    return cur
+  end
+
+private
 
   def validate_deactivate
     if nodes.reload.any?(&:active?)
@@ -201,13 +212,6 @@ class Node < ApplicationRecord
   def validate_cant_create_node_under_subproject
     if self.parent&.is_subproject?
       errors.add(:base, "A node cannot be created under a subproject")
-    end
-  end
-
-  def validate_subproject_cost_code_is_valid_for_parent_project
-    return unless self.cost_code
-    if !BillingFacadeClient.get_sub_cost_codes(self.parent.cost_code).include?(self.cost_code)
-      errors.add(:base, "This node's cost code is not valid for the parent project")
     end
   end
 

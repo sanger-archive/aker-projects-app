@@ -5,6 +5,8 @@
   before_action :current_node, except: :create
   before_action :build_org_chart, except: :create
   before_action :set_child, only: [:show, :tree]
+  before_action :set_form, only: [:edit]
+  before_action :set_ubw_subprojects, only: [:edit]
 
   def show
     authorize! :read, Node
@@ -41,8 +43,6 @@
 
   def edit
     authorize! :read, current_node
-
-    set_form
 
     respond_to do |format|
       format.html
@@ -132,4 +132,10 @@
     EventService.publish(message)
   end
 
+  def set_ubw_subprojects
+    parent_cost_code = current_node.parent.cost_code
+    return if parent_cost_code.blank?
+    result_set = Ubw::SubProject.where(cost_code: parent_cost_code)
+    @ubw_subprojects = result_set.items
+  end
 end
