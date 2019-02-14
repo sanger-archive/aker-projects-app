@@ -6,8 +6,7 @@ module Api
       include WebSocketsNotification
 
       skip_authorization_check only: [:index, :show, :get_related_resource]
-
-      skip_credentials only: [:show]
+      skip_credentials only: [:index, :show, :get_related_resource]
 
       def create
         authorize! :create, Node, message: 'You are not authorized to create this node.'
